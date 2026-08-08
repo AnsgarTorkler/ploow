@@ -131,6 +131,44 @@ gruppe('Der Bau-Ablauf auf GitHub');
     ok(w.includes('dist/*.' + e), 'Die .' + e + ' wird als Artefakt gesichert'));
 }
 
+gruppe('Die Dateinamen passen zu den Links der Produktseite');
+{
+  /* Die Website verlinkt vier feste Dateinamen. Stimmt einer nicht mit
+     dem überein, was electron-builder erzeugt, sieht die Seite heil aus
+     und der Knopf führt auf eine 404-Seite von GitHub. Genau das war der
+     Fall: artifactName setzt ${arch} in den Namen, also hätte die .dmg
+     „Ploow-1.13.1-arm64.dmg" geheißen, die Seite aber „Ploow-1.13.1.dmg"
+     erwartet. */
+  const b = paket.build;
+  const v = paket.version;
+  const N = (s) => String(s || b.artifactName)
+    .replace(/\$\{productName\}/g, b.productName)
+    .replace(/\$\{version\}/g, v)
+    .replace(/\$\{arch\}/g, 'x64')
+    .replace(/\$\{ext\}/g, 'PLATZ');
+
+  const erzeugt = {
+    dateiWindows:  N(b.nsis && b.nsis.artifactName).replace('PLATZ', 'exe'),
+    dateiPortabel: N(b.portable && b.portable.artifactName).replace('PLATZ', 'exe'),
+    dateiMac:      N(b.dmg && b.dmg.artifactName).replace('PLATZ', 'dmg'),
+    dateiLinux:    N(b.appImage && b.appImage.artifactName).replace('PLATZ', 'AppImage')
+  };
+
+  const seite = fs.readFileSync(path.join(wurzel, 'docs', 'index.html'), 'utf8');
+  Object.entries(erzeugt).forEach(([schluessel, name]) => {
+    const erwartet = (seite.match(new RegExp(schluessel + ':\\s*"([^"]+)"')) || [])[1];
+    gleich(name, erwartet, `${schluessel}: gebaut wird „${name}", verlinkt ist „${erwartet}"`);
+  });
+
+  /* Nur eine Architektur je System – sonst gibt es zwei Dateien mit
+     demselben Namen und electron-builder überschreibt eine davon. */
+  const archs = (ziel) => (ziel || []).flatMap(t => (typeof t === 'object' && t.arch) ? t.arch : ['(Vorgabe)']);
+  gleich(archs(b.mac.target), ['x64'], 'macOS wird als x64 gebaut – läuft über Rosetta 2 auch auf Apple Silicon');
+  gleich(archs(b.linux.target), ['x64'], 'Linux ebenso');
+  ok(!/\$\{arch\}/.test((b.dmg || {}).artifactName || ''), 'Die .dmg trägt keine Architektur im Namen');
+  ok(!/\$\{arch\}/.test((b.appImage || {}).artifactName || ''), 'Die .AppImage ebenfalls nicht');
+}
+
 gruppe('Bezugsquelle für die Aktualisierung');
 {
   /* Ohne publish weiß electron-updater nicht, wo es nachfragen soll –
