@@ -174,6 +174,31 @@ gruppe('Manuskript: Text und Markdown');
 }
 
 fs.rmSync(tmp, { recursive: true, force: true });
+gruppe('Eine gezippte Bombe legt das Programm nicht lahm');
+{
+  /* Gzip komprimiert Wiederholungen extrem gut: aus 600 KB lassen sich
+     600 MB erzeugen. Ohne Deckel entpackt der Hauptprozess das brav in
+     den Arbeitsspeicher – und mit ihm friert das Fenster ein, samt
+     ungesicherter Arbeit. */
+  const zlib = require('zlib');
+  const bombe = zlib.gzipSync(Buffer.alloc(600 * 1024 * 1024, 0x41));
+  ok(bombe.length < 2 * 1024 * 1024,
+     `${Math.round(bombe.length / 1024)} KB gepackt werden zu 600 MB entpackt`);
+
+  let meldung = null;
+  try { S.unpack(bombe); } catch (e) { meldung = e.message; }
+  ok(meldung, 'Sie wird abgewiesen statt entpackt');
+  ok(/400 MB/.test(meldung || ''), 'Mit einer Meldung, die den Grund nennt: ' + meldung);
+
+  /* Und eine echte Datei geht weiterhin durch. */
+  const echt = S.pack({ schema: 7, book: { title: 'Test' }, items: [] });
+  gleich(S.unpack(echt).book.title, 'Test', 'Ein normales Projekt bleibt lesbar');
+
+  /* Auch als blanke gzip-Datei, den zweiten Weg in unpack(). */
+  const blank = zlib.gzipSync(Buffer.from(JSON.stringify({ schema: 7, book: { title: 'Blank' } })));
+  gleich(S.unpack(blank).book.title, 'Blank', 'Auch der Weg über blankes gzip ist gedeckelt und funktioniert');
+}
+
 bilanz();
 
 })().catch(e => { console.error('Testlauf abgebrochen:', e); process.exitCode = 1; });

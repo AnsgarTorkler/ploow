@@ -19,6 +19,23 @@ const os = require('os');
 const MAGIC = Buffer.from('SPLN');      // Kennung am Dateianfang
 const FORMAT = 1;                        // Dateiformat (nicht das Datenschema)
 const BACKUP_KEEP = 12;                  // so viele Sicherungen bleiben liegen
+/* Obergrenze beim Entpacken. Gzip komprimiert Wiederholungen extrem gut:
+   aus wenigen hundert Kilobyte lassen sich Gigabyte erzeugen. Ohne Deckel
+   würde eine so gebaute .story-Datei den Hauptprozess vollaufen lassen –
+   und mit ihm das ganze Programm, samt ungesicherter Arbeit im Fenster.
+   400 MB entpackt sind weit mehr, als ein echtes Projekt je erreicht. */
+const MAX_ENTPACKT = 400 * 1024 * 1024;
+function entpacke(buf) {
+  try {
+    return zlib.gunzipSync(buf, { maxOutputLength: MAX_ENTPACKT });
+  } catch (e) {
+    if (/maxOutputLength|larger than|too large|exceed/i.test(e.message || '')) {
+      throw new Error('Diese Datei entpackt sich auf über '
+        + Math.round(MAX_ENTPACKT / 1048576) + ' MB und wird nicht geladen.');
+    }
+    throw e;
+  }
+}
 
 /* ---------- Serialisieren ---------- */
 function pack(stateObj) {
@@ -38,11 +55,11 @@ function unpack(buf) {
     if (format > FORMAT) {
       throw new Error('Diese Datei wurde mit einer neueren Version von Ploow geschrieben.');
     }
-    return JSON.parse(zlib.gunzipSync(buf.slice(5)).toString('utf8'));
+    return JSON.parse(entpacke(buf.slice(5)).toString('utf8'));
   }
   // Blanke gzip-Datei
   if (buf.length > 2 && buf[0] === 0x1f && buf[1] === 0x8b) {
-    return JSON.parse(zlib.gunzipSync(buf).toString('utf8'));
+    return JSON.parse(entpacke(buf).toString('utf8'));
   }
   // Unkomprimiertes JSON (exportierte Sicherungen aus älteren Fassungen)
   const text = buf.toString('utf8').replace(/^﻿/, '').trim();
@@ -150,7 +167,7 @@ async function pushRecent(userDataDir, file, title) {
 }
 
 module.exports = {
-  pack, unpack, writeAtomic, readProject, writeProject,
+  pack, unpack, writeAtomic, readProject, writeProject, MAX_ENTPACKT,
   backupDir, rotateBackup,
   writeDraft, readDraft, clearDraft, draftPath,
   readRecent, pushRecent, recentPath,

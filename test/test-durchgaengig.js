@@ -1755,6 +1755,83 @@ gruppe('Das Beispielprojekt benutzt jede Funktion');
          'Ihre Lage wird im Projekt gemerkt');
 }
 
+gruppe('Werte in Ereignis-Attributen brechen nicht aus');
+{
+  /* Der Fund vom 8. August. In onclick="f('WERT')" reicht esc() nicht:
+     esc macht aus ' ein &#39;, und der HTML-Parser wandelt das zurück in
+     ein ', BEVOR der Browser den Ausdruck übersetzt. Ein Merkmal oder
+     ein Optionsschlüssel aus einer fremden .story-Datei konnte damit die
+     Zeichenkette beenden und eigenen Code anhängen – mit Zugriff auf die
+     ganze Brücke zum Hauptprozess.
+
+     Dieser Test führt das erzeugte Attribut wirklich aus, so wie ein
+     Browser es täte: erst Entitäten auflösen, dann übersetzen. */
+  const entity = s => s.replace(/&#39;/g, "'").replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+
+  const laeuftDurch = (attribut) => {
+    let ausgebrochen = false, letztes = null;
+    const fn = new Function('renameOpt', 'delOpt', 'setSideFilter', 'AUSGEBROCHEN',
+                            entity(attribut));
+    fn((...a) => { letztes = a[a.length - 1]; },
+       (...a) => { letztes = a[a.length - 1]; },
+       (...a) => { letztes = a[a.length - 1]; },
+       () => { ausgebrochen = true; });
+    return { ausgebrochen, letztes };
+  };
+
+  const nutzlast = "x'); AUSGEBROCHEN(); ('";
+
+  // 1) Optionsschlüssel
+  {
+    const U = baueUmgebung(standardPfad, { alsAnwendung: true });
+    U.lauf(`state.custom = sauberProjekt({schema:7, book:{}, items:[],
+      custom:{ROLES:{${JSON.stringify('c_' + nutzlast)}:"Rolle"}}}).custom; renderOpts();`);
+    const attr = (U.store.optsBody._html.match(/onclick="(renameOpt\([^"]*)"/) || [])[1];
+    ok(!!attr, 'Das Optionsmenü erzeugt ein onclick');
+    const r = laeuftDurch(attr);
+    ok(!r.ausgebrochen, 'Ein Optionsschlüssel mit Apostroph führt keinen Code aus');
+    gleich(r.letztes, 'c_' + nutzlast, 'Und kommt trotzdem unverfälscht als Argument an');
+  }
+
+  // 2) Merkmal – viel leichter zu erreichen, die Profi-Leiste zeichnet immer
+  {
+    const U = baueUmgebung(standardPfad, { alsAnwendung: true });
+    U.lauf(`state.items = sauberProjekt({schema:7, book:{}, items:[{id:"a1", kind:"figur",
+      name:"M", tags:[${JSON.stringify('Fantasy' + nutzlast)}]}]}).items; renderSide();`);
+    const attr = (U.store.pSide._html.match(/onclick="(setSideFilter\('tag'[^"]*)"/) || [])[1];
+    ok(!!attr, 'Die Profi-Seitenleiste erzeugt ein onclick');
+    const r = laeuftDurch(attr);
+    ok(!r.ausgebrochen, 'Ein Merkmal mit Apostroph führt keinen Code aus');
+    gleich(r.letztes, 'Fantasy' + nutzlast, 'Und filtert weiterhin nach dem echten Namen');
+  }
+
+  // 3) Der Maskierer selbst
+  {
+    const U = baueUmgebung(standardPfad, { alsAnwendung: true });
+    const faelle = ["a'b", 'a"b', 'a\\b', 'a<b>c', 'a&b', "a\nb", "a b"];
+    faelle.forEach(f => {
+      const attr = U.json(`"f(" + JSON.stringify(attrJs(${JSON.stringify(f)})) + ")"`);
+      const roh = U.json(`attrJs(${JSON.stringify(f)})`);
+      let ergebnis = null;
+      try { new Function('f', entity("f('" + roh + "')"))(v => { ergebnis = v; }); }
+      catch (e) { ergebnis = 'SYNTAXFEHLER: ' + e.message; }
+      const erwartet = f.replace(/[\r\n\u2028\u2029]/g, ' ');
+      gleich(ergebnis, erwartet, `attrJs überträgt ${JSON.stringify(f)} unversehrt`);
+      void attr;
+    });
+    ok(!/[\r\n]/.test(U.json('attrJs("a\\nb")')), 'Zeilenumbrüche werden ersetzt, nicht durchgereicht');
+  }
+
+  /* Und statisch: kein neues onclick mit esc() in einer Zeichenkette. */
+  {
+    const skript = html.slice(html.lastIndexOf('<script>'));
+    const treffer = [...skript.matchAll(/on[a-z]+="[a-zA-Z0-9_]+\([^"]*'\$\{esc\(/g)].map(m => m[0]);
+    gleich(treffer, [], 'Nirgends steht esc() in einer JavaScript-Zeichenkette – dort gehört attrJs() hin'
+      + (treffer.length ? ': ' + treffer[0] : ''));
+  }
+}
+
 gruppe('Das Beispielprojekt ersetzt, statt anzuhängen');
 {
   /* Der Fehler in den Bildschirmfotos: neun Kapitel statt fünf, jede
@@ -1879,6 +1956,9 @@ gruppe('Die Projektkarte klappt beim zweiten Klick wieder zu');
   ok(!!U.store.popupMenu, 'Der erste Klick öffnet');
   U.lauf('projektMenue(_anker);');
   ok(!U.store.popupMenu, 'Der zweite schließt');
+  /* Wieder nachsichtig schalten: sonst stolpert ein später auslösender
+     Zeitgeber – etwa der Rundgang – über eine fehlende Kennung. */
+  U.strengeIds(false);
 }
 
 gruppe('Kein deutscher Rest im einfachen Modus');

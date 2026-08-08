@@ -490,8 +490,18 @@ ipcMain.handle('anhang:oeffnen', async (_e, { name, daten }) => {
 
 ipcMain.handle('anhang:imOrdnerZeigen', async (_e, { name, daten }) => {
   try {
+    /* Dieselbe Sperre wie beim Öffnen. Sie fehlte hier – damit ließ sich
+       eine .exe aus einer fremden Projektdatei zwar nicht starten, aber
+       auf die Platte schreiben und im Explorer markiert anzeigen, wo ein
+       Doppelklick nahe liegt. Eine Sperre mit einer Hintertür ist keine. */
+    const sicher = sicherName(name || 'anhang');
+    const endung = path.extname(sicher).slice(1).toLowerCase();
+    if (ANHANG_GESPERRT.has(endung)) {
+      return { ok: false, fehler: 'Dateien mit der Endung .' + endung
+        + ' werden aus Sicherheitsgründen nicht auf die Platte geschrieben.' };
+    }
     fs.mkdirSync(ANHANG_ORDNER, { recursive: true });
-    const ziel = path.join(ANHANG_ORDNER, sicherName(name || 'anhang'));
+    const ziel = path.join(ANHANG_ORDNER, sicher);
     await speicher.writeAtomic(ziel, Buffer.from(daten, 'base64'));
     shell.showItemInFolder(ziel);
     return ok({ datei: ziel });

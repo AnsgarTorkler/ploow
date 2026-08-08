@@ -1,0 +1,111 @@
+# CodeRabbit – Konfiguration für Ploow
+# Vollständige Referenz: https://docs.coderabbit.ai/reference/configuration
+#
+# Zugeschnitten auf ein Projekt, das anders gebaut ist als das, was
+# CodeRabbit üblicherweise sieht: eine einzelne index.html mit dem
+# gesamten Renderer darin, deutschsprachige Bezeichner und Kommentare,
+# eigene Testläufe ohne Framework. Ohne diese Hinweise meldet ein
+# Prüfwerkzeug vor allem Dinge, die hier bewusst so sind.
+
+language: de-DE
+
+tone_instructions: >
+  Antworte auf Deutsch, sachlich und knapp. Nenne bei jedem Befund die
+  Fundstelle und begründe, was konkret schiefgehen kann. Ordne nach
+  Schwere. Stilfragen bitte nur, wenn sie zu Fehlern führen können –
+  reine Geschmacksfragen zu Namen, Anführungszeichen oder Zeilenlänge
+  sind hier nicht hilfreich.
+
+reviews:
+  profile: assertive          # lieber zu viel melden als zu wenig
+  request_changes_workflow: false
+  high_level_summary: true
+  review_status: true
+  poem: false
+  collapse_walkthrough: false
+
+  # Was gar nicht erst angesehen wird.
+  path_filters:
+    - "!dist/**"              # Bauergebnisse
+    - "!node_modules/**"
+    - "!package-lock.json"
+    - "!**/*.png"
+    - "!**/*.ico"
+    - "!**/*.docx"
+    - "!src/sprachen.js"      # ~9.400 Übersetzungen, reine Daten
+    - "!vorschau-layout.html" # alter Entwurf, nicht ausgeliefert
+
+  path_instructions:
+    - path: "main.js"
+      instructions: >
+        Electron-Hauptprozess. Achte besonders auf: Pfade, die aus dem
+        Renderer kommen und im Dateisystem landen (Verzeichniswechsel
+        über .. , absolute Pfade, Symlinks); ob jeder IPC-Handler seine
+        Eingaben prüft, bevor er sie benutzt; ob Fenster mit
+        contextIsolation an und nodeIntegration aus erzeugt werden;
+        ob externe Links im Standardbrowser statt im Anwendungsfenster
+        geöffnet werden; ob shell.openPath oder shell.openExternal mit
+        Werten aus einer Projektdatei aufgerufen werden können.
+        Schreibvorgänge sollen atomar sein – erst in eine Nebendatei,
+        dann umbenennen –, damit ein Absturz mitten im Speichern nicht
+        das Projekt des Nutzers zerstört.
+
+    - path: "preload.js"
+      instructions: >
+        Die Brücke zwischen Fenster und Hauptprozess. Prüfe, ob über
+        contextBridge nur einzelne, eng geschnittene Funktionen nach
+        außen gehen und nirgends ipcRenderer selbst, ein ganzes Modul
+        oder eine Funktion durchgereicht wird, die einen beliebigen
+        Kanalnamen entgegennimmt.
+
+    - path: "index.html"
+      instructions: >
+        Der gesamte Renderer liegt in dieser einen Datei, etwa 950 KB in
+        zwei inline-Skriptblöcken. Das ist Absicht: die Anwendung läuft
+        unter file:// mit einer strengen CSP, deshalb können keine
+        externen Skripte geladen werden. Bitte nicht vorschlagen, die
+        Datei in Module aufzuteilen.
+        Worauf es ankommt: Jede Stelle, die innerHTML mit Daten des
+        Nutzers füllt, muss durch esc() gehen – Titel, Zusammenfassungen,
+        Namen, Kartenbeschriftungen, Mindmap-Knoten. Bildquellen müssen
+        durch safeSrc(), damit nur data:-Bilder durchkommen und kein
+        javascript:. Achte außerdem auf Stellen, an denen beim Laden
+        oder Bereinigen eines Projekts Felder stillschweigend verloren
+        gehen: die Bereinigung listet erlaubte Felder auf, und ein
+        vergessenes Feld bedeutet Datenverlust ohne Fehlermeldung. Die
+        Bezeichner sind deutsch, das ist durchgehend so gewollt.
+
+    - path: "src/main/*.js"
+      instructions: >
+        Module des Hauptprozesses: Speichern, Bibliothek, Manuskript,
+        Protokoll. Achte auf Pfadprüfungen, auf Fehler, die verschluckt
+        statt gemeldet werden, und darauf, dass beim Lesen fremder
+        Dateien keine unbegrenzten Datenmengen in den Speicher gehen.
+
+    - path: "test/**"
+      instructions: >
+        Eigener Testlauf ohne Framework, mit einem selbstgebauten
+        DOM-Ersatz. Bitte nicht vorschlagen, auf Jest oder Vitest
+        umzustellen. Sinnvoll ist der Hinweis, wenn ein Test etwas
+        behauptet, das er nicht wirklich prüft – der DOM-Ersatz legt
+        unbekannte Element-Kennungen von selbst an und liefert für
+        querySelectorAll immer eine leere Liste, was schon zweimal
+        einen echten Absturz verdeckt hat.
+
+    - path: "website/index.html"
+      instructions: >
+        Produktseite, eine Datei, sieben Sprachen, keine fremden Server
+        und keine Bibliotheken – das ist Absicht und soll so bleiben.
+        Prüfe: ob alle eingesetzten Texte maskiert werden, ob Links nach
+        außen rel="noopener noreferrer" tragen, ob die Seite auch mit
+        abgeschaltetem JavaScript noch etwas Sinnvolles zeigt, und ob
+        die Bedienung mit der Tastatur und für Screenreader funktioniert
+        (die Großansicht der Bildschirmfotos ist ein Dialog).
+
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+
+chat:
+  auto_reply: true

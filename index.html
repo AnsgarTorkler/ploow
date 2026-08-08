@@ -2601,8 +2601,8 @@ function renderOpts(){
     return `<div class="optGrp"><h4>${esc(tx(EXT_LABEL[name]||name))}</h4>
       ${keys.length?keys.map(k=>{ const n=optUsage(name,k);
         return `<div class="optRow"><span class="grow">${esc(mine[k])} <span class="base">· ${esc(n===0?tx("opt.nichtVerwendet"):tx("opt.verwendet", n))}</span></span>
-        <button class="btn small" onclick="renameOpt('${name}','${esc(k)}')">${esc(tx("opt.umbenennen"))}</button>
-        <button class="btn small" onclick="delOpt('${name}','${esc(k)}')">${esc(tx("btn.loeschen"))}</button></div>`;}).join("")
+        <button class="btn small" onclick="renameOpt('${name}','${attrJs(k)}')">${esc(tx("opt.umbenennen"))}</button>
+        <button class="btn small" onclick="delOpt('${name}','${attrJs(k)}')">${esc(tx("btn.loeschen"))}</button></div>`;}).join("")
       :`<div class="base">${esc(tx("opt.keineEigenen", Object.keys(BASE_OPTS[name]).length))}</div>`}
     </div>`;
   }).join("");
@@ -3010,6 +3010,21 @@ function ladeAusBrowser(nurWennVorhanden){
 }
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+/* Für Werte, die in einem Ereignis-Attribut INNERHALB einer
+   JavaScript-Zeichenkette landen, etwa onclick="f('HIER')".
+   esc() allein genügt dort nicht: es macht aus ' ein &#39;, und der
+   HTML-Parser wandelt das wieder in ein ' zurück, BEVOR der Browser
+   den JavaScript-Ausdruck übersetzt. Ein Anführungszeichen im Wert
+   beendet also die Zeichenkette, und was dahinter steht, wird
+   ausgeführt. Ein Merkmal oder ein Optionsschlüssel aus einer fremden
+   .story-Datei reichte dafür aus.
+   Deshalb erst für JavaScript maskieren, dann für HTML. */
+function attrJs(v){
+  return esc(String(v??"")
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'")
+    .replace(/[\r\n\u2028\u2029]/g," "));
+}
 
 /* Ein Klick auf den Hintergrund schließt das Fenster – aber nur, wenn er
    dort auch begonnen hat. Wer in einem Textfeld zu markieren anfängt und
@@ -7035,7 +7050,7 @@ function setSideFilter(k,v){
 function renderSide(){
   const tags={}; state.items.forEach(i=>(i.tags||[]).forEach(t=>tags[t]=(tags[t]||0)+1));
   const row=(k,v,label,n)=>`<div class="pSideItem ${sideFilter&&sideFilter.k===k&&sideFilter.v===v?"active":""}"
-    onclick="setSideFilter('${k}','${esc(v)}')"><span>${label}</span><span class="n">${n}</span></div>`;
+    onclick="setSideFilter('${k}','${attrJs(v)}')"><span>${label}</span><span class="n">${n}</span></div>`;
   $("pSide").innerHTML=`
     <div class="pSideItem ${!sideFilter?"active":""}" onclick="sideFilter=null;renderPro()"><span>◆ ${esc(tx("pr.alle"))}</span><span class="n">${state.items.length}</span></div>
     <h4>${esc(tx("pr.sammlungen"))}</h4>
