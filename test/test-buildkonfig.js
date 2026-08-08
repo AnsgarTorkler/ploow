@@ -112,9 +112,23 @@ gruppe('Der Bau-Ablauf auf GitHub');
   ok(/tags:\s*\n\s*-\s*'v\*'/.test(w), 'Ausgelöst wird von einem Tag der Form v1.2.3');
   ok(/workflow_dispatch/.test(w), 'Und lässt sich von Hand starten');
   ok(/contents:\s*write/.test(w), 'Der Ablauf darf das Release befüllen');
-  ok(/--publish always/.test(w), 'electron-builder hängt die Dateien ans Release');
-  ok(/GH_TOKEN:\s*\$\{\{\s*secrets\.GITHUB_TOKEN/.test(w),
-     'Mit dem Token, das GitHub selbst stellt – kein eigenes Geheimnis nötig');
+  /* Der Bau veröffentlicht ausdrücklich NICHT. Die erste Fassung liess
+     alle drei Systeme gleichzeitig ans Release schreiben – daraus wurden
+     zwei Releases für eine Version, und die .dmg ging verloren, während
+     ihr Blockmap ankam. Jetzt sammelt ein einziger Job am Ende ein. */
+  ok(/--publish never/.test(w), 'Der Bau selbst veröffentlicht nicht');
+  ok(!/--publish always/.test(w), 'Kein Job schreibt einzeln ans Release');
+  ok(/needs: bauen/.test(w), 'Der Veröffentlichungsjob wartet auf alle drei Systeme');
+  ok(/upload-artifact/.test(w) && /download-artifact/.test(w),
+     'Die Ergebnisse gehen über Artefakte, nicht über das Release');
+  ok(/merge-multiple: true/.test(w), 'Und werden in einem Ordner zusammengeführt');
+  ok(/if-no-files-found: error/.test(w), 'Ein Bau ohne Ergebnis gilt als Fehler, nicht als Erfolg');
+  ok(/draft: true/.test(w), 'Das Release entsteht als Entwurf – vorher nachsehen lassen');
+  ok(/prerelease: false/.test(w),
+     'Und nicht als Vorabfassung: latest/download würde sie sonst überspringen');
+  ok(/fail_on_unmatched_files: true/.test(w), 'Fehlt eine Datei, schlägt es fehl statt still zu bleiben');
+  ok(/if: always\(\)/.test(w),
+     'Was gebaut wurde, kommt an – auch wenn ein System gescheitert ist');
   ok(/CSC_IDENTITY_AUTO_DISCOVERY:\s*false/.test(w),
      'Ohne Apple-Konto wird die Beglaubigung abgeschaltet, sonst bricht der Bau ab');
   ok(/fail-fast:\s*false/.test(w),

@@ -1,14 +1,18 @@
 name: Release
 
-# Läuft, sobald ein Tag der Form v1.12.0 gepusht wird.
+# Läuft, sobald ein Tag der Form v1.13.2 gepusht wird.
 #
-# Der Grund für diese Datei: npm run dist baut auf einem Windows-Rechner
-# nur die Windows-Fassungen. .dmg und .AppImage brauchen einen Mac und
-# einen Linux-Rechner. GitHub stellt beide kostenlos bereit – der
-# Arbeitsablauf hier baut auf allen drei Systemen und hängt die Ergebnisse
-# an dasselbe Release.
+# Warum in zwei Stufen?
 #
-# Von Hand starten geht auch: Actions → Release → Run workflow.
+# Die erste Fassung liess alle drei Systeme gleichzeitig bauen UND
+# gleichzeitig ans Release hängen. Das ging schief: drei Jobs versuchen
+# dasselbe Release anzulegen, einer gewinnt, die anderen legen ein
+# zweites an oder verlieren ihre Datei. Ergebnis waren zwei Releases
+# für eine Version, und die .dmg fehlte, während ihr Blockmap dalag.
+#
+# Jetzt bauen die drei Systeme nur und legen ihre Dateien als Artefakt
+# ab. Ein einziger Job danach sammelt alles ein und legt EIN Release an.
+# Kein Wettlauf mehr möglich.
 
 on:
   push:
@@ -20,13 +24,13 @@ permissions:
   contents: write        # nötig, um das Release anzulegen und zu befüllen
 
 jobs:
+  # ---------- Stufe 1: bauen ----------
   bauen:
-    # Die Namen erscheinen so in der Actions-Übersicht.
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       # Ein fehlgeschlagenes System soll die anderen nicht abbrechen –
-      # sonst steht am Ende gar nichts im Release.
+      # sonst steht am Ende gar nichts bereit.
       fail-fast: false
       matrix:
         include:
@@ -51,31 +55,65 @@ jobs:
         run: npm ci
 
       # Die Testreihe läuft nur einmal – sie prüft Dateien und Logik,
-      # nicht das Betriebssystem. Dreimal dasselbe zu prüfen kostet nur Zeit.
+      # nicht das Betriebssystem. Dreimal dasselbe kostet nur Zeit.
       - name: Testreihe
         if: matrix.os == 'ubuntu-latest'
         run: npm test
 
-      - name: Bauen und ans Release hängen
-        run: npx electron-builder --publish always
+      # --publish never: hier wird ausdrücklich NICHT veröffentlicht.
+      # Das macht Stufe 2, und zwar genau einmal.
+      - name: Bauen
+        run: npx electron-builder --publish never
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Ohne Apple-Entwicklerkonto lässt sich nicht beglaubigen.
-          # Ausdrücklich abschalten, sonst bricht der Bau mit einer
-          # Fehlermeldung ab, statt eine unsignierte .dmg zu liefern.
+          # Ausdrücklich abschalten, sonst bricht der Bau ab, statt
+          # eine unsignierte .dmg zu liefern.
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
-      - name: Ergebnisse auch als Artefakt ablegen
-        # Damit man sich die Dateien ansehen kann, wenn das Anhängen
-        # ans Release einmal scheitert.
-        if: always()
+      - name: Ergebnisse ablegen
         uses: actions/upload-artifact@v4
         with:
-          name: Ploow-${{ matrix.name }}
+          name: bau-${{ matrix.name }}
           path: |
             dist/*.exe
             dist/*.dmg
             dist/*.AppImage
-            dist/*.yml
-          if-no-files-found: ignore
+            dist/*.blockmap
+            dist/latest*.yml
+          if-no-files-found: error     # nichts gebaut ist ein Fehler, kein Erfolg
           retention-days: 14
+
+  # ---------- Stufe 2: veröffentlichen ----------
+  veroeffentlichen:
+    name: Release anlegen
+    needs: bauen
+    # Auch wenn ein System gescheitert ist: was gebaut wurde, soll
+    # ankommen. Besser eine Fassung für Windows als keine.
+    if: always() && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Alle Ergebnisse einsammeln
+        uses: actions/download-artifact@v4
+        with:
+          path: eingesammelt
+          pattern: bau-*
+          merge-multiple: true         # alles in einen Ordner
+
+      - name: Auflisten, was zusammengekommen ist
+        run: |
+          echo "### Dateien im Release" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ls -lh eingesammelt/ >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ls eingesammelt/
+
+      - name: Ein Release, ein Mal
+        uses: softprops/action-gh-release@v2
+        with:
+          files: eingesammelt/*
+          # Als Entwurf: so lässt sich vorher nachsehen, ob alle vier
+          # Dateien dabei sind, bevor die Website darauf zeigt.
+          draft: true
+          prerelease: false
+          fail_on_unmatched_files: true
