@@ -2,7 +2,7 @@
 /* Impressum, Datenschutzerklärung und Lizenz in der App.
 
    Warum das nicht nur Komfort ist: Anbieterangaben nach § 5 DDG
-   müssen ohne Umweg erreichbar sein, und Ploow läuft offline –
+   müssen ohne Umweg erreichbar sein, und Sluuw läuft offline –
    ein Link ins Netz wäre gerade dann nutzlos, wenn man ihn
    braucht. Die Texte liegen deshalb im Paket und werden in einem
    eigenen Fenster gezeigt.
@@ -36,6 +36,17 @@ gruppe('Die Textdateien liegen vor und werden mitgeliefert');
     .split('\n').filter(z => z.startsWith('## ')).length;
   gleich(abschnitte('IMPRINT.md'), abschnitte('IMPRESSUM.md'),
          'IMPRINT.md hat so viele Abschnitte wie IMPRESSUM.md');
+  /* Und keine der beiden Datenschutzfassungen darf eine Nummer
+     überspringen. Genau daran fiel auf, dass in PRIVACY.md der
+     Abschnitt zu den Betroffenenrechten fehlte – die Zählung sprang
+     von 4 auf 6, und beim Lesen fällt so etwas niemandem auf. */
+  ['DATENSCHUTZ.md', 'PRIVACY.md', 'LIZENZ.md', 'LICENSE.md'].forEach(d => {
+    const nummern = fs.readFileSync(path.join(wurzel, d), 'utf8')
+      .split('\n').filter(z => /^## \d+\./.test(z))
+      .map(z => parseInt(z.slice(3), 10));
+    const erwartet = nummern.map((_, i) => i + 1);
+    gleich(nummern, erwartet, d + ': die Abschnitte sind lückenlos durchnummeriert');
+  });
   gleich(abschnitte('PRIVACY.md'), abschnitte('DATENSCHUTZ.md'),
          'PRIVACY.md hat so viele Abschnitte wie DATENSCHUTZ.md');
   gleich(abschnitte('LICENSE.md'), abschnitte('LIZENZ.md'),
@@ -49,11 +60,31 @@ gruppe('Die Textdateien liegen vor und werden mitgeliefert');
     ok(!deutsch.test(text), d + ' enthält keinen deutschen Fließtext');
   });
 
-  /* Die Datei mit den Anbieterangaben muss die Pflichtfelder überhaupt
-     vorsehen – ob sie ausgefüllt sind, ist eine andere Frage. */
-  const imp = fs.readFileSync(path.join(wurzel, 'IMPRESSUM.md'), 'utf8');
-  ['Anbieter', 'Kontakt', 'DDG'].forEach(w =>
-    ok(imp.includes(w), 'IMPRESSUM.md spricht über „' + w + '"'));
+  /* Die Anbieterangaben sind bewusst knapp: Sluuw ist kostenlos und
+     wird nicht geschäftsmäßig angeboten, damit greift § 5 DDG nach
+     überwiegender Auffassung nicht. Eine Wohnanschrift zu
+     veröffentlichen, die niemand verlangt, wäre der schlechtere Tausch.
+     Erreichbar sein muss der Anbieter trotzdem. */
+  ['IMPRESSUM.md', 'IMPRINT.md'].forEach(d => {
+    const t = fs.readFileSync(path.join(wurzel, d), 'utf8');
+    ok(/@/.test(t), d + ' nennt eine E-Mail-Adresse');
+    ok(/https?:\/\//.test(t), d + ' nennt die Web-Adresse');
+    ok(!/\[/.test(t), d + ' enthält keine offene Lücke mehr');
+  });
+
+  /* Und die Kontaktangaben müssen in beiden Fassungen dieselben sein –
+     sonst erreicht man je nach Sprache jemand anderen. */
+  const mail = t => (t.match(/[\w.+-]+@[\w.-]+/) || [])[0];
+  gleich(mail(fs.readFileSync(path.join(wurzel, 'IMPRINT.md'), 'utf8')),
+         mail(fs.readFileSync(path.join(wurzel, 'IMPRESSUM.md'), 'utf8')),
+         'Beide Fassungen nennen dieselbe E-Mail-Adresse');
+
+  /* Der Verantwortliche muss auch in den Datenschutztexten stehen –
+     ohne ihn läuft das Auskunftsrecht aus Art. 15 DSGVO ins Leere. */
+  ['DATENSCHUTZ.md', 'PRIVACY.md'].forEach(d => {
+    const t = fs.readFileSync(path.join(wurzel, d), 'utf8');
+    ok(/@/.test(t), d + ' nennt eine Kontaktadresse für Betroffenenrechte');
+  });
 }
 
 gruppe('Der Hauptprozess gibt nur die fünf bekannten Texte heraus');
@@ -146,7 +177,10 @@ gruppe('Markdown wird maskiert, bevor es umgesetzt wird');
     let erg = null, fehler = null;
     try { erg = md(roh); } catch (e) { fehler = e.message; }
     ok(!fehler, d + ' läuft fehlerfrei durch' + (fehler ? ' – ' + fehler : ''));
-    ok(erg && erg.length > 200, d + ' ergibt Inhalt (' + (erg || '').length + ' Zeichen)');
+    /* Die Anbieterangaben sind bewusst kurz, die übrigen Texte lang. */
+    const mindestens = /IMPRESSUM|IMPRINT/.test(d) ? 80 : 200;
+    ok(erg && erg.length > mindestens,
+       d + ' ergibt Inhalt (' + (erg || '').length + ' Zeichen)');
     ok(!/<script|<iframe|<object|javascript:/i.test(erg || ''),
        d + ' enthält danach nichts Ausführbares');
   });

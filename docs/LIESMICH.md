@@ -1,4 +1,4 @@
-# Ploow – Produktseite
+# Sluuw – Produktseite
 
 Eine einzelne HTML-Datei, ohne Bibliotheken und ohne Build-Schritt – wie die
 Anwendung selbst. Sieben Sprachen (Deutsch, Englisch, Chinesisch, Hindi,
@@ -15,10 +15,10 @@ Ganz oben im `<script>`-Block von `index.html` steht ein Kasten `KONFIG`.
 ```js
 const KONFIG = {
   benutzer: "BITTE-EINTRAGEN",   // ← Ihr GitHub-Benutzername
-  repo:     "ploow",             // ← Name des Repositorys
-  storeAdresse: "",              // ← leer lassen, bis Ploow im Store steht
-  version:      "1.13.4",
-  dateiWindows: "Ploow-1.13.4-x64.exe",
+  repo:     "sluuw",             // ← Name des Repositorys
+  storeAdresse: "",              // ← leer lassen, bis Sluuw im Store steht
+  version:      "1.14.0",
+  dateiWindows: "Sluuw-1.14.0-x64.exe",
   ...
 };
 ```
@@ -27,10 +27,10 @@ Aus `benutzer` und `repo` entstehen alle Links von allein:
 
 | Knopf | Ziel |
 |---|---|
-| Windows | `…/releases/latest/download/Ploow-1.13.4-x64.exe` |
-| Ohne Installation | `…/releases/latest/download/Ploow-1.13.4-portabel.exe` |
-| macOS | `…/releases/latest/download/Ploow-1.13.4.dmg` |
-| Linux | `…/releases/latest/download/Ploow-1.13.4.AppImage` |
+| Windows | `…/releases/latest/download/Sluuw-1.14.0-x64.exe` |
+| Ohne Installation | `…/releases/latest/download/Sluuw-1.14.0-portabel.exe` |
+| macOS | `…/releases/latest/download/Sluuw-1.14.0.dmg` |
+| Linux | `…/releases/latest/download/Sluuw-1.14.0.AppImage` |
 | Alle Fassungen | `…/releases` |
 
 `releases/latest/download/` zeigt **immer** auf die neueste Veröffentlichung.
@@ -60,7 +60,7 @@ die Seite bleibt also benutzbar.
 >   Verdopplungsfehler beim Beispielprojekt).
 > * `figuren.png` – oben rechts steht „0 connections", und die Karten haben
 >   keine Bilder. Nach der Korrektur hat das Beispiel sechs Beziehungen.
-> * `welt-karten.png` – die Karte zeigt das Ploow-Logo und hat null
+> * `welt-karten.png` – die Karte zeigt das Sluuw-Logo und hat null
 >   Markierungen. Das Beispielprojekt bringt jetzt „Das Aschereich" mit drei
 >   Markierungen mit.
 >
@@ -116,7 +116,7 @@ jeweiligen Sprache ausgeschrieben.
 2. Auf github.com → *Settings* → *Pages*
 3. *Source*: `Deploy from a branch`, Branch `main`, Ordner `/docs`
 4. Nach etwa einer Minute liegt die Seite unter
-   `https://BENUTZER.github.io/ploow/`
+   `https://BENUTZER.github.io/sluuw/`
 
 **Variante B – eigenes Repository**
 

@@ -138,14 +138,14 @@ p(/Store/.test(T['inst.winX'].de), 'Der Store wird Windows-Nutzern nahegelegt');
   ['ui.vergroessern','ui.schliessen'].forEach(k=>p(!!T[k], 'Textschlüssel vorhanden: '+k));
 }
 
-/* Seit die Update-Prüfung eingeschaltet ist, geht Ploow einmal beim
+/* Seit die Update-Prüfung eingeschaltet ist, geht Sluuw einmal beim
    Start ins Netz. Die Seite darf dann nicht mehr das Gegenteil
    behaupten – das wäre nicht nur ungenau, sondern datenschutzrechtlich
    eine falsche Angabe. */
 {
   const heikel = /ohne Internet|no internet|keine Netzwerkverbindung|makes no network|vollständig offline|fully offline/i;
   const treffer = Object.keys(T).filter(k => codes.some(c => heikel.test(String(T[k][c]||''))));
-  p(treffer.length===0, 'Keine Aussage mehr, Ploow gehe nie ins Netz'+(treffer.length?': '+treffer.join(', '):''));
+  p(treffer.length===0, 'Keine Aussage mehr, Sluuw gehe nie ins Netz'+(treffer.length?': '+treffer.join(', '):''));
 
   const nennt = k => codes.every(c => /Aktualisierung|update|更新|अपडेट|actualiza|mises? à jour|التحديث/i.test(String(T[k][c]||'')));
   p(nennt('foot.rechte'), 'Die Fußzeile nennt die Aktualisierungsprüfung in jeder Sprache');

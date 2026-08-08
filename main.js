@@ -158,7 +158,7 @@ function sichereApp() {
 /* ------------------------------------------------------------
    HILFSFUNKTIONEN
    ------------------------------------------------------------ */
-const FILTER = [{ name: 'Ploow-Projekt', extensions: ['story'] }];
+const FILTER = [{ name: 'Sluuw-Projekt', extensions: ['story'] }];
 const MANUSKRIPT_FILTER = [{ name: 'Manuskript', extensions: ['docx', 'odt', 'rtf', 'txt', 'md'] }];
 
 function sicherName(titel) {
@@ -224,7 +224,7 @@ async function erlaubteDatei(roh, { nurStory = true } = {}) {
    sonst ließe sich die Platte darüber abfragen. */
 const nichtErlaubt = (was) => {
   protokoll.fehler('Zugriff abgelehnt (' + was + ')');
-  return { ok: false, fehler: 'Auf diese Datei greift Ploow nicht zu. '
+  return { ok: false, fehler: 'Auf diese Datei greift Sluuw nicht zu. '
     + 'Es lassen sich nur Projekte aus dem Geschichten-Ordner und zuletzt geöffnete Projekte bearbeiten.' };
 };
 
@@ -411,7 +411,7 @@ ipcMain.handle('datei:importieren', async () => {
   try {
     const r = await dialog.showOpenDialog(win, {
       title: 'Sicherung importieren',
-      filters: [{ name: 'Ploow-Sicherung', extensions: ['story', 'json'] }],
+      filters: [{ name: 'Sluuw-Sicherung', extensions: ['story', 'json'] }],
       properties: ['openFile']
     });
     if (r.canceled || !r.filePaths[0]) return { ok: false, abgebrochen: true };
@@ -642,7 +642,7 @@ ipcMain.on('protokoll:fehler', (_e, { nachricht, spur }) =>
 
    Seit dem 8. August eingerichtet: electron-updater ist
    installiert, und package.json nennt unter build.publish das
-   GitHub-Repository als Bezugsquelle. Beim Start fragt Ploow
+   GitHub-Repository als Bezugsquelle. Beim Start fragt Sluuw
    dort nach, ob es eine neuere Fassung gibt.
 
    Das ist der EINZIGE Netzzugriff im ganzen Programm. Er ist

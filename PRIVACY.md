@@ -1,81 +1,94 @@
-# Privacy Policy for Ploow
+# Privacy Policy for Sluuw
 
-> **Template.** Complete every passage marked `[…]`. The text describes the
-> software as it is actually built — if you later add features that reach the
-> internet (telemetry, accounts, cloud backup, crash reporting), this policy has
-> to grow with them. Not legal advice.
->
-> This is the English counterpart of `DATENSCHUTZ.md`. Both describe the same
-> processing under the GDPR.
+We appreciate your interest in our free online product.
+Protecting your personal data, such as your project data, is a matter of great importance to us.
 
-**Controller within the meaning of the GDPR:**
-[Full name or company], [Street and number], [Postcode, Town]
-Email: [address@example.com], Phone: [number]
-**Version of:** [Date]
+This statement describes what Sluuw does with your data — which is very
+little. Sluuw is a program that runs on your own computer; it is not a
+website and not a service. There is no account, no server holding your
+texts, and no usage statistics. We collect no personal data through your
+use of the Software.
 
-## 1. In short
+There is exactly one point at which any data leaves your device: the
+check for updates (section 3). For that, this statement fulfils the
+information duties under Art. 13 and 14 GDPR. It follows the General
+Data Protection Regulation (GDPR) and the German Federal Data
+Protection Act (BDSG).
 
-Ploow is a program that runs on your own device. Your texts, characters and
-notes do not leave it. There is no account, no cloud, no tracking pixel and no
-usage statistics.
+**Data Controller (under GDPR):**
+Ansgar Torkler, Hahner Str. 130, 52076 Aachen
+Email: ansgartorkler2@gmail.com, Phone: 0179 5169289
+**Last updated:** 08.08.2026
+Represented by legal guardians: M. Claudia Torkler
 
-One single exception: on startup, Ploow asks GitHub whether a newer version is
-available. No content is transmitted. This check can be switched off in the
-settings – after that, no network communication takes place at all. See
-section 3 for details.
+## 1. Summary
+
+Sluuw is a program that runs on your device. Your texts, characters, and
+notes do not leave your device. There is no account, no cloud, no
+tracking pixels, and no usage statistics.
+
+There is one single exception: upon startup, Sluuw checks with GitHub to see
+if a newer version is available. No content is transmitted during this process.
+This check can be disabled in the settings—in which case, no network
+communication takes place at all. See Section 3 for details.
 
 ## 2. What is stored on your device
 
-The Software stores the following data locally:
+The software stores the following data locally:
 
-- **Project files** (`.story`) in the location you choose when saving. They
-  contain your book data, characters, notes, images and attachments.
-- **Backup copies** of the last twelve saved states, in a folder next to the
-  project file.
-- **Program settings and recently opened projects** in the application's user
-  data folder.
-- **An error log** (`protokoll.txt`) in the same folder. It contains timestamps
-  and technical error messages, no content from your projects. You can view and
-  delete it at any time via "About Ploow → Show log".
+- **Project files** (`.story`) at the location you choose when saving. They
+  contain your book data, characters, notes, images, and attached files.
+- **Backup copies** of the last twelve save states in a folder
+  next to the project file.
+- **Program settings and recently opened projects** in the
+  application's user data folder.
+- **An error log** (`protokoll.txt`) in the same folder. It contains
+  timestamps and technical error messages, not the content of your projects. You
+  can view and delete it at any time via "About Sluuw → Show Log."
 
-This data leaves your device only if you pass a file on yourself.
+This data only leaves your device if you personally share a file.
 
 ## 3. Updates
 
-On startup, Ploow fetches a file from GitHub's servers in order to compare the
-version number published there with its own. The address is
+Upon startup, Sluuw retrieves a file from GitHub’s servers to compare the
+version number stored there with its own. The address is
 
-    https://github.com/AnsgarTorkler/ploow/releases/
+    https://github.com/AnsgarTorkler/sluuw/releases/
 
-**What is transmitted:** for technical reasons your IP address and the details
-every HTTP request carries – program version, operating system and processor
-architecture as part of the user agent. **What is not transmitted:** any content
-from your projects, file names, file paths, or any identifier that would make
-you or your device recognisable.
+**Data transmitted:** For technical reasons, your IP address is transmitted,
+along with the information included in every HTTP request—program version,
+operating system, and processor architecture as part of the program identifier.
+**Data not transmitted:** Content from your projects, file names, file paths,
+or any identifier that would make you or your device personally identifiable.
 
 **Recipient:** GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA
-94107, USA. The transfer to the USA relies on the EU-US Data Privacy Framework,
-which GitHub has joined. GitHub's privacy statement is at
+94107, USA. Data transfer to the USA is based on the
+EU-US Data Privacy Framework, to which GitHub adheres. You can find
+GitHub’s privacy policy at
 https://docs.github.com/site-policy/privacy-policies.
 
-**Legal basis:** legitimate interest in the security and functioning of the
-Software (Art. 6(1)(f) GDPR).
+**Legal basis:** Legitimate interest in the security and functionality
+of the software (Art. 6(1)(f) GDPR).
 
-**Retention:** we store nothing ourselves – the request never reaches us, only
-GitHub. How long GitHub keeps server logs is GitHub's decision.
+**Storage duration:** We do not store any data ourselves; the request does not
+reach us, but rather GitHub. GitHub determines how long it retains server logs.
 
-**Objection:** the check can be switched off under *Settings → Updates*. After
-that, Ploow establishes no network connection whatsoever. An available update is
-never downloaded or installed on its own either – both happen only when you
-click.
+**Objection:** The update check can be disabled under *Settings → Update*.
+After that, Sluuw will no longer establish any network connections. Furthermore,
+any update found is never downloaded or installed automatically—both actions
+require you to click to initiate them.
 
-## 4. Purchase and support
+## 4. Purchase and Support
 
-When you buy through [payment provider / shop], the data you enter there is
-processed; the privacy policy of [provider] applies in addition. If you send us
-a support request, we process your email address and the content of your message
-in order to answer it (Art. 6(1)(b) or (f) GDPR). We delete support messages
-after [retention period].
+If you send us a support request, we process your email address and
+the content of the request in order to answer it (Art. 6(1)(b) or (f) GDPR).
+As a rule, we delete support messages 6 months after your request has been resolved.
+
+ ## 5. Your Rights
+
+You have the right to access (Art. 15), rectification (Art. 16), erasure (Art. 17), restriction of processing (Art. 18), data portability (Art. 20), and objection (Art. 21 GDPR). Please contact the address mentioned above to exercise these rights. You also have the right to lodge a complaint with a supervisory authority, such as the State Commissioner for Data Protection and Freedom of Information of North Rhine-Westphalia (LDI NRW).
+
+Since we do not receive any personal data ourselves through the use of the software, we can neither provide information about nor delete your project content—this data remains exclusively with you.
 
 ## 5. Your rights
 
@@ -83,18 +96,19 @@ You have the right of access (Art. 15), rectification (Art. 16), erasure
 (Art. 17), restriction of processing (Art. 18), data portability (Art. 20) and
 objection (Art. 21 GDPR). Please contact us at the address given above. You also
 have the right to lodge a complaint with a supervisory authority, for example
-[competent data protection authority].
+the State Commissioner for Data Protection and Freedom of Information of North
+Rhine-Westphalia (LDI NRW).
 
 Because we receive no personal data through your use of the Software, we can
 neither provide information about your project content nor delete it — that data
 resides solely with you.
 
-## 6. Data security
+## 6. Data Security
 
-The Software runs its user interface without system privileges, denies all
-device permissions (camera, microphone, location, notifications) and prevents
-content from being loaded from the network. Imported third-party files are
-filtered before they are displayed.
+The software runs its display interface without system privileges, denies all
+device permissions (camera, microphone, location, notifications), and
+prevents the loading of content from the network. External files are
+filtered before being displayed.
 
-You remain responsible for protecting the project files on your own device, for
-example through disk encryption and regular backups.
+You are personally responsible for protecting project files on your device—for
+example, through hard drive encryption and regular backups.

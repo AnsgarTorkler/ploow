@@ -53,7 +53,7 @@ function unpack(buf) {
   if (buf.length > 5 && buf.slice(0, 4).equals(MAGIC)) {
     const format = buf.readUInt8(4);
     if (format > FORMAT) {
-      throw new Error('Diese Datei wurde mit einer neueren Version von Ploow geschrieben.');
+      throw new Error('Diese Datei wurde mit einer neueren Version von Sluuw geschrieben.');
     }
     return JSON.parse(entpacke(buf.slice(5)).toString('utf8'));
   }
@@ -64,7 +64,7 @@ function unpack(buf) {
   // Unkomprimiertes JSON (exportierte Sicherungen aus älteren Fassungen)
   const text = buf.toString('utf8').replace(/^﻿/, '').trim();
   if (text.startsWith('{')) return JSON.parse(text);
-  throw new Error('Das ist keine Ploow-Datei.');
+  throw new Error('Das ist keine Sluuw-Datei.');
 }
 
 /* ---------- Atomar schreiben ---------- */

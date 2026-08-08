@@ -9,7 +9,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 const nurFunktion = f => (typeof f === 'function' ? f : () => {});
 
-contextBridge.exposeInMainWorld('ploow', {
+contextBridge.exposeInMainWorld('sluuw', {
 
   /* ---- Fenster ---- */
   minimize: () => ipcRenderer.send('fenster:minimieren'),

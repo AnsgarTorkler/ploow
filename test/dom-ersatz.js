@@ -47,9 +47,9 @@ function brueckeAttrappe(gespeichert) {
     manuskript: { lesen: () => Promise.resolve({ ok: false, abgebrochen: true }) },
     bib: {
       liste: () => jaOk({
-        ordner: 'C:\\Users\\A\\Documents\\Ploow',
+        ordner: 'C:\\Users\\A\\Documents\\Sluuw',
         eintraege: [
-          { datei: 'C:\\Users\\A\\Documents\\Ploow\\Die Aschekrone.story',
+          { datei: 'C:\\Users\\A\\Documents\\Sluuw\\Die Aschekrone.story',
             name: 'Die Aschekrone', inBibliothek: true, groesse: 2400000, geaendert: Date.now() - 3600e3,
             meta: { titel: 'Die Aschekrone', genre: 'Fantasy', worte: 34500, kapitel: 24, kapitelFertig: 7,
                     zielWorte: 90000, figuren: 31, orte: 19, eintraege: 120, schema: 2 }, fehler: null },
@@ -57,15 +57,15 @@ function brueckeAttrappe(gespeichert) {
             name: 'Zweitwerk', inBibliothek: false, groesse: 120000, geaendert: Date.now() - 5 * 86400e3,
             meta: { titel: 'Zweitwerk', genre: 'Krimi', worte: 800, kapitel: 2, kapitelFertig: 0,
                     zielWorte: 0, figuren: 3, orte: 1, eintraege: 9, schema: 2 }, fehler: null },
-          { datei: 'C:\\Users\\A\\Documents\\Ploow\\Kaputt.story',
+          { datei: 'C:\\Users\\A\\Documents\\Sluuw\\Kaputt.story',
             name: 'Kaputt', inBibliothek: true, groesse: 20, geaendert: Date.now() - 9 * 86400e3,
-            meta: null, fehler: 'Das ist keine Ploow-Datei.' }
+            meta: null, fehler: 'Das ist keine Sluuw-Datei.' }
         ]
       }),
-      speichern: () => jaOk({ datei: 'C:\\Users\\A\\Documents\\Ploow\\Neu.story', bytes: 1, zuletzt: [] }),
+      speichern: () => jaOk({ datei: 'C:\\Users\\A\\Documents\\Sluuw\\Neu.story', bytes: 1, zuletzt: [] }),
       ordnerWaehlen: () => jaOk({ ordner: 'D:\\Neuer Ordner' }),
       ordnerOeffnen: () => jaOk(),
-      umbenennen: () => jaOk({ datei: 'C:\\Users\\A\\Documents\\Ploow\\Neuer Name.story' }),
+      umbenennen: () => jaOk({ datei: 'C:\\Users\\A\\Documents\\Sluuw\\Neuer Name.story' }),
       entfernen: () => jaOk({ papierkorb: 'x' }),
       imOrdnerZeigen: () => jaOk()
     },
@@ -154,7 +154,7 @@ function baueUmgebung(htmlPfad, optionen) {
   sandbox.window = sandbox;
   sandbox.window.document = document;
   sandbox.window.localStorage = localStorage;
-  if (optionen.alsAnwendung) sandbox.window.ploow = brueckeAttrappe();
+  if (optionen.alsAnwendung) sandbox.window.sluuw = brueckeAttrappe();
   sandbox.globalThis = sandbox;
   sandbox.self = sandbox;
   vm.createContext(sandbox);

@@ -1,24 +1,19 @@
-# Endnutzer-Lizenzvertrag für Ploow
+# Endnutzer-Lizenzvertrag für Sluuw
 
-> **Vorlage.** Alle mit `[…]` markierten Stellen müssen vor dem Verkauf ausgefüllt
-> werden. Dieser Text ist keine Rechtsberatung. Lass ihn vor der ersten
-> Veröffentlichung von einer Anwältin oder einem Anwalt für IT-Recht prüfen –
-> insbesondere die Abschnitte zu Haftung und Gewährleistung.
-
-**Anbieter:** [Vor- und Nachname bzw. Firma], [Straße Hausnummer], [PLZ Ort], [Land]
-**Stand:** [Datum]
-**Software:** Ploow, Version [x.y.z]
+**Anbieter:** Ansgar Torkler, Hahner Str.130, 52076, Deutschland
+**Stand:** 08.08.2026
+**Software:** Sluuw, Version v1.13.3
 
 ## 1. Gegenstand
 
-Dieser Vertrag regelt die Nutzung der Software Ploow (nachfolgend „Software")
+Dieser Vertrag regelt die Nutzung der Software Sluuw (nachfolgend „Software")
 zwischen dem Anbieter und der Person, die die Software erwirbt und einsetzt
 (nachfolgend „Nutzer").
 
 ## 2. Nutzungsrecht
 
 Der Nutzer erhält ein einfaches, nicht ausschließliches, zeitlich unbefristetes
-Recht, die Software auf [Anzahl] Geräten zu eigenen Zwecken zu nutzen. Die Nutzung
+Recht, die Software auf beliebig vielen Geräten zu eigenen Zwecken zu nutzen. Die Nutzung
 ist sowohl privat als auch gewerblich gestattet, insbesondere zum Planen und
 Schreiben von Werken, die der Nutzer anschließend verwertet.
 
@@ -65,23 +60,16 @@ Wiederherstellung erforderlich gewesen wäre.
 
 Der Anbieter stellt Aktualisierungen nach eigenem Ermessen bereit. Ein Anspruch auf
 bestimmte künftige Funktionen besteht nicht. Sicherheitsrelevante Aktualisierungen
-werden für [Zeitraum, z. B. 24 Monate] ab Kauf bereitgestellt.
+werden für 12Monate ab Bereitstellung bereitgestellt.
 
-## 9. Widerrufsrecht
+## 9. Verwendete Fremdsoftware
 
-Verbraucher haben ein vierzehntägiges Widerrufsrecht. Bei sofortiger Bereitstellung
-digitaler Inhalte erlischt es, wenn der Nutzer ausdrücklich zugestimmt hat und
-bestätigt, dass er dadurch sein Widerrufsrecht verliert. Die vollständige
-Widerrufsbelehrung ist unter [Adresse] abrufbar.
-
-## 10. Verwendete Fremdsoftware
-
-Ploow nutzt Electron (MIT-Lizenz) und Chromium (BSD-Lizenz). Deren
+Sluuw nutzt Electron (MIT-Lizenz) und Chromium (BSD-Lizenz). Deren
 Lizenztexte liegen dem Programmpaket bei. Weitere Fremdbibliotheken werden zur
 Laufzeit nicht eingesetzt.
 
-## 11. Schlussbestimmungen
+## 10. Schlussbestimmungen
 
 Es gilt deutsches Recht unter Ausschluss des UN-Kaufrechts. Ist der Nutzer
-Kaufmann, ist Gerichtsstand [Ort]. Sollte eine Bestimmung unwirksam sein, bleibt
+Kaufmann, ist Gerichtsstand Aachen. Sollte eine Bestimmung unwirksam sein, bleibt
 der Vertrag im Übrigen wirksam.

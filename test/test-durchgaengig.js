@@ -675,7 +675,7 @@ gruppe('Rundgang: Ziele, Schritte, Bedienung');
   U.lauf(`tourNr=${letzter}; tourZeichnen(); tourWeiter(1);`);
   ok(!U.json('tourLaeuft()'), 'Nach dem letzten Schritt endet er');
   ok(!U.store.tourFolie, 'Und die Folie verschwindet');
-  gleich(U.localStorage.getItem('ploow.tour'), U.json('TOUR_STAND'), 'Der Stand wird gemerkt');
+  gleich(U.localStorage.getItem('sluuw.tour'), U.json('TOUR_STAND'), 'Der Stand wird gemerkt');
 }
 
 gruppe('Rundgang: Bedienung ohne Maus und Vorlesesoftware');
@@ -714,11 +714,11 @@ gruppe('Rundgang: Bedienung ohne Maus und Vorlesesoftware');
 gruppe('Rundgang: nur beim ersten Start von allein');
 {
   const U = baueUmgebung(standardPfad, { alsAnwendung: true });
-  U.localStorage.setItem('ploow.tour', U.json('TOUR_STAND'));
+  U.localStorage.setItem('sluuw.tour', U.json('TOUR_STAND'));
   U.lauf('tourVielleicht();');
   ok(!U.json('tourLaeuft()'), 'Wer ihn kennt, bekommt ihn nicht noch einmal');
 
-  U.localStorage.removeItem('ploow.tour');
+  U.localStorage.removeItem('sluuw.tour');
   ok(U.json('typeof tourVielleicht') === 'function', 'Beim ersten Start wird er angeboten');
 
   // Im Hilfe-Menü lässt er sich wiederholen

@@ -14,8 +14,8 @@ const os = require('os');
 const { ok, gleich, gruppe, bilanz } = require('./hilfen');
 const Z = require('../src/main/zugriff');
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ploow-zugriff-'));
-const bib = path.join(tmp, 'Ploow');
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sluuw-zugriff-'));
+const bib = path.join(tmp, 'Sluuw');
 const woanders = path.join(tmp, 'Schreibtisch');
 fs.mkdirSync(bib, { recursive: true });
 fs.mkdirSync(woanders, { recursive: true });
@@ -30,7 +30,7 @@ const geheimTxt  = anlegen(path.join(woanders, 'passwoerter.txt'));
 
 /* Ein Nachbarordner, dessen Name mit dem der Bibliothek beginnt –
    der klassische Weg, an einem startsWith() vorbeizukommen. */
-const nachbar = path.join(tmp, 'Ploow-geheim');
+const nachbar = path.join(tmp, 'Sluuw-geheim');
 fs.mkdirSync(nachbar, { recursive: true });
 const imNachbarn = anlegen(path.join(nachbar, 'Fremd.story'));
 
@@ -58,7 +58,7 @@ gruppe('Die Wege daneben');
 {
   ok(!erlaubt(geheim), 'Eine .docx wird nicht durchgelassen – die Endung passt nicht');
   ok(!erlaubt(geheimTxt), 'Eine .txt ebenso wenig');
-  ok(!erlaubt(imNachbarn), 'Ploow-geheim ist kein Unterordner von Ploow, auch wenn der Name so anfängt');
+  ok(!erlaubt(imNachbarn), 'Sluuw-geheim ist kein Unterordner von Sluuw, auch wenn der Name so anfängt');
   ok(!erlaubt(path.join(bib, 'gibtesnicht.story')), 'Was es nicht gibt, wird abgelehnt');
   ok(!erlaubt(bib), 'Ein Verzeichnis ist nie gemeint');
   ok(!erlaubt(path.join(bib, '..', 'Schreibtisch', 'Fremdes Projekt.story')),
@@ -93,9 +93,9 @@ gruppe('Die Prüfung lässt sich für den Test austauschen');
 {
   /* pruefeDatei ersetzt den Zugriff aufs Dateisystem – damit lässt
      sich auch prüfen, was ohne echte Dateien passieren würde. */
-  const erfunden = { bibliothek: '/heim/Ploow', zuletzt: [], endung: '.story',
+  const erfunden = { bibliothek: '/heim/Sluuw', zuletzt: [], endung: '.story',
                      pruefeDatei: () => true };
-  ok(Z.erlaubteDatei('/heim/Ploow/x.story', erfunden) !== null, 'Erfundene Bibliothek, erfundene Datei');
+  ok(Z.erlaubteDatei('/heim/Sluuw/x.story', erfunden) !== null, 'Erfundene Bibliothek, erfundene Datei');
   ok(Z.erlaubteDatei('/heim/anderes/x.story', erfunden) === null, 'Und weiterhin nichts daneben');
 }
 

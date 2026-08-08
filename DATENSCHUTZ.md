@@ -1,22 +1,33 @@
-# Datenschutzerklärung für Ploow
+# Datenschutzerklärung für Sluuw
 
-> **Vorlage.** Die mit `[…]` markierten Stellen ausfüllen. Der Text beschreibt die
-> Software so, wie sie gebaut ist – wenn du später Funktionen ergänzt, die ins
-> Netz gehen (Telemetrie, Konten, Cloud-Sicherung, Absturzberichte), muss diese
-> Erklärung mitwachsen. Keine Rechtsberatung.
+Wir freuen uns über Ihr Interesse an unserem kostenlosen Omline Produkt.
+Der Schutz Ihrer personenbezogenen Daten, wie Ihre Projektdaten, ist uns ein wichtiges Anliegen.
+
+Diese Erklärung beschreibt, was Sluuw mit Ihren Daten tut – und das ist
+wenig. Sluuw ist ein Programm für Ihren eigenen Rechner, keine Website
+und kein Dienst. Es gibt kein Konto, keinen Server, auf dem Ihre Texte
+liegen, und keine Nutzungsstatistik. Durch die Nutzung der Software
+erheben wir keine personenbezogenen Daten.
+
+Es gibt genau eine Stelle, an der überhaupt Daten das Gerät verlassen:
+die Suche nach Aktualisierungen (Abschnitt 3). Für sie erfüllt diese
+Erklärung die Informationspflichten aus Art. 13 und 14 DSGVO. Sie
+richtet sich nach der Datenschutz-Grundverordnung (DSGVO) und dem
+Bundesdatenschutzgesetz (BDSG).
 
 **Verantwortlicher im Sinne der DSGVO:**
-[Vor- und Nachname bzw. Firma], [Straße Hausnummer], [PLZ Ort]
-E-Mail: [adresse@example.de], Telefon: [Nummer]
-**Stand:** [Datum]
+Ansgar Torkler, Hahner Str.130, 52076 Aachen
+E-Mail: ansgartorkler2@gmail.com, Telefon: 0179 5169289
+**Stand:** 08.08.2026
+Vertreten durch die gesetzlichen Vertreter: M. Claudia Torkler
 
 ## 1. Kurzfassung
 
-Ploow ist ein Programm, das auf deinem Gerät läuft. Deine Texte, Figuren und
-Notizen verlassen dein Gerät nicht. Es gibt kein Konto, keine Cloud, keine
+Sluuw ist ein Programm, das auf ihrem Gerät läuft. Ihre Texte, Figuren und
+Notizen verlassen ihr Gerät nicht. Es gibt kein Konto, keine Cloud, keine
 Zählpixel und keine Nutzungsstatistik.
 
-Eine einzige Ausnahme: Beim Start fragt Ploow bei GitHub nach, ob eine neuere
+Eine einzige Ausnahme: Beim Start fragt Sluuw bei GitHub nach, ob eine neuere
 Fassung vorliegt. Dabei werden keine Inhalte übertragen. Diese Prüfung lässt
 sich in den Einstellungen abschalten – dann findet überhaupt keine
 Netzwerkkommunikation mehr statt. Näheres in Abschnitt 3.
@@ -33,23 +44,23 @@ Die Software legt folgende Daten lokal ab:
   Benutzerdatenordner der Anwendung.
 - **Ein Fehlerprotokoll** (`protokoll.txt`) im selben Ordner. Es enthält
   Zeitpunkte und technische Fehlermeldungen, keine Inhalte deiner Projekte. Du
-  kannst es jederzeit über „Über Ploow → Protokoll zeigen" einsehen und
+  kannst es jederzeit über „Über Sluuw → Protokoll zeigen" einsehen und
   löschen.
 
 Diese Daten verlassen dein Gerät nur, wenn du selbst eine Datei weitergibst.
 
 ## 3. Aktualisierungen
 
-Beim Start ruft Ploow eine Datei auf den Servern von GitHub ab, um die dort
+Beim Start ruft Sluuw eine Datei auf den Servern von GitHub ab, um die dort
 hinterlegte Versionsnummer mit der eigenen zu vergleichen. Die Adresse lautet
 
-    https://github.com/AnsgarTorkler/ploow/releases/
+    https://github.com/AnsgarTorkler/sluuw/releases/
 
 **Was dabei übertragen wird:** technisch bedingt deine IP-Adresse sowie die
 Angaben, die jeder HTTP-Abruf mitschickt – Programmversion, Betriebssystem und
 Prozessorarchitektur als Teil der Programmkennung. **Nicht übertragen werden**
-Inhalte aus deinen Projekten, Dateinamen, Dateipfade oder eine Kennung, die dich
-oder dein Gerät wiedererkennbar machen würde.
+Inhalte aus ihren Projekten, Dateinamen, Dateipfade oder eine Kennung, die Sie
+oder ihr Gerät wiedererkennbar machen würde.
 
 **Empfänger:** GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA
 94107, USA. Die Übermittlung in die USA stützt sich auf das
@@ -64,29 +75,27 @@ fähigkeit der Software (Art. 6 Abs. 1 lit. f DSGVO).
 sondern nur GitHub. Wie lange GitHub Server-Protokolle vorhält, bestimmt GitHub.
 
 **Widerspruch:** Die Prüfung lässt sich unter *Einstellungen → Aktualisierung*
-abschalten. Danach baut Ploow keinerlei Netzwerkverbindung mehr auf. Eine
+abschalten. Danach baut Sluuw keinerlei Netzwerkverbindung mehr auf. Eine
 gefundene Aktualisierung wird außerdem nie von allein geladen oder installiert –
 beides geschieht nur auf deinen Klick.
 
 ## 4. Kauf und Support
 
-Beim Kauf über [Zahlungsanbieter / Shop] werden die dort angegebenen Daten
-verarbeitet; es gilt zusätzlich die Datenschutzerklärung von [Anbieter].
-Schreibst du uns eine Support-Anfrage, verarbeiten wir deine E-Mail-Adresse und
+Schreiben Sie uns eine Support-Anfrage, verarbeiten wir ihre E-Mail-Adresse und
 den Inhalt der Anfrage, um sie zu beantworten (Art. 6 Abs. 1 lit. b bzw. f DSGVO).
-Wir löschen Support-Nachrichten nach [Zeitraum].
+Wir löschen Support-Nachrichten in der Regel 6Monate nach der Erledigung ihrer Anfrage.
 
 ## 5. Deine Rechte
 
-Du hast das Recht auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung
+Sie haben das Recht auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung
 (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit
-(Art. 20) und Widerspruch (Art. 21 DSGVO). Wende dich dafür an die oben genannte
-Adresse. Außerdem steht dir ein Beschwerderecht bei einer Aufsichtsbehörde zu,
-etwa bei [zuständige Landesdatenschutzbehörde].
+(Art. 20) und Widerspruch (Art. 21 DSGVO). Wenden Sie sich dafür an die oben genannte
+Adresse. Außerdem steht ihnen ein Beschwerderecht bei einer Aufsichtsbehörde zu,
+etwa bei der Landesbeauftragten für Datenschutz und Informationsfreiheit Nordrhein-Westfalen (LDI NRW).
 
 Da wir durch die Nutzung der Software selbst keine personenbezogenen Daten
-erhalten, können wir zu deinen Projektinhalten weder Auskunft geben noch sie
-löschen – diese Daten liegen ausschließlich bei dir.
+erhalten, können wir zu ihren Projektinhalten weder Auskunft geben noch sie
+löschen – diese Daten liegen ausschließlich bei ihnen.
 
 ## 6. Datensicherheit
 
@@ -95,6 +104,6 @@ Geräteberechtigungen (Kamera, Mikrofon, Standort, Benachrichtigungen) und
 unterbindet das Nachladen von Inhalten aus dem Netz. Eingelesene Fremddateien
 werden vor der Anzeige gefiltert.
 
-Für den Schutz der Projektdateien auf deinem Gerät – etwa durch
-Festplattenverschlüsselung und regelmäßige Sicherungen – bist du selbst
+Für den Schutz der Projektdateien auf ihrem Gerät – etwa durch
+Festplattenverschlüsselung und regelmäßige Sicherungen – sind Sie selbst
 verantwortlich.

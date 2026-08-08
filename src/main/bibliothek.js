@@ -17,12 +17,18 @@ const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const speicher = require('./storage');
+const produkt = require('./produkt');
 
 const ENDUNG = '.story';
 
 /* ---------- Ordner ---------- */
+/* Der Name kommt aus produkt.js, nicht als Zeichenkette hierher.
+   Beim Wechsel von Ploow auf Sluuw stand er als einziger Ort im
+   Projekt fest verdrahtet und wurde von der Umbenennung übersehen –
+   ein Test hat es gefunden, ein Nutzer hätte einen falsch benannten
+   Ordner in seinen Dokumenten gehabt. */
 function standardOrdner(dokumente) {
-  return path.join(dokumente, 'Ploow');
+  return path.join(dokumente, produkt.DATEN_ORDNER);
 }
 async function ordnerSicherstellen(ordner) {
   await fsp.mkdir(ordner, { recursive: true });

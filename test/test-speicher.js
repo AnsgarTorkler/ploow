@@ -199,6 +199,29 @@ gruppe('Eine gezippte Bombe legt das Programm nicht lahm');
   gleich(S.unpack(blank).book.title, 'Blank', 'Auch der Weg über blankes gzip ist gedeckelt und funktioniert');
 }
 
+gruppe('Kein alter Produktname in sichtbaren Texten');
+{
+  /* Beim Wechsel von Ploow auf Sluuw blieben zwei Fehlermeldungen in
+     storage.js stehen – „Das ist keine Ploow-Datei." bekommt der Nutzer
+     zu sehen, ein Kommentar nicht. Diese Prüfung trennt beides: sie
+     sieht sich nur an, was in Anführungszeichen steht. */
+  const ALT = /\b(Ploow|StoryPlaner)\b/;
+  const ERLAUBT = [/storyplaner-media/, /storyplaner\.einstellungen/,
+                   /Umbenennen von/, /StoryPlaner-App/];
+
+  ['main.js', 'preload.js', 'src/main/storage.js', 'src/main/bibliothek.js',
+   'src/main/zugriff.js', 'src/main/produkt.js', 'src/main/manuskript.js',
+   'src/main/protokoll.js'].forEach(rel => {
+    const text = fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
+    /* Nur Zeichenketten, keine Kommentare: die Geschichte darf im
+       Quelltext stehen bleiben, auf dem Bildschirm nicht. */
+    const zeichenketten = [...text.matchAll(/'([^'\n]*)'|"([^"\n]*)"/g)]
+      .map(m => m[1] || m[2] || '')
+      .filter(s => ALT.test(s) && !ERLAUBT.some(r => r.test(s)));
+    gleich(zeichenketten, [], rel + ': kein alter Produktname in einer Zeichenkette');
+  });
+}
+
 bilanz();
 
 })().catch(e => { console.error('Testlauf abgebrochen:', e); process.exitCode = 1; });

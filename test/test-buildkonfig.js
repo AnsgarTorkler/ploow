@@ -151,7 +151,7 @@ gruppe('Die Dateinamen passen zu den Links der Produktseite');
      dem überein, was electron-builder erzeugt, sieht die Seite heil aus
      und der Knopf führt auf eine 404-Seite von GitHub. Genau das war der
      Fall: artifactName setzt ${arch} in den Namen, also hätte die .dmg
-     „Ploow-1.13.1-arm64.dmg" geheißen, die Seite aber „Ploow-1.13.1.dmg"
+     „Sluuw-1.13.1-arm64.dmg" geheißen, die Seite aber „Sluuw-1.13.1.dmg"
      erwartet. */
   const b = paket.build;
   const v = paket.version;

@@ -1,13 +1,13 @@
 {
-  "name": "ploow",
-  "productName": "Ploow",
-  "version": "1.13.4",
-  "description": "Ploow – Buchprojekte planen: Handlung, Figuren und Welt, vollständig offline.",
+  "name": "sluuw",
+  "productName": "Sluuw",
+  "version": "1.14.0",
+  "description": "Sluuw – Buchprojekte planen: Handlung, Figuren und Welt, vollständig offline.",
   "author": {
     "name": "Ansgar Jannes Torkler",
     "email": "ansgartorkler2@gmail.com"
   },
-  "homepage": "https://AnsgarTorkler.github.io/ploow/",
+  "homepage": "https://AnsgarTorkler.github.io/sluuw/",
   "license": "UNLICENSED",
   "private": true,
   "main": "main.js",
@@ -20,8 +20,8 @@
     "sprachen": "node build/sprachen-einbetten.js"
   },
   "build": {
-    "appId": "de.torkler.ploow",
-    "productName": "Ploow",
+    "appId": "de.torkler.sluuw",
+    "productName": "Sluuw",
     "copyright": "© 2026 Ansgar Jannes Torkler",
     "artifactName": "${productName}-${version}-${arch}.${ext}",
     "directories": {
@@ -48,13 +48,13 @@
     "fileAssociations": [
       {
         "ext": "story",
-        "name": "Ploow-Projekt",
-        "description": "Ploow-Projektdatei",
+        "name": "Sluuw-Projekt",
+        "description": "Sluuw-Projektdatei",
         "icon": "build/icon.ico",
         "role": "Editor"
       }
     ],
-    "executableName": "Ploow",
+    "executableName": "Sluuw",
     "win": {
       "target": [
         {
@@ -79,7 +79,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Ploow",
+      "shortcutName": "Sluuw",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
       "deleteAppDataOnUninstall": false,
@@ -116,7 +116,7 @@
       {
         "provider": "github",
         "owner": "AnsgarTorkler",
-        "repo": "ploow"
+        "repo": "sluuw"
       }
     ],
     "dmg": {
@@ -135,6 +135,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnsgarTorkler/ploow.git"
+    "url": "https://github.com/AnsgarTorkler/sluuw.git"
   }
 }

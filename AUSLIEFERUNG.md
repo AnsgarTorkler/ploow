@@ -1,6 +1,6 @@
 # Auslieferung
 
-Was noch zu tun ist, bevor Ploow verkauft werden kann – und was schon fertig ist.
+Was noch zu tun ist, bevor Sluuw verkauft werden kann – und was schon fertig ist.
 
 ## Vor dem ersten Verkauf zwingend erledigen
 
@@ -238,7 +238,7 @@ npm run dist         # Installer und portable Fassung in dist/
   zwölf Stände bleiben liegen. Der frühere 4,8-MB-Deckel ist damit weg.
 - **Bibliothek statt verborgenem App-Speicher.** „In der App gespeichert"
   heißt: in einem Ordner, den die App kennt – voreingestellt
-  `Dokumente\Ploow`, in den Einstellungen änderbar. Die Dateien liegen
+  `Dokumente\Sluuw`, in den Einstellungen änderbar. Die Dateien liegen
   sichtbar im Explorer, lassen sich mitnehmen, sichern und weitergeben. Ein
   neues Projekt wandert beim ersten Strg+S ohne Dialog dorthin; „Speichern
   unter" fragt weiterhin nach dem Ort.
@@ -294,7 +294,7 @@ npm run dist         # Installer und portable Fassung in dist/
   Zum Öffnen wird eine Kopie in den Benutzerordner geschrieben, der beim
   nächsten Start geleert wird. Ausführbare Dateien (.exe, .bat, .ps1 und
   Verwandte) werden dabei bewusst **nicht** an das System weitergereicht.
-- **Freies JSON einlesen** für Dateien, die nicht aus Ploow stammen. Die
+- **Freies JSON einlesen** für Dateien, die nicht aus Sluuw stammen. Die
   App durchsucht die Datei nach Listen von Objekten – auch verschachtelt –,
   schlägt je Liste eine Eintragsart und eine Feldzuordnung vor und zeigt beides
   mit Beispielwerten zur Prüfung. Erst danach wird angelegt. Auswahlfelder
@@ -324,7 +324,7 @@ npm run dist         # Installer und portable Fassung in dist/
 
 ## Was bewusst offen bleibt
 
-- **Kein Manuskript-Editor.** Ploow plant, geschrieben wird woanders. Der
+- **Kein Manuskript-Editor.** Sluuw plant, geschrieben wird woanders. Der
   Wortzahl-Import schließt die Lücke halb. Ob ein eigener Editor dazukommt, ist
   eine Produktentscheidung, keine technische.
 - **Keine Cloud, keine Synchronisierung.** Absicht – das ist Teil des
