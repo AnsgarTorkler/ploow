@@ -1012,7 +1012,10 @@
     'bn.anordnen': { de:'Neu anordnen', en:'Rearrange', zh:'重新排列', hi:'पुनः व्यवस्थित', es:'Reorganizar', ar:'إعادة الترتيب', fr:'Réorganiser', bn:'পুনর্বিন্যাস', pt:'Reorganizar', id:'Tata ulang', ur:'دوبارہ ترتیب' },
 
     /* --- Verbinden als Umschalter --- */
-    'mm.verbindenAus': { de:'Verbinden beendet', en:'Connecting finished', zh:'连接模式已关闭', hi:'जोड़ना समाप्त', es:'Modo conectar desactivado', ar:'انتهى وضع الربط', fr:'Mode liaison désactivé', bn:'সংযোগ মোড বন্ধ', pt:'Modo ligar desativado', id:'Mode hubungkan selesai', ur:'جوڑنے کا موڈ ختم' }
+    'mm.verbindenAus': { de:'Verbinden beendet', en:'Connecting finished', zh:'连接模式已关闭', hi:'जोड़ना समाप्त', es:'Modo conectar desactivado', ar:'انتهى وضع الربط', fr:'Mode liaison désactivé', bn:'সংযোগ মোড বন্ধ', pt:'Modo ligar desativado', id:'Mode hubungkan selesai', ur:'جوڑنے کا موڈ ختم' },
+
+    /* --- Leerer Zustand im einfachen Modus --- */
+    'ls.eintragAnlegen': { de:'Eintrag anlegen', en:'Add entry', zh:'新建条目', hi:'प्रविष्टि जोड़ें', es:'Añadir entrada', ar:'إضافة مُدخل', fr:'Ajouter une entrée', bn:'এন্ট্রি যোগ করুন', pt:'Adicionar entrada', id:'Tambah entri', ur:'اندراج شامل کریں' }
   };
 
   /* Kürzel der Eintragsarten in der Änderungsliste. Bewusst knapp:
