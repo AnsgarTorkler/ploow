@@ -587,9 +587,46 @@ ipcMain.handle('app:info', async () => ok({
   verpackt: app.isPackaged
 }));
 
+/* ------------------------------------------------------------
+   RECHTSTEXTE
+
+   Impressum, Datenschutzerklärung und Lizenz müssen erreichbar
+   sein, ohne dass jemand im Programmordner sucht – und ohne
+   Internet, denn die App läuft offline. Sie liegen deshalb als
+   Textdateien im Paket und werden hier gelesen.
+
+   Nur diese fünf Namen, fest verdrahtet: der Renderer bestimmt
+   nicht, welche Datei gelesen wird, sondern wählt aus einer
+   Liste. Ein Pfad aus dem Fenster käme hier gar nicht erst an.
+   ------------------------------------------------------------ */
+const RECHTSTEXTE = {
+  impressum:   'IMPRESSUM.md',
+  datenschutz: 'DATENSCHUTZ.md',
+  privacy:     'PRIVACY.md',
+  lizenz:      'LIZENZ.md',
+  license:     'LICENSE.md'
+};
+
+ipcMain.handle('app:rechtstext', async (_e, welche) => {
+  try {
+    const datei = RECHTSTEXTE[String(welche || '')];
+    if (!datei) return { ok: false, fehler: 'Unbekannter Text.' };
+    /* getAppPath zeigt im fertigen Programm in die app.asar hinein –
+       Electron liest daraus wie aus einem normalen Ordner. */
+    const pfad = path.join(app.getAppPath(), datei);
+    const text = fs.readFileSync(pfad, 'utf8');
+    return ok({ text, datei });
+  } catch (e) {
+    /* Fehlt die Datei, soll der Dialog das sagen können, statt leer zu bleiben. */
+    protokoll.fehler('Rechtstext nicht lesbar: ' + e.message);
+    return { ok: false, fehler: e.message };
+  }
+});
+
 ipcMain.handle('app:ordnerZeigen', async (_e, was) => {
   try {
-    if (was === 'protokoll' && protokoll.pfad()) shell.showItemInFolder(protokoll.pfad());
+    if (was === 'programm') shell.openPath(path.dirname(app.getAppPath()));
+    else if (was === 'protokoll' && protokoll.pfad()) shell.showItemInFolder(protokoll.pfad());
     else if (was === 'sicherungen' && aktuelleDatei) shell.openPath(speicher.backupDir(aktuelleDatei));
     else shell.openPath(USERDATA);
     return ok();

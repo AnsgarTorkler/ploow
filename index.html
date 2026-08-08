@@ -932,6 +932,34 @@ body.pro .btn:focus-visible,.pBtn:focus-visible,.pWs:focus-visible{outline-color
    ============================================================ */
 .dlgOverlay{align-items:center; z-index:500;}
 .dlgModal{width:460px; padding:22px 24px;}
+
+/* ---------- Rechtliches ----------
+   Impressum, Datenschutz und Lizenz liegen als Textdateien im Paket.
+   Sie hier zu zeigen ist keine Kür: Anbieterangaben müssen ohne Umweg
+   erreichbar sein, und die App läuft offline – ein Link ins Netz wäre
+   also gerade dann nutzlos, wenn man ihn braucht. */
+.rtModal{width:min(760px, 92vw); height:min(78vh, 720px); padding:0; display:flex; flex-direction:column;}
+.rtKopf{display:flex; align-items:center; gap:10px; padding:16px 20px 0;}
+.rtKopf h2{font-size:16px; margin:0; flex:1;}
+.rtReiter{display:flex; gap:6px; padding:12px 20px 0; border-bottom:1px solid var(--border); flex-wrap:wrap;}
+.rtReiter button{background:none; border:none; border-bottom:2px solid transparent; color:var(--text2);
+  padding:8px 10px; font-size:13px; cursor:pointer; border-radius:6px 6px 0 0;}
+.rtReiter button:hover{color:var(--text); background:var(--panel2);}
+.rtReiter button[aria-selected="true"]{color:var(--accent); border-bottom-color:var(--accent); font-weight:600;}
+.rtInhalt{flex:1; overflow:auto; padding:18px 24px; line-height:1.7; font-size:13.5px;}
+.rtInhalt h1{font-size:18px; margin:0 0 12px;}
+.rtInhalt h2{font-size:15px; margin:22px 0 8px; padding-bottom:5px; border-bottom:1px solid var(--border);}
+.rtInhalt h3{font-size:13.5px; margin:16px 0 6px; color:var(--accent);}
+.rtInhalt p{margin:0 0 10px;}
+.rtInhalt li{margin:0 0 6px 18px;}
+.rtInhalt code{font-family:ui-monospace,Consolas,monospace; font-size:12.5px; background:var(--panel2);
+  padding:1px 5px; border-radius:4px;}
+.rtInhalt blockquote{margin:0 0 12px; padding:10px 14px; background:var(--panel2);
+  border-left:3px solid var(--accent); border-radius:0 6px 6px 0; color:var(--text2);}
+.rtInhalt .luecke{background:rgba(176,113,58,.18); border-radius:3px; padding:0 3px;}
+.rtFuss{display:flex; align-items:center; gap:10px; padding:12px 20px; border-top:1px solid var(--border);}
+.rtFuss .hinweis{flex:1; font-size:11.5px; color:var(--text3); line-height:1.5;}
+body.pro .rtModal{background:var(--p-bg2); border-color:var(--p-line);}
 .dlgModal h2{font-size:16px; margin-bottom:10px;}
 .dlgText{font-size:13.5px; line-height:1.55; color:var(--text2); white-space:pre-wrap; margin-bottom:6px;
   max-height:46vh; overflow-y:auto;}
@@ -2282,7 +2310,17 @@ body.pro .anhangName{color:var(--p-txt);}
     'mm.verbindenAus': { de:'Verbinden beendet', en:'Connecting finished', zh:'连接模式已关闭', hi:'जोड़ना समाप्त', es:'Modo conectar desactivado', ar:'انتهى وضع الربط', fr:'Mode liaison désactivé', bn:'সংযোগ মোড বন্ধ', pt:'Modo ligar desativado', id:'Mode hubungkan selesai', ur:'جوڑنے کا موڈ ختم' },
 
     /* --- Leerer Zustand im einfachen Modus --- */
-    'ls.eintragAnlegen': { de:'Eintrag anlegen', en:'Add entry', zh:'新建条目', hi:'प्रविष्टि जोड़ें', es:'Añadir entrada', ar:'إضافة مُدخل', fr:'Ajouter une entrée', bn:'এন্ট্রি যোগ করুন', pt:'Adicionar entrada', id:'Tambah entri', ur:'اندراج شامل کریں' }
+    'ls.eintragAnlegen': { de:'Eintrag anlegen', en:'Add entry', zh:'新建条目', hi:'प्रविष्टि जोड़ें', es:'Añadir entrada', ar:'إضافة مُدخل', fr:'Ajouter une entrée', bn:'এন্ট্রি যোগ করুন', pt:'Adicionar entrada', id:'Tambah entri', ur:'اندراج شامل کریں' },
+
+    /* --- Rechtstexte in der App --- */
+    'rt.titel':         { de:'Rechtliches', en:'Legal', zh:'法律信息', hi:'कानूनी जानकारी', es:'Información legal', ar:'معلومات قانونية', fr:'Mentions légales', bn:'আইনগত তথ্য', pt:'Informações legais', id:'Informasi hukum', ur:'قانونی معلومات' },
+    'rt.impressum':     { de:'Anbieter', en:'Provider', zh:'提供者', hi:'प्रदाता', es:'Proveedor', ar:'مقدّم الخدمة', fr:'Éditeur', bn:'প্রদানকারী', pt:'Fornecedor', id:'Penyedia', ur:'فراہم کنندہ' },
+    'rt.datenschutz':   { de:'Datenschutz', en:'Privacy', zh:'隐私', hi:'गोपनीयता', es:'Privacidad', ar:'الخصوصية', fr:'Confidentialité', bn:'গোপনীয়তা', pt:'Privacidade', id:'Privasi', ur:'رازداری' },
+    'rt.lizenz':        { de:'Lizenz', en:'Licence', zh:'许可', hi:'लाइसेंस', es:'Licencia', ar:'الترخيص', fr:'Licence', bn:'লাইসেন্স', pt:'Licença', id:'Lisensi', ur:'لائسنس' },
+    'rt.sprachhinweis': { de:'Dieser Text ist rechtlich verbindlich nur in seiner deutschen bzw. englischen Fassung. Übersetzungen dienen dem Verständnis.', en:'This text is legally binding only in its German or English version. Translations are provided for understanding.', zh:'本文仅德文或英文版本具有法律效力。译文仅供理解参考。', hi:'यह पाठ केवल अपने जर्मन या अंग्रेज़ी संस्करण में कानूनी रूप से बाध्यकारी है। अनुवाद केवल समझने के लिए हैं।', es:'Este texto solo es jurídicamente vinculante en su versión alemana o inglesa. Las traducciones sirven para la comprensión.', ar:'هذا النص مُلزِم قانونياً بنسختيه الألمانية والإنجليزية فقط. أما الترجمات فهي للفهم لا غير.', fr:'Ce texte n’a de valeur juridique que dans sa version allemande ou anglaise. Les traductions servent à la compréhension.', bn:'এই লেখাটি কেবল জার্মান বা ইংরেজি সংস্করণে আইনত বাধ্যতামূলক। অনুবাদ কেবল বোঝার সুবিধার্থে।', pt:'Este texto só é juridicamente vinculativo na sua versão alemã ou inglesa. As traduções servem para compreensão.', id:'Teks ini hanya mengikat secara hukum dalam versi Jerman atau Inggris. Terjemahan hanya untuk pemahaman.', ur:'یہ متن صرف اپنے جرمن یا انگریزی نسخے میں قانونی طور پر لازم ہے۔ تراجم صرف سمجھنے کے لیے ہیں۔' },
+    'rt.nichtLesbar':   { de:'Dieser Text konnte nicht geladen werden. Die Dateien liegen im Programmordner.', en:'This text could not be loaded. The files are in the program folder.', zh:'无法载入此文本。文件位于程序文件夹中。', hi:'यह पाठ लोड नहीं हो सका। फ़ाइलें प्रोग्राम फ़ोल्डर में हैं।', es:'No se pudo cargar este texto. Los archivos están en la carpeta del programa.', ar:'تعذّر تحميل هذا النص. الملفات موجودة في مجلد البرنامج.', fr:'Ce texte n’a pas pu être chargé. Les fichiers se trouvent dans le dossier du programme.', bn:'এই লেখাটি লোড করা যায়নি। ফাইলগুলি প্রোগ্রাম ফোল্ডারে আছে।', pt:'Não foi possível carregar este texto. Os ficheiros estão na pasta do programa.', id:'Teks ini tidak dapat dimuat. Berkasnya ada di folder program.', ur:'یہ متن لوڈ نہیں ہو سکا۔ فائلیں پروگرام فولڈر میں ہیں۔' },
+    'rt.ordnerOeffnen': { de:'Ordner öffnen', en:'Open folder', zh:'打开文件夹', hi:'फ़ोल्डर खोलें', es:'Abrir carpeta', ar:'فتح المجلد', fr:'Ouvrir le dossier', bn:'ফোল্ডার খুলুন', pt:'Abrir pasta', id:'Buka folder', ur:'فولڈر کھولیں' },
+    'pm.rechtliches':   { de:'Rechtliches …', en:'Legal …', zh:'法律信息 …', hi:'कानूनी जानकारी …', es:'Información legal …', ar:'معلومات قانونية …', fr:'Mentions légales …', bn:'আইনগত তথ্য …', pt:'Informações legais …', id:'Informasi hukum …', ur:'قانونی معلومات …' }
   };
 
   /* Kürzel der Eintragsarten in der Änderungsliste. Bewusst knapp:
@@ -6959,6 +6997,7 @@ function projektMenue(anker){
     e.push({sep:1});
   }
   e.push({t:tx("btn.ordnerZeigen"), run:()=>window.ploow.app.ordnerZeigen("sicherungen"), aus:!DATEI||!projektDatei});
+  e.push({t:tx("pm.rechtliches"), run:()=>rechtDialog()});
   e.push({t:tx("pm.ueber"), run:ueberDialog});
   popup(anker, e);
 }
@@ -7019,12 +7058,121 @@ async function ueberDialog(){
   let info={version:"—", electron:"—", chrome:"—", verpackt:false};
   try{ const r=await window.ploow.app.info(); if(r&&r.ok) info=r; }catch(e){}
   const r=await dlg({titel:tx("ue.titel"),
-    text:tx("ue.version", info.version)+"\n"+tx("ue.offline")+"\n\n"+tx("ue.dateien")+"\n\n"+
+    text:tx("ue.version", info.version)+"\n"+tx("ue.offline")+"\n\n"+
       tx("ue.technik", info.electron, info.chrome),
-    knoepfe:[{t:tx("ue.protokoll")},{t:tx("ue.ordner")},{t:tx("btn.schliessen"), w:true}]});
+    knoepfe:[{t:tx("rt.titel")},{t:tx("ue.protokoll")},{t:tx("ue.ordner")},{t:tx("btn.schliessen"), w:true}]});
   if(!r) return;
-  if(r.knopf===0) window.ploow.app.ordnerZeigen("protokoll");
-  if(r.knopf===1) window.ploow.app.ordnerZeigen("userdata");
+  /* Rechtliches liegt jetzt im eigenen Fenster statt als Hinweis auf
+     Dateien, die niemand im Programmordner sucht. */
+  if(r.knopf===0) rechtDialog();
+  if(r.knopf===1) window.ploow.app.ordnerZeigen("protokoll");
+  if(r.knopf===2) window.ploow.app.ordnerZeigen("userdata");
+}
+
+/* ================= RECHTLICHES =================
+   Ein Fenster mit drei Reitern. Die Texte kommen als Markdown aus
+   dem Paket; hier wird nur so viel davon umgesetzt, wie in diesen
+   Dateien vorkommt – Überschriften, Absätze, Listen, Zitate, Code.
+   Eine Bibliothek dafür wäre bei fünf Konstrukten übertrieben.
+
+   Wichtig: markdown() maskiert ZUERST und setzt danach um. Andersherum
+   könnte ein < aus einer Datei zu einem Element werden. */
+let rtOffen = null;
+
+function rtMarkdown(roh){
+  const zeilen = String(roh||"").replace(/\r\n/g,"\n").split("\n");
+  const aus=[]; let inListe=false, inZitat=[];
+  const zitatSchliessen=()=>{ if(inZitat.length){
+    aus.push("<blockquote>"+inZitat.join(" ")+"</blockquote>"); inZitat=[]; } };
+  const listeSchliessen=()=>{ if(inListe){ aus.push("</ul>"); inListe=false; } };
+
+  /* Fett, Code und die eckigen Lücken der Vorlagen hervorheben –
+     Letzteres, damit sofort auffällt, was noch auszufüllen ist. */
+  const inline = s => esc(s)
+    .replace(/`([^`]+)`/g, (m,t)=>"<code>"+t+"</code>")
+    .replace(/\*\*([^*]+)\*\*/g, (m,t)=>"<strong>"+t+"</strong>")
+    .replace(/\[([^\]]{2,})\]/g, (m,t)=>'<span class="luecke">['+t+']</span>');
+
+  zeilen.forEach(z=>{
+    const t=z.trim();
+    if(!t){ listeSchliessen(); zitatSchliessen(); return; }
+    if(t.startsWith("> ")){ listeSchliessen(); inZitat.push(inline(t.slice(2))); return; }
+    zitatSchliessen();
+    const h=t.match(/^(#{1,3})\s+(.*)$/);
+    if(h){ listeSchliessen(); const n=h[1].length; aus.push("<h"+n+">"+inline(h[2])+"</h"+n+">"); return; }
+    if(/^[-*]\s+/.test(t)){ if(!inListe){ aus.push("<ul>"); inListe=true; }
+      aus.push("<li>"+inline(t.replace(/^[-*]\s+/,""))+"</li>"); return; }
+    listeSchliessen();
+    aus.push("<p>"+inline(t)+"</p>");
+  });
+  listeSchliessen(); zitatSchliessen();
+  return aus.join("");
+}
+
+/* Welche Datei zu welchem Reiter gehört. Impressum gibt es nur auf
+   Deutsch – es erfüllt eine deutsche Pflicht und wird sonst überall
+   in derselben Fassung gezeigt, weil die Anbieterangaben dieselben
+   sind. Datenschutz und Lizenz liegen zweisprachig vor. */
+function rtDatei(reiter){
+  const d = sprache === "de";
+  if(reiter === "impressum")   return "impressum";
+  if(reiter === "datenschutz") return d ? "datenschutz" : "privacy";
+  return d ? "lizenz" : "license";
+}
+
+async function rechtDialog(reiter){
+  if(rtOffen){ rtWechseln(reiter || "impressum"); return; }
+  const ov=document.createElement("div");
+  ov.className="overlay show";
+  ov.innerHTML=`<div class="modal rtModal" role="dialog" aria-modal="true" aria-label="${esc(tx("rt.titel"))}">
+    <div class="rtKopf"><h2>${esc(tx("rt.titel"))}</h2></div>
+    <div class="rtReiter" role="tablist">
+      ${[["impressum","rt.impressum"],["datenschutz","rt.datenschutz"],["lizenz","rt.lizenz"]]
+        .map(([k,s])=>`<button role="tab" data-r="${k}" aria-selected="false">${esc(tx(s))}</button>`).join("")}
+    </div>
+    <div class="rtInhalt" id="rtInhalt" tabindex="0"></div>
+    <div class="rtFuss">
+      <span class="hinweis">${esc(tx("rt.sprachhinweis"))}</span>
+      <button class="btn small" id="rtOrdner">${esc(tx("rt.ordnerOeffnen"))}</button>
+      <button class="btn primary" id="rtZu">${esc(tx("btn.schliessen"))}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  rtOffen=ov;
+
+  ov.querySelectorAll("[data-r]").forEach(b =>
+    b.addEventListener("click", ()=>rtWechseln(b.dataset.r)));
+  ov.querySelector("#rtOrdner").addEventListener("click",
+    ()=>{ try{ window.ploow.app.ordnerZeigen("programm"); }catch(e){} });
+  ov.querySelector("#rtZu").addEventListener("click", rechtSchliessen);
+  hintergrundKlick(ov, rechtSchliessen);
+  document.addEventListener("keydown", rtTaste, true);
+  await rtWechseln(reiter || "impressum");
+  ov.querySelector("#rtZu").focus();
+}
+
+function rtTaste(e){
+  if(e.key==="Escape" && rtOffen){ e.preventDefault(); e.stopPropagation(); rechtSchliessen(); }
+}
+function rechtSchliessen(){
+  if(!rtOffen) return;
+  rtOffen.remove(); rtOffen=null;
+  document.removeEventListener("keydown", rtTaste, true);
+}
+
+async function rtWechseln(reiter){
+  if(!rtOffen) return;
+  rtOffen.querySelectorAll("[data-r]").forEach(b =>
+    b.setAttribute("aria-selected", String(b.dataset.r===reiter)));
+  const ziel=rtOffen.querySelector("#rtInhalt");
+  ziel.textContent="…";
+  let r=null;
+  try{ r=await window.ploow.app.rechtstext(rtDatei(reiter)); }catch(e){}
+  if(!rtOffen) return;                       // zwischenzeitlich geschlossen
+  ziel.innerHTML = (r && r.ok && r.text)
+    ? rtMarkdown(r.text)
+    : `<p>${esc(tx("rt.nichtLesbar"))}</p>`;
+  ziel.scrollTop=0;
 }
 
 /* ================= THEME & MODUS ================= */
@@ -7235,6 +7383,8 @@ function proMenues(){
     [tx("pm.hilfe"), [
       ["tourStart()", tx("tour.starten"), ""],
       ["showShortcuts()", tx("pm.tastenkuerzel"), ""],
+      null,
+      ["rechtDialog()", tx("pm.rechtliches"), ""],
       ["ueberDialog()", tx("pm.ueberProg"), ""]]]
   ].map(([titel, eintraege], i)=>`<div class="pMenu" data-tour="menue${i}"><button>${esc(titel)}</button><div class="pDrop">${
     eintraege.map(e=>e===null?`<div class="sep"></div>`

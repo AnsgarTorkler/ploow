@@ -1,7 +1,7 @@
 {
   "name": "ploow",
   "productName": "Ploow",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "description": "Ploow – Buchprojekte planen: Handlung, Figuren und Welt, vollständig offline.",
   "author": {
     "name": "Ansgar Jannes Torkler",
@@ -13,7 +13,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "node test/test-buildkonfig.js && node test/test-speicher.js && node test/test-zugriff.js && node test/test-bibliothek.js && node test/test-sprachen.js && node test/test-oberflaeche.js && node test/test-layout.js && node test/test-durchgaengig.js && node test/test-kennung.js",
+    "test": "node test/test-buildkonfig.js && node test/test-speicher.js && node test/test-zugriff.js && node test/test-rechtliches.js && node test/test-bibliothek.js && node test/test-sprachen.js && node test/test-oberflaeche.js && node test/test-layout.js && node test/test-durchgaengig.js && node test/test-kennung.js",
     "icon": "node build/icon-erzeugen.js",
     "dist": "npm test && electron-builder",
     "dist:ohne-test": "electron-builder",

@@ -71,6 +71,9 @@ contextBridge.exposeInMainWorld('ploow', {
   app: {
     info: () => ipcRenderer.invoke('app:info'),
     ordnerZeigen: was => ipcRenderer.invoke('app:ordnerZeigen', String(was || '')),
+    /* Impressum, Datenschutz, Lizenz. Der Hauptprozess kennt die fünf
+       erlaubten Namen; ein Pfad wäre hier gar nicht verwendbar. */
+    rechtstext: welche => ipcRenderer.invoke('app:rechtstext', String(welche || '')),
     protokolliere: (nachricht, spur) =>
       ipcRenderer.send('protokoll:fehler', { nachricht: String(nachricht), spur: String(spur || '') }),
     onAktualisierung: cb => ipcRenderer.on('app:aktualisierung', (_e, d) => nurFunktion(cb)(d)),
