@@ -22,9 +22,31 @@ const skript = html.slice(html.lastIndexOf('<script>'));
 gruppe('Die Textdateien liegen vor und werden mitgeliefert');
 {
   const paket = JSON.parse(fs.readFileSync(path.join(wurzel, 'package.json'), 'utf8'));
-  ['IMPRESSUM.md', 'DATENSCHUTZ.md', 'PRIVACY.md', 'LIZENZ.md', 'LICENSE.md'].forEach(d => {
+  ['IMPRESSUM.md', 'IMPRINT.md', 'DATENSCHUTZ.md', 'PRIVACY.md',
+   'LIZENZ.md', 'LICENSE.md'].forEach(d => {
     ok(fs.existsSync(path.join(wurzel, d)), d + ' ist vorhanden');
     ok((paket.build.files || []).includes(d), d + ' wird ins Paket gelegt');
+  });
+
+  /* Jede Sprachfassung muss dieselben Abschnitte vorsehen. Sonst fehlt
+     in der englischen Fassung eine Pflichtangabe, die in der deutschen
+     steht – und niemand merkt es, weil beide für sich gelesen stimmig
+     aussehen. */
+  const abschnitte = (d) => fs.readFileSync(path.join(wurzel, d), 'utf8')
+    .split('\n').filter(z => z.startsWith('## ')).length;
+  gleich(abschnitte('IMPRINT.md'), abschnitte('IMPRESSUM.md'),
+         'IMPRINT.md hat so viele Abschnitte wie IMPRESSUM.md');
+  gleich(abschnitte('PRIVACY.md'), abschnitte('DATENSCHUTZ.md'),
+         'PRIVACY.md hat so viele Abschnitte wie DATENSCHUTZ.md');
+  gleich(abschnitte('LICENSE.md'), abschnitte('LIZENZ.md'),
+         'LICENSE.md hat so viele Abschnitte wie LIZENZ.md');
+
+  /* Und keine Fassung darf in der Sprache der anderen abdriften. */
+  const deutsch = /\b(und|nicht|werden|deine|über|Angaben|Anschrift|Software gewerblich)\b/;
+  ['IMPRINT.md', 'PRIVACY.md', 'LICENSE.md'].forEach(d => {
+    const text = fs.readFileSync(path.join(wurzel, d), 'utf8')
+      .split('\n').filter(z => !/German|Deutsch|IMPRESSUM|DATENSCHUTZ|LIZENZ/.test(z)).join('\n');
+    ok(!deutsch.test(text), d + ' enthält keinen deutschen Fließtext');
   });
 
   /* Die Datei mit den Anbieterangaben muss die Pflichtfelder überhaupt
@@ -91,6 +113,32 @@ gruppe('Markdown wird maskiert, bevor es umgesetzt wird');
   gleich(md(''), '', 'Leerer Text ergibt leeres Markup');
   gleich(md(null), '', 'Und null auch');
 
+  /* Die Vorlagen-Notiz am Anfang ist eine Anweisung an den Autor, nicht
+     an die Nutzerin. Sie stand vorher mitten im Dialog und wirkte wie
+     ein Fehler. */
+  const mitHinweis = '# Impressum\n\n> **Vorlage.** Alles ausfüllen.\n> Zweite Zeile.\n\n## Anbieter\n\nName';
+  const ohne = md(mitHinweis);
+  ok(!/Vorlage/.test(ohne), 'Der Vorlagen-Hinweis erscheint nicht im Dialog');
+  ok(!/Zweite Zeile/.test(ohne), 'Auch seine Fortsetzung nicht');
+  ok(/<h1>Impressum<\/h1>/.test(ohne), 'Die Überschrift bleibt');
+  ok(/<h2>Anbieter<\/h2>/.test(ohne) && /Name/.test(ohne), 'Und der Inhalt danach auch');
+
+  ok(!/Template/.test(md('> **Template.** Fill everything in.\n\nReal text')),
+     'Auf Englisch heißt er Template und fliegt genauso heraus');
+
+  /* Andere Zitate im Text sind Inhalt und bleiben stehen. */
+  ok(/<blockquote>Ein echtes Zitat.<\/blockquote>/.test(md('> Ein echtes Zitat.')),
+     'Ein gewöhnliches Zitat bleibt erhalten');
+
+  /* Und in den echten Dateien darf danach nichts mehr davon stehen. */
+  ['IMPRESSUM.md', 'IMPRINT.md', 'DATENSCHUTZ.md', 'PRIVACY.md', 'LIZENZ.md', 'LICENSE.md']
+    .forEach(d => {
+      const erg = md(fs.readFileSync(path.join(wurzel, d), 'utf8'));
+      ok(!/Vorlage\.|Template\./.test(erg), d + ': keine Vorlagen-Notiz im Dialog');
+      ok(!/Rechtsberatung|not legal advice/i.test(erg),
+         d + ': auch der Hinweis „keine Rechtsberatung" gehört in die Datei, nicht in den Dialog');
+    });
+
   /* Alle fünf echten Dateien einmal durchschicken – kein Fehler,
      kein Element, das dort nichts zu suchen hat. */
   ['IMPRESSUM.md', 'DATENSCHUTZ.md', 'PRIVACY.md', 'LIZENZ.md', 'LICENSE.md'].forEach(d => {
@@ -116,8 +164,23 @@ gruppe('Sprachwahl: welche Fassung wird gezeigt');
   gleich(fuer('zh', 'datenschutz'), 'privacy', 'Auch auf Chinesisch die englische');
   gleich(fuer('de', 'lizenz'), 'lizenz', 'Auf Deutsch die deutsche Lizenz');
   gleich(fuer('ar', 'lizenz'), 'license', 'Sonst die englische');
-  gleich(fuer('de', 'impressum'), 'impressum', 'Das Impressum gibt es nur einmal');
-  gleich(fuer('id', 'impressum'), 'impressum', 'Und wird überall gezeigt');
+  /* Vorher lieferte der Reiter „Anbieter" in JEDER Sprache die deutsche
+     Fassung. Wer die App auf Englisch bediente, saß plötzlich vor
+     deutschem Text – das sah nach einem Fehler aus, und war einer. */
+  gleich(fuer('de', 'impressum'), 'impressum', 'Auf Deutsch das deutsche Impressum');
+  gleich(fuer('en', 'impressum'), 'imprint', 'Auf Englisch die englische Fassung');
+  gleich(fuer('id', 'impressum'), 'imprint', 'Und auf Indonesisch ebenfalls die englische');
+  gleich(fuer('ur', 'impressum'), 'imprint', 'Auf Urdu auch');
+
+  /* Kein Reiter darf in irgendeiner Sprache ohne Datei dastehen. */
+  const H = require('../src/sprachen');
+  Object.keys(H.SPRACHEN).forEach(c => {
+    ['impressum', 'datenschutz', 'lizenz'].forEach(r => {
+      const d = fuer(c, r);
+      ok(['impressum','imprint','datenschutz','privacy','lizenz','license'].includes(d),
+         `${c}/${r} zeigt auf eine bekannte Datei (${d})`);
+    });
+  });
 }
 
 gruppe('Erreichbar in jeder Sprache');

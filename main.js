@@ -601,6 +601,7 @@ ipcMain.handle('app:info', async () => ok({
    ------------------------------------------------------------ */
 const RECHTSTEXTE = {
   impressum:   'IMPRESSUM.md',
+  imprint:     'IMPRINT.md',
   datenschutz: 'DATENSCHUTZ.md',
   privacy:     'PRIVACY.md',
   lizenz:      'LIZENZ.md',

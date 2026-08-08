@@ -7079,8 +7079,29 @@ async function ueberDialog(){
    könnte ein < aus einer Datei zu einem Element werden. */
 let rtOffen = null;
 
-function rtMarkdown(roh){
+/* Am Anfang jeder Vorlage steht ein Zitatblock mit Anweisungen an mich
+   selbst („Vorlage. Alle […] ausfüllen"). Der gehört in die Datei, aber
+   nicht auf den Bildschirm der Nutzerin – dort wirkte er wie ein Fehler.
+   Deshalb fliegt genau dieser eine Block heraus, und nur er: andere
+   Zitate im Text bleiben stehen. */
+function rtOhneVorlagenhinweis(roh){
   const zeilen = String(roh||"").replace(/\r\n/g,"\n").split("\n");
+  const aus=[]; let imHinweis=false;
+  for(const z of zeilen){
+    const t=z.trim();
+    if(!imHinweis && /^>\s*\*\*(Vorlage|Template)\.?\*\*/.test(t)){ imHinweis=true; continue; }
+    if(imHinweis){
+      if(t.startsWith(">")) continue;      // Fortsetzung des Zitats
+      imHinweis=false;                     // erste Zeile danach beendet ihn
+      if(!t) continue;                     // die Leerzeile gleich mit
+    }
+    aus.push(z);
+  }
+  return aus.join("\n");
+}
+
+function rtMarkdown(roh){
+  const zeilen = rtOhneVorlagenhinweis(roh).split("\n");
   const aus=[]; let inListe=false, inZitat=[];
   const zitatSchliessen=()=>{ if(inZitat.length){
     aus.push("<blockquote>"+inZitat.join(" ")+"</blockquote>"); inZitat=[]; } };
@@ -7115,7 +7136,11 @@ function rtMarkdown(roh){
    sind. Datenschutz und Lizenz liegen zweisprachig vor. */
 function rtDatei(reiter){
   const d = sprache === "de";
-  if(reiter === "impressum")   return "impressum";
+  /* Auch die Anbieterangaben gibt es zweisprachig. Die deutsche Fassung
+     ist die verbindliche – § 5 DDG verlangt sie –, aber wer die App auf
+     Englisch bedient, soll nicht plötzlich vor deutschem Text sitzen.
+     Genau das war vorher der Fall und sah entsprechend falsch aus. */
+  if(reiter === "impressum")   return d ? "impressum" : "imprint";
   if(reiter === "datenschutz") return d ? "datenschutz" : "privacy";
   return d ? "lizenz" : "license";
 }

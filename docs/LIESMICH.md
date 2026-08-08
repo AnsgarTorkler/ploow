@@ -17,8 +17,8 @@ const KONFIG = {
   benutzer: "BITTE-EINTRAGEN",   // ← Ihr GitHub-Benutzername
   repo:     "ploow",             // ← Name des Repositorys
   storeAdresse: "",              // ← leer lassen, bis Ploow im Store steht
-  version:      "1.13.3",
-  dateiWindows: "Ploow-1.13.3-x64.exe",
+  version:      "1.13.4",
+  dateiWindows: "Ploow-1.13.4-x64.exe",
   ...
 };
 ```
@@ -27,10 +27,10 @@ Aus `benutzer` und `repo` entstehen alle Links von allein:
 
 | Knopf | Ziel |
 |---|---|
-| Windows | `…/releases/latest/download/Ploow-1.13.3-x64.exe` |
-| Ohne Installation | `…/releases/latest/download/Ploow-1.13.3-portabel.exe` |
-| macOS | `…/releases/latest/download/Ploow-1.13.3.dmg` |
-| Linux | `…/releases/latest/download/Ploow-1.13.3.AppImage` |
+| Windows | `…/releases/latest/download/Ploow-1.13.4-x64.exe` |
+| Ohne Installation | `…/releases/latest/download/Ploow-1.13.4-portabel.exe` |
+| macOS | `…/releases/latest/download/Ploow-1.13.4.dmg` |
+| Linux | `…/releases/latest/download/Ploow-1.13.4.AppImage` |
 | Alle Fassungen | `…/releases` |
 
 `releases/latest/download/` zeigt **immer** auf die neueste Veröffentlichung.
