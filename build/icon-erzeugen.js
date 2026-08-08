@@ -253,6 +253,45 @@ function icoPacken(bilder) {
 }
 
 /* ---------- Ablauf ---------- */
+/* ---------- macOS: .icns ----------
+   electron-builder verlangt für macOS eine .icns und ersetzt dazu
+   einfach die Endung: aus build/icon.png wird build/icon.icns. Fehlt
+   die, bricht der Bau ab – genau daran ist der erste Lauf auf
+   macos-latest gescheitert.
+
+   Das Format ist einfach: die Kennung 'icns', die Gesamtlänge, dann
+   je Bild ein Vierbuchstaben-Typ, die Länge einschließlich dieser
+   acht Bytes, und die rohen PNG-Daten. Seit macOS 10.7 dürfen die
+   Einträge PNG sein – ein eigener Kodierer ist also nicht nötig.
+
+   Welcher Typ welche Kantenlänge bedeutet, ist von Apple festgelegt.
+   1024 lassen wir weg: die Vorlage hat 512, und Hochrechnen macht
+   das Symbol nur unscharf, nicht größer. */
+const ICNS_TYPEN = [
+  ['icp4', 16], ['icp5', 32], ['ic11', 32],   // ic11 = 16 bei doppelter Auflösung
+  ['icp6', 64], ['ic12', 64],                 // ic12 = 32 bei doppelter Auflösung
+  ['ic07', 128],
+  ['ic08', 256], ['ic13', 256],               // ic13 = 128 bei doppelter Auflösung
+  ['ic09', 512], ['ic14', 512]                // ic14 = 256 bei doppelter Auflösung
+];
+
+function icnsPacken(pngNachGroesse) {
+  const bloecke = [];
+  for (const [typ, n] of ICNS_TYPEN) {
+    const png = pngNachGroesse[n];
+    if (!png) continue;
+    const kopf = Buffer.alloc(8);
+    kopf.write(typ, 0, 4, 'ascii');
+    kopf.writeUInt32BE(png.length + 8, 4);
+    bloecke.push(kopf, png);
+  }
+  const inhalt = Buffer.concat(bloecke);
+  const kopf = Buffer.alloc(8);
+  kopf.write('icns', 0, 4, 'ascii');
+  kopf.writeUInt32BE(inhalt.length + 8, 4);
+  return Buffer.concat([kopf, inhalt]);
+}
+
 function erzeuge(quellPfad) {
   let quelle = null, herkunft = 'gezeichnetes Motiv';
   if (quellPfad && fs.existsSync(quellPfad)) {
@@ -274,7 +313,16 @@ function erzeuge(quellPfad) {
   fs.writeFileSync(path.join(__dirname, 'icon.ico'), icoPacken(bilder));
   const gross = quelle ? skaliere(quelle, 512) : zeichne(256);
   fs.writeFileSync(path.join(__dirname, 'icon.png'), pngSchreiben(quelle ? 512 : 256, quelle ? 512 : 256, gross));
-  return { herkunft, groessen: GROESSEN };
+
+  /* Und die .icns für macOS. Jede benötigte Kantenlänge einmal als PNG. */
+  const nach = {};
+  [...new Set(ICNS_TYPEN.map(([, n]) => n))].forEach(n => {
+    const pixel = quelle ? skaliere(quelle, n) : zeichne(n);
+    nach[n] = pngSchreiben(n, n, pixel);
+  });
+  fs.writeFileSync(path.join(__dirname, 'icon.icns'), icnsPacken(nach));
+
+  return { herkunft, groessen: GROESSEN, icns: Object.keys(nach).map(Number).sort((a, b) => a - b) };
 }
 
 if (require.main === module) {
@@ -284,8 +332,10 @@ if (require.main === module) {
   const r = erzeuge(quelle);
   console.log('Quelle:  ' + r.herkunft);
   console.log('Größen:  ' + r.groessen.join(', ') + ' px');
-  console.log('Erzeugt: build/icon.ico und build/icon.png');
+  console.log('Erzeugt: build/icon.ico, build/icon.png und build/icon.icns');
+  console.log('.icns:   ' + r.icns.join(', ') + ' px');
   if (!quelle) console.log('\nEigenes Bild verwenden: als build/logo.png ablegen (quadratisch, 512×512 oder größer),\ndann "npm run icon" erneut ausführen.');
 }
 
-module.exports = { erzeuge, pngLesen, pngSchreiben, dibSchreiben, skaliere, icoPacken, GROESSEN };
+module.exports = { erzeuge, pngLesen, pngSchreiben, dibSchreiben, skaliere, icoPacken,
+                   icnsPacken, ICNS_TYPEN, GROESSEN };

@@ -162,6 +162,54 @@ gruppe('Symboldatei');
   ok(p.readUInt32BE(16) >= 256, 'Und mindestens 256 Punkte breit (' + p.readUInt32BE(16) + ')');
 }
 
+gruppe('Symboldatei für macOS');
+{
+  /* Der Bau auf macos-latest brach ab mit „cannot find specified
+     resource build/icon.icns". electron-builder ersetzt für macOS
+     einfach die Endung: aus build/icon.png wird build/icon.icns
+     gemacht, und die gab es nicht. Ein Hinweis darauf gab es beim
+     Bauen unter Windows nie – dort wird die mac-Konfiguration nicht
+     angesehen. Deshalb steht die Prüfung jetzt hier. */
+  gleich(b.mac.icon, 'build/icon.icns', 'Die mac-Konfiguration nennt eine .icns, keine .png');
+
+  const datei = path.join(wurzel, 'build', 'icon.icns');
+  ok(fs.existsSync(datei), 'build/icon.icns ist vorhanden');
+  const d = fs.readFileSync(datei);
+
+  gleich(d.slice(0, 4).toString('ascii'), 'icns', 'Die Kennung am Dateianfang stimmt');
+  gleich(d.readUInt32BE(4), d.length,
+         `Die Länge im Kopf (${d.readUInt32BE(4)}) entspricht der Datei (${d.length})`);
+
+  /* Jeden Eintrag durchlaufen. Bleibt am Ende ein Rest oder ragt ein
+     Eintrag über das Dateiende hinaus, liest macOS die Datei nicht. */
+  const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const gefunden = [];
+  let i = 8;
+  while (i < d.length) {
+    const typ = d.slice(i, i + 4).toString('ascii');
+    const laenge = d.readUInt32BE(i + 4);
+    ok(laenge >= 8 && i + laenge <= d.length, `Eintrag ${typ} liegt vollständig in der Datei`);
+    if (!(laenge >= 8 && i + laenge <= d.length)) break;
+    ok(d.slice(i + 8, i + 16).equals(PNG), `Eintrag ${typ} ist als PNG abgelegt`);
+    gefunden.push(typ);
+    i += laenge;
+  }
+  gleich(i, d.length, 'Die Einträge füllen die Datei genau aus');
+
+  /* Ohne diese vier sieht das Symbol im Dock oder im Finder falsch aus. */
+  ['ic07', 'ic08', 'ic09', 'ic11'].forEach(t =>
+    ok(gefunden.includes(t), `Typ ${t} ist enthalten`));
+  ok(gefunden.length >= 8, gefunden.length + ' Einträge: ' + gefunden.join(', '));
+
+  /* Und der Erzeuger muss sie auch wieder herstellen können. */
+  const I = require('../build/icon-erzeugen');
+  ok(typeof I.icnsPacken === 'function', 'npm run icon erzeugt die .icns mit');
+  ok(Array.isArray(I.ICNS_TYPEN) && I.ICNS_TYPEN.length >= 8, 'Die Typenliste ist hinterlegt');
+  const leer = I.icnsPacken({});
+  gleich(leer.slice(0, 4).toString('ascii'), 'icns', 'Auch ohne Bilder entsteht ein gültiger Kopf');
+  gleich(leer.readUInt32BE(4), 8, 'Und die Länge stimmt dann ebenfalls');
+}
+
 gruppe('Eigenes Bild einsetzen');
 {
   const I = require('../build/icon-erzeugen');
