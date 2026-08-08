@@ -95,4 +95,63 @@ gruppe('Was im Paket landet');
   ok(dateien.some(f => f.startsWith('build/icon')), 'Das Symbol wird mitgeliefert');
 }
 
+gruppe('Der Bau-Ablauf auf GitHub');
+{
+  /* npm run dist baut auf Windows nur .exe. .dmg und .AppImage
+     entstehen nur auf einem Mac beziehungsweise unter Linux –
+     dafür ist dieser Ablauf da. Fehlt er oder stimmt er nicht mit
+     der Konfiguration überein, zeigen zwei der vier Knöpfe auf der
+     Produktseite ins Leere. */
+  const datei = path.join(wurzel, '.github', 'workflows', 'release.yml');
+  ok(fs.existsSync(datei), '.github/workflows/release.yml ist vorhanden');
+  const w = fs.readFileSync(datei, 'utf8');
+
+  ['windows-latest', 'macos-latest', 'ubuntu-latest'].forEach(s =>
+    ok(w.includes(s), 'Es wird auch auf ' + s + ' gebaut'));
+
+  ok(/tags:\s*\n\s*-\s*'v\*'/.test(w), 'Ausgelöst wird von einem Tag der Form v1.2.3');
+  ok(/workflow_dispatch/.test(w), 'Und lässt sich von Hand starten');
+  ok(/contents:\s*write/.test(w), 'Der Ablauf darf das Release befüllen');
+  ok(/--publish always/.test(w), 'electron-builder hängt die Dateien ans Release');
+  ok(/GH_TOKEN:\s*\$\{\{\s*secrets\.GITHUB_TOKEN/.test(w),
+     'Mit dem Token, das GitHub selbst stellt – kein eigenes Geheimnis nötig');
+  ok(/CSC_IDENTITY_AUTO_DISCOVERY:\s*false/.test(w),
+     'Ohne Apple-Konto wird die Beglaubigung abgeschaltet, sonst bricht der Bau ab');
+  ok(/fail-fast:\s*false/.test(w),
+     'Ein fehlgeschlagenes System bricht die anderen nicht ab');
+  ok(/npm ci/.test(w), 'Installiert wird nach package-lock.json, nicht frei');
+  ok(/npm test/.test(w), 'Die Testreihe läuft mit');
+
+  /* Die Ziele im Ablauf müssen zu denen in package.json passen. */
+  const b = paket.build;
+  const ziele = JSON.stringify([b.win.target, b.mac.target, b.linux.target]);
+  ok(/dmg/.test(ziele) && /AppImage/.test(ziele) && /nsis/.test(ziele),
+     'package.json kennt Ziele für alle drei Systeme');
+  ['exe', 'dmg', 'AppImage'].forEach(e =>
+    ok(w.includes('dist/*.' + e), 'Die .' + e + ' wird als Artefakt gesichert'));
+}
+
+gruppe('Bezugsquelle für die Aktualisierung');
+{
+  /* Ohne publish weiß electron-updater nicht, wo es nachfragen soll –
+     und --publish always im Ablauf hätte kein Ziel. */
+  const b = paket.build;
+  const pub = Array.isArray(b.publish) ? b.publish[0] : b.publish;
+  ok(pub && pub.provider === 'github', 'build.publish nennt GitHub als Bezugsquelle');
+  ok(pub && pub.owner && !/BITTE|EINTRAGEN/i.test(pub.owner), 'Mit eingetragenem Benutzer: ' + (pub && pub.owner));
+  ok(pub && pub.repo, 'Und Repository: ' + (pub && pub.repo));
+  ok(paket.dependencies && paket.dependencies['electron-updater'],
+     'electron-updater ist als Abhängigkeit eingetragen');
+  ok(paket.repository && /github\.com/.test(paket.repository.url || ''),
+     'package.json nennt das Repository');
+
+  /* Der Hauptprozess muss die Prüfung auch wirklich anstoßen. */
+  const mainJs = fs.readFileSync(path.join(wurzel, 'main.js'), 'utf8');
+  ok(/pruefeAktualisierung\(\)/.test(mainJs), 'Beim Start wird geprüft');
+  ok(/autoDownload = false/.test(mainJs), 'Aber nichts von allein heruntergeladen');
+  ok(/autoInstallOnAppQuit = false/.test(mainJs), 'Und nichts ohne Zustimmung installiert');
+  ok(/if \(!app\.isPackaged \|\| !updatesErlaubt\) return;/.test(mainJs),
+     'Abschaltbar, und im Entwicklungsbetrieb ohnehin aus');
+}
+
 bilanz();

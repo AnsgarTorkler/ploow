@@ -18,7 +18,7 @@ module.exports = {
   /* Windows gruppiert und heftet Fenster über diese Kennung an die
      Taskleiste. Muss mit build.appId übereinstimmen und darf nach
      der ersten Veröffentlichung nie mehr geändert werden. */
-  APP_ID: 'de.bitte-eintragen.ploow',
+  APP_ID: 'de.torkler.ploow',
 
   /* Ordner für Einstellungen, zuletzt geöffnete Projekte und das
      Protokoll. Bewusst unabhängig vom Produktnamen: wird das

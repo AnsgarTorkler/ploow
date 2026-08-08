@@ -17,8 +17,8 @@ const KONFIG = {
   benutzer: "BITTE-EINTRAGEN",   // ← Ihr GitHub-Benutzername
   repo:     "ploow",             // ← Name des Repositorys
   storeAdresse: "",              // ← leer lassen, bis Ploow im Store steht
-  version:      "1.12.0",
-  dateiWindows: "Ploow-1.12.0-x64.exe",
+  version:      "1.13.0",
+  dateiWindows: "Ploow-1.13.0-x64.exe",
   ...
 };
 ```
@@ -27,10 +27,10 @@ Aus `benutzer` und `repo` entstehen alle Links von allein:
 
 | Knopf | Ziel |
 |---|---|
-| Windows | `…/releases/latest/download/Ploow-1.12.0-x64.exe` |
-| Ohne Installation | `…/releases/latest/download/Ploow-1.12.0-portabel.exe` |
-| macOS | `…/releases/latest/download/Ploow-1.12.0.dmg` |
-| Linux | `…/releases/latest/download/Ploow-1.12.0.AppImage` |
+| Windows | `…/releases/latest/download/Ploow-1.13.0-x64.exe` |
+| Ohne Installation | `…/releases/latest/download/Ploow-1.13.0-portabel.exe` |
+| macOS | `…/releases/latest/download/Ploow-1.13.0.dmg` |
+| Linux | `…/releases/latest/download/Ploow-1.13.0.AppImage` |
 | Alle Fassungen | `…/releases` |
 
 `releases/latest/download/` zeigt **immer** auf die neueste Veröffentlichung.
@@ -48,7 +48,7 @@ Versionsnummer im Namen steckt.
 
 ## 2. Bildschirmfotos
 
-Die sechs Bilder **liegen in `bilder/`** und sind eingebunden. Fehlt eines,
+Die sechs Bilder **liegen in `docs/bilder/`** und sind eingebunden. Fehlt eines,
 erscheint an seiner Stelle ein beschrifteter Platzhalter mit dem Dateinamen –
 die Seite bleibt also benutzbar.
 
@@ -65,7 +65,7 @@ die Seite bleibt also benutzbar.
 >   Markierungen mit.
 >
 > Vorgehen: Beispielprojekt frisch laden, die drei Ansichten erneut
-> aufnehmen, Dateien im Ordner `bilder/` ersetzen. `node pruefen.js` prüft
+> aufnehmen, Dateien im Ordner `docs/bilder/` ersetzen. `node pruefen.js` prüft
 > danach Format, Breite und Dateigröße.
 
 | Datei | Was darauf zu sehen sein sollte |
@@ -112,7 +112,7 @@ jeweiligen Sprache ausgeschrieben.
 
 **Variante A – einfachster Weg (Ordner `docs/`)**
 
-1. Diesen Ordner im Repository nach `docs/` umbenennen oder kopieren.
+1. Der Ordner heißt bereits `docs/` – GitHub Pages liest nur von dort oder aus dem Wurzelverzeichnis.
 2. Auf github.com → *Settings* → *Pages*
 3. *Source*: `Deploy from a branch`, Branch `main`, Ordner `/docs`
 4. Nach etwa einer Minute liegt die Seite unter
@@ -144,7 +144,7 @@ Anbieter der Domain einen CNAME-Eintrag auf `BENUTZER.github.io` setzen.
 ## 6. Noch zu erledigen
 
 - [ ] `KONFIG.benutzer` eintragen
-- [x] Sechs Bildschirmfotos nach `bilder/` legen
+- [x] Sechs Bildschirmfotos nach `docs/bilder/` legen
 - [ ] Drei davon nach den Korrekturen neu aufnehmen (siehe Abschnitt 2)
 - [ ] Ein Release auf GitHub anlegen und die `.exe` anhängen
 - [ ] `LICENSE.md` und `PRIVACY.md` im Repository-Wurzelverzeichnis haben

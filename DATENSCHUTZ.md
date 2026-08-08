@@ -12,10 +12,14 @@ E-Mail: [adresse@example.de], Telefon: [Nummer]
 
 ## 1. Kurzfassung
 
-Ploow ist ein Programm, das ausschließlich auf deinem Gerät läuft. Es baut
-im laufenden Betrieb keine Verbindung ins Internet auf und überträgt weder deine
-Texte noch Nutzungsdaten an uns oder an Dritte. Wir erheben durch die Nutzung der
-Software keine personenbezogenen Daten.
+Ploow ist ein Programm, das auf deinem Gerät läuft. Deine Texte, Figuren und
+Notizen verlassen dein Gerät nicht. Es gibt kein Konto, keine Cloud, keine
+Zählpixel und keine Nutzungsstatistik.
+
+Eine einzige Ausnahme: Beim Start fragt Ploow bei GitHub nach, ob eine neuere
+Fassung vorliegt. Dabei werden keine Inhalte übertragen. Diese Prüfung lässt
+sich in den Einstellungen abschalten – dann findet überhaupt keine
+Netzwerkkommunikation mehr statt. Näheres in Abschnitt 3.
 
 ## 2. Was auf deinem Gerät gespeichert wird
 
@@ -36,17 +40,33 @@ Diese Daten verlassen dein Gerät nur, wenn du selbst eine Datei weitergibst.
 
 ## 3. Aktualisierungen
 
-[Nur behalten, wenn die Update-Funktion aktiviert ist:]
-Wenn die automatische Aktualisierung eingerichtet ist, fragt die Software beim
-Start bei [Adresse des Update-Servers] nach, ob eine neuere Fassung vorliegt.
-Dabei werden technisch bedingt deine IP-Adresse, die Programmversion und das
-Betriebssystem übermittelt. Rechtsgrundlage ist unser berechtigtes Interesse an
-der Sicherheit der Software (Art. 6 Abs. 1 lit. f DSGVO). Diese Anfragen werden
-[Speicherdauer] gespeichert. Die Aktualisierungsprüfung lässt sich in den
-Einstellungen abschalten.
+Beim Start ruft Ploow eine Datei auf den Servern von GitHub ab, um die dort
+hinterlegte Versionsnummer mit der eigenen zu vergleichen. Die Adresse lautet
 
-Ist keine Update-Funktion eingerichtet, findet keinerlei Netzwerkkommunikation
-statt.
+    https://github.com/AnsgarTorkler/ploow/releases/
+
+**Was dabei übertragen wird:** technisch bedingt deine IP-Adresse sowie die
+Angaben, die jeder HTTP-Abruf mitschickt – Programmversion, Betriebssystem und
+Prozessorarchitektur als Teil der Programmkennung. **Nicht übertragen werden**
+Inhalte aus deinen Projekten, Dateinamen, Dateipfade oder eine Kennung, die dich
+oder dein Gerät wiedererkennbar machen würde.
+
+**Empfänger:** GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA
+94107, USA. Die Übermittlung in die USA stützt sich auf das
+EU-US Data Privacy Framework, dem GitHub beigetreten ist. Die
+Datenschutzerklärung von GitHub findest du unter
+https://docs.github.com/site-policy/privacy-policies.
+
+**Rechtsgrundlage:** berechtigtes Interesse an der Sicherheit und Funktions-
+fähigkeit der Software (Art. 6 Abs. 1 lit. f DSGVO).
+
+**Speicherdauer:** Wir selbst speichern nichts – die Anfrage erreicht uns nicht,
+sondern nur GitHub. Wie lange GitHub Server-Protokolle vorhält, bestimmt GitHub.
+
+**Widerspruch:** Die Prüfung lässt sich unter *Einstellungen → Aktualisierung*
+abschalten. Danach baut Ploow keinerlei Netzwerkverbindung mehr auf. Eine
+gefundene Aktualisierung wird außerdem nie von allein geladen oder installiert –
+beides geschieht nur auf deinen Klick.
 
 ## 4. Kauf und Support
 

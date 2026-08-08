@@ -92,7 +92,7 @@ reviews:
         querySelectorAll immer eine leere Liste, was schon zweimal
         einen echten Absturz verdeckt hat.
 
-    - path: "website/index.html"
+    - path: "docs/index.html"
       instructions: >
         Produktseite, eine Datei, sieben Sprachen, keine fremden Server
         und keine Bibliotheken – das ist Absicht und soll so bleiben.

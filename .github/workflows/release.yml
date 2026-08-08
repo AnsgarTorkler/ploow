@@ -1,0 +1,81 @@
+name: Release
+
+# Läuft, sobald ein Tag der Form v1.12.0 gepusht wird.
+#
+# Der Grund für diese Datei: npm run dist baut auf einem Windows-Rechner
+# nur die Windows-Fassungen. .dmg und .AppImage brauchen einen Mac und
+# einen Linux-Rechner. GitHub stellt beide kostenlos bereit – der
+# Arbeitsablauf hier baut auf allen drei Systemen und hängt die Ergebnisse
+# an dasselbe Release.
+#
+# Von Hand starten geht auch: Actions → Release → Run workflow.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write        # nötig, um das Release anzulegen und zu befüllen
+
+jobs:
+  bauen:
+    # Die Namen erscheinen so in der Actions-Übersicht.
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Ein fehlgeschlagenes System soll die anderen nicht abbrechen –
+      # sonst steht am Ende gar nichts im Release.
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows
+          - os: macos-latest
+            name: macOS
+          - os: ubuntu-latest
+            name: Linux
+
+    steps:
+      - name: Quelltext holen
+        uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      # Die Testreihe läuft nur einmal – sie prüft Dateien und Logik,
+      # nicht das Betriebssystem. Dreimal dasselbe zu prüfen kostet nur Zeit.
+      - name: Testreihe
+        if: matrix.os == 'ubuntu-latest'
+        run: npm test
+
+      - name: Bauen und ans Release hängen
+        run: npx electron-builder --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Ohne Apple-Entwicklerkonto lässt sich nicht beglaubigen.
+          # Ausdrücklich abschalten, sonst bricht der Bau mit einer
+          # Fehlermeldung ab, statt eine unsignierte .dmg zu liefern.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Ergebnisse auch als Artefakt ablegen
+        # Damit man sich die Dateien ansehen kann, wenn das Anhängen
+        # ans Release einmal scheitert.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ploow-${{ matrix.name }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.yml
+          if-no-files-found: ignore
+          retention-days: 14

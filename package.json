@@ -1,26 +1,26 @@
 {
   "name": "ploow",
   "productName": "Ploow",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Ploow – Buchprojekte planen: Handlung, Figuren und Welt, vollständig offline.",
   "author": {
     "name": "Ansgar Jannes Torkler",
     "email": "ansgartorkler2@gmail.com"
   },
-  "homepage": "https://bitte-eintragen.example",
+  "homepage": "https://AnsgarTorkler.github.io/ploow/",
   "license": "UNLICENSED",
   "private": true,
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "node test/test-buildkonfig.js && node test/test-speicher.js && node test/test-bibliothek.js && node test/test-sprachen.js && node test/test-oberflaeche.js && node test/test-layout.js && node test/test-durchgaengig.js && node test/test-kennung.js",
+    "test": "node test/test-buildkonfig.js && node test/test-speicher.js && node test/test-zugriff.js && node test/test-bibliothek.js && node test/test-sprachen.js && node test/test-oberflaeche.js && node test/test-layout.js && node test/test-durchgaengig.js && node test/test-kennung.js",
     "icon": "node build/icon-erzeugen.js",
     "dist": "npm test && electron-builder",
     "dist:ohne-test": "electron-builder",
     "sprachen": "node build/sprachen-einbetten.js"
   },
   "build": {
-    "appId": "de.bitte-eintragen.ploow",
+    "appId": "de.torkler.ploow",
     "productName": "Ploow",
     "copyright": "© 2026 Ansgar Jannes Torkler",
     "artifactName": "${productName}-${version}-${arch}.${ext}",
@@ -100,10 +100,24 @@
       ],
       "icon": "build/icon.png",
       "category": "public.app-category.productivity"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "AnsgarTorkler",
+        "repo": "ploow"
+      }
+    ]
   },
   "devDependencies": {
     "electron": "^43.2.0",
     "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnsgarTorkler/ploow.git"
   }
 }

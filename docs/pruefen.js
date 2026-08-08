@@ -37,7 +37,12 @@ p(unbenutzt.length===0, 'Kein Textschlüssel liegt brach'+(unbenutzt.length?': '
 
 // Adressen
 const wurzel='https://github.com/'+K.benutzer+'/'+K.repo;
-p(/BITTE-EINTRAGEN/.test(K.benutzer), 'Der Benutzername ist als Platzhalter erkennbar');
+/* Umgekehrt zur ersten Fassung: jetzt darf KEIN Platzhalter mehr
+   dastehen, sonst zeigen alle acht Adressen auf ein Repository, das
+   es nicht gibt. */
+p(!/BITTE|EINTRAGEN|example/i.test(K.benutzer), 'Der Benutzername ist eingetragen: ' + K.benutzer);
+p(/^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$/.test(K.benutzer),
+  'Und hat die Form eines GitHub-Benutzernamens');
 p(K.dateiWindows.endsWith('.exe'), 'Windows-Datei: '+K.dateiWindows);
 p(js.includes('releases/latest/download/'), 'Die Links zeigen immer auf die neueste Fassung');
 
@@ -131,6 +136,23 @@ p(/Store/.test(T['inst.winX'].de), 'Der Store wird Windows-Nutzern nahegelegt');
   p(/function tippGross/.test(js)&&/\(hover: none\)/.test(js),
     'Ohne Maus genügt ein Tippen – sonst wäre die Großansicht am Telefon unerreichbar');
   ['ui.vergroessern','ui.schliessen'].forEach(k=>p(!!T[k], 'Textschlüssel vorhanden: '+k));
+}
+
+/* Seit die Update-Prüfung eingeschaltet ist, geht Ploow einmal beim
+   Start ins Netz. Die Seite darf dann nicht mehr das Gegenteil
+   behaupten – das wäre nicht nur ungenau, sondern datenschutzrechtlich
+   eine falsche Angabe. */
+{
+  const heikel = /ohne Internet|no internet|keine Netzwerkverbindung|makes no network|vollständig offline|fully offline/i;
+  const treffer = Object.keys(T).filter(k => codes.some(c => heikel.test(String(T[k][c]||''))));
+  p(treffer.length===0, 'Keine Aussage mehr, Ploow gehe nie ins Netz'+(treffer.length?': '+treffer.join(', '):''));
+
+  const nennt = k => codes.every(c => /Aktualisierung|update|更新|अपडेट|actualiza|mises? à jour|التحديث/i.test(String(T[k][c]||'')));
+  p(nennt('foot.rechte'), 'Die Fußzeile nennt die Aktualisierungsprüfung in jeder Sprache');
+  p(nennt('f6.x'), 'Und der Abschnitt „Ihre Daten bleiben Ihre“ ebenfalls');
+
+  const abschaltbar = k => codes.every(c => String(T[k][c]||'').length > 40);
+  p(abschaltbar('foot.rechte'), 'In jeder Sprache ausformuliert, nicht nur ein Wort');
 }
 
 console.log(ok+' Prüfungen bestanden'+(fehler.length?', '+fehler.length+' fehlgeschlagen':''));

@@ -15,10 +15,14 @@ Email: [address@example.com], Phone: [number]
 
 ## 1. In short
 
-Ploow is a program that runs entirely on your own device. It establishes
-no internet connection during normal operation and transmits neither your texts
-nor usage data to us or to third parties. We collect no personal data through
-your use of the Software.
+Ploow is a program that runs on your own device. Your texts, characters and
+notes do not leave it. There is no account, no cloud, no tracking pixel and no
+usage statistics.
+
+One single exception: on startup, Ploow asks GitHub whether a newer version is
+available. No content is transmitted. This check can be switched off in the
+settings – after that, no network communication takes place at all. See
+section 3 for details.
 
 ## 2. What is stored on your device
 
@@ -38,15 +42,32 @@ This data leaves your device only if you pass a file on yourself.
 
 ## 3. Updates
 
-[Keep only if the update function is enabled:]
-If automatic updating is configured, the Software asks [address of the update
-server] on startup whether a newer version is available. For technical reasons
-this transmits your IP address, the program version and your operating system.
-The legal basis is our legitimate interest in the security of the Software
-(Art. 6(1)(f) GDPR). These requests are stored for [retention period]. The
-update check can be switched off in the settings.
+On startup, Ploow fetches a file from GitHub's servers in order to compare the
+version number published there with its own. The address is
 
-If no update function is configured, no network communication takes place at all.
+    https://github.com/AnsgarTorkler/ploow/releases/
+
+**What is transmitted:** for technical reasons your IP address and the details
+every HTTP request carries – program version, operating system and processor
+architecture as part of the user agent. **What is not transmitted:** any content
+from your projects, file names, file paths, or any identifier that would make
+you or your device recognisable.
+
+**Recipient:** GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA
+94107, USA. The transfer to the USA relies on the EU-US Data Privacy Framework,
+which GitHub has joined. GitHub's privacy statement is at
+https://docs.github.com/site-policy/privacy-policies.
+
+**Legal basis:** legitimate interest in the security and functioning of the
+Software (Art. 6(1)(f) GDPR).
+
+**Retention:** we store nothing ourselves – the request never reaches us, only
+GitHub. How long GitHub keeps server logs is GitHub's decision.
+
+**Objection:** the check can be switched off under *Settings → Updates*. After
+that, Ploow establishes no network connection whatsoever. An available update is
+never downloaded or installed on its own either – both happen only when you
+click.
 
 ## 4. Purchase and support
 

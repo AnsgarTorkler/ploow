@@ -13,6 +13,7 @@ const protokoll = require('./src/main/protokoll');
 const speicher = require('./src/main/storage');
 const manuskript = require('./src/main/manuskript');
 const bibliothek = require('./src/main/bibliothek');
+const zugriff = require('./src/main/zugriff');
 
 /* ------------------------------------------------------------
    NAME UND KENNUNG
@@ -206,6 +207,27 @@ function einstellungenSichern() {
   catch (e) { protokoll.fehler('Programmeinstellungen: ' + e.message); }
 }
 
+/* ------------------------------------------------------------
+   WELCHE PFADE DAS FENSTER NENNEN DARF
+   Die Regel steht in src/main/zugriff.js, damit sie sich ohne
+   Electron prüfen lässt. Hier wird nur die Umgebung gereicht.
+   ------------------------------------------------------------ */
+async function erlaubteDatei(roh, { nurStory = true } = {}) {
+  return zugriff.erlaubteDatei(roh, {
+    bibliothek: bibliotheksOrdner(),
+    zuletzt: await speicher.readRecent(USERDATA),
+    endung: nurStory ? bibliothek.ENDUNG : null
+  });
+}
+
+/* Einheitliche Absage. Bewusst ohne Angabe, ob die Datei existiert –
+   sonst ließe sich die Platte darüber abfragen. */
+const nichtErlaubt = (was) => {
+  protokoll.fehler('Zugriff abgelehnt (' + was + ')');
+  return { ok: false, fehler: 'Auf diese Datei greift Ploow nicht zu. '
+    + 'Es lassen sich nur Projekte aus dem Geschichten-Ordner und zuletzt geöffnete Projekte bearbeiten.' };
+};
+
 ipcMain.handle('bib:liste', async () => {
   try {
     const ordner = bibliotheksOrdner();
@@ -250,28 +272,46 @@ ipcMain.handle('bib:ordnerOeffnen', async () => {
 
 ipcMain.handle('bib:umbenennen', async (_e, { datei, titel }) => {
   try {
-    const neu = await bibliothek.umbenennen(datei, titel);
-    if (aktuelleDatei === datei) aktuelleDatei = neu;
+    const geprueft = await erlaubteDatei(datei);
+    if (!geprueft) return nichtErlaubt('umbenennen');
+    const neu = await bibliothek.umbenennen(geprueft, titel);
+    if (aktuelleDatei === geprueft) aktuelleDatei = neu;
     return ok({ datei: neu });
   } catch (e) { return fehler(e, 'Umbenennen'); }
 });
 
 ipcMain.handle('bib:entfernen', async (_e, { datei }) => {
   try {
-    const ziel = await bibliothek.inPapierkorb(datei);
-    if (aktuelleDatei === datei) aktuelleDatei = null;
+    const geprueft = await erlaubteDatei(datei);
+    if (!geprueft) return nichtErlaubt('entfernen');
+    const ziel = await bibliothek.inPapierkorb(geprueft);
+    if (aktuelleDatei === geprueft) aktuelleDatei = null;
     return ok({ papierkorb: ziel });
   } catch (e) { return fehler(e, 'Entfernen'); }
 });
 
 ipcMain.handle('bib:imOrdnerZeigen', async (_e, { datei }) => {
-  try { shell.showItemInFolder(datei); return ok(); }
-  catch (e) { return fehler(e, 'Im Ordner zeigen'); }
+  try {
+    const geprueft = await erlaubteDatei(datei);
+    if (!geprueft) return nichtErlaubt('im Ordner zeigen');
+    shell.showItemInFolder(geprueft);
+    return ok();
+  } catch (e) { return fehler(e, 'Im Ordner zeigen'); }
 });
 
 ipcMain.handle('datei:oeffnen', async (_e, vorgegeben) => {
   try {
+    /* Ein vorgegebener Pfad kommt entweder aus dem Doppelklick auf eine
+       .story oder aus der Liste „zuletzt geöffnet". Beides sind
+       Projektdateien – alles andere ist nicht gemeint. Der Ordner wird
+       hier bewusst NICHT eingeschränkt: eine .story auf dem Schreibtisch
+       muss sich beim ersten Mal öffnen lassen, sonst wäre die
+       Dateizuordnung wertlos. Gelesen wird ohnehin nur, was sich als
+       Projekt entpacken lässt. */
     let datei = vorgegeben;
+    if (datei && path.extname(String(datei)).toLowerCase() !== bibliothek.ENDUNG) {
+      return nichtErlaubt('öffnen');
+    }
     if (!datei) {
       const r = await dialog.showOpenDialog(win, {
         title: 'Projekt öffnen', filters: FILTER, properties: ['openFile']
@@ -384,6 +424,9 @@ ipcMain.handle('datei:importieren', async () => {
    enthält, entscheidet die Oberfläche zusammen mit der Nutzerin – der
    Hauptprozess trifft dazu bewusst keine Annahmen. */
 const JSON_GRENZE = 64 * 1024 * 1024;
+/* Was sich über „Datei einlesen" verarbeiten lässt. Gilt nur für Pfade,
+   die aus dem Fenster kommen – siehe die Begründung im Handler. */
+const IMPORT_ENDUNGEN = new Set(['.json', '.csv', '.tsv', '.md', '.markdown', '.txt']);
 /* Liest eine Datei zum Einlesen: JSON, CSV oder Markdown. Der Aufrufer
    bekommt den Rohtext und die Endung; das Zerlegen macht die Oberfläche,
    damit die Zuordnung dort in einem Zug mit der Vorschau passiert. */
@@ -404,6 +447,15 @@ ipcMain.handle('datei:importLesen', async (e, pfad) => {
       });
       if (r.canceled || !r.filePaths[0]) return { ok: false, abgebrochen: true };
       datei = r.filePaths[0];
+    }
+    /* Kam der Pfad aus dem Fenster – also aus einer hineingezogenen Datei –,
+       muss die Endung zu dem passen, was hier überhaupt eingelesen werden
+       kann. Ohne das ließe sich über diesen Weg jede beliebige Textdatei
+       auf der Platte auslesen, etwa Schlüssel oder Zugangsdaten. Aus dem
+       Auswahlfenster kommt der Pfad von der Nutzerin selbst und ist frei. */
+    if (pfad) {
+      const e = path.extname(String(datei)).toLowerCase();
+      if (!IMPORT_ENDUNGEN.has(e)) return nichtErlaubt('einlesen ' + (e || 'ohne Endung'));
     }
     if (!fs.existsSync(datei) || !fs.statSync(datei).isFile()) return { ok: false, fehler: 'Datei nicht gefunden.' };
 
@@ -549,12 +601,24 @@ ipcMain.on('protokoll:fehler', (_e, { nachricht, spur }) =>
 
 /* ------------------------------------------------------------
    AKTUALISIERUNG
-   electron-updater ist bewusst optional eingebunden: fehlt das
-   Paket oder ist keine Bezugsquelle hinterlegt, läuft die App
-   normal weiter, statt beim Start zu scheitern. Solange nichts
-   eingerichtet ist, geht die App also überhaupt nicht ins Netz.
 
-   Einrichtung Schritt für Schritt: siehe AUSLIEFERUNG.md.
+   Seit dem 8. August eingerichtet: electron-updater ist
+   installiert, und package.json nennt unter build.publish das
+   GitHub-Repository als Bezugsquelle. Beim Start fragt Ploow
+   dort nach, ob es eine neuere Fassung gibt.
+
+   Das ist der EINZIGE Netzzugriff im ganzen Programm. Er ist
+   abschaltbar (Einstellungen → Aktualisierung), lädt nichts von
+   allein herunter (autoDownload = false) und installiert nichts
+   ohne Zustimmung. Übertragen wird dabei nur, was jeder
+   HTTP-Abruf überträgt – kein Inhalt aus Projekten.
+
+   Wichtig: Website und Datenschutzerklärung beschreiben genau
+   das. Wer hier etwas ändert, muss beide mitziehen.
+
+   electron-updater bleibt trotzdem optional eingebunden: wird es
+   aus package.json entfernt, läuft die App weiter, statt beim
+   Start zu scheitern.
    ------------------------------------------------------------ */
 let updater = null, updaterGeprueft = false;
 let updatesErlaubt = true;      // wird von der Oberfläche gesetzt
