@@ -1,0 +1,14 @@
+Hier gehören sechs Bildschirmfotos hinein:
+
+  kapitel.png         Kapitelliste mit Status und Fortschritt
+  figuren.png         Beziehungsnetz oder Stammbaum
+  welt-karten.png     Karte mit Markierungen, Vorschaustreifen offen
+  handlung.png        Handlungs-Board mit Akten und Handlungssträngen
+  mindmap.png         Mindmap mit Kacheln, Text und Notizzettel
+  import-export.png   Einlese-Vorschau mit Feldzuordnung
+
+Seitenverhältnis 16:10, mindestens 1600 x 1000 Punkte, PNG.
+Solange eine Datei fehlt, zeigt die Seite an ihrer Stelle einen
+beschrifteten Platzhalter mit dem erwarteten Dateinamen.
+
+Näheres in ../LIESMICH.md

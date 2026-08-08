@@ -1,0 +1,109 @@
+{
+  "name": "ploow",
+  "productName": "Ploow",
+  "version": "1.12.0",
+  "description": "Ploow – Buchprojekte planen: Handlung, Figuren und Welt, vollständig offline.",
+  "author": {
+    "name": "Ansgar Jannes Torkler",
+    "email": "ansgartorkler2@gmail.com"
+  },
+  "homepage": "https://bitte-eintragen.example",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/test-buildkonfig.js && node test/test-speicher.js && node test/test-bibliothek.js && node test/test-sprachen.js && node test/test-oberflaeche.js && node test/test-layout.js && node test/test-durchgaengig.js && node test/test-kennung.js",
+    "icon": "node build/icon-erzeugen.js",
+    "dist": "npm test && electron-builder",
+    "dist:ohne-test": "electron-builder",
+    "sprachen": "node build/sprachen-einbetten.js"
+  },
+  "build": {
+    "appId": "de.bitte-eintragen.ploow",
+    "productName": "Ploow",
+    "copyright": "© 2026 Ansgar Jannes Torkler",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "src/**/*",
+      "build/icon.*",
+      "LICENSE.md",
+      "PRIVACY.md",
+      "LIZENZ.md",
+      "DATENSCHUTZ.md",
+      "IMPRESSUM.md",
+      "!test/**",
+      "!dist/**",
+      "!**/*.bak",
+      "!vorschau-layout.html"
+    ],
+    "fileAssociations": [
+      {
+        "ext": "story",
+        "name": "Ploow-Projekt",
+        "description": "Ploow-Projektdatei",
+        "icon": "build/icon.ico",
+        "role": "Editor"
+      }
+    ],
+    "executableName": "Ploow",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "verifyUpdateCodeSignature": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Ploow",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false,
+      "license": "LIZENZ.md"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portabel.${ext}"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "build/icon.png",
+      "category": "Office"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.productivity"
+    }
+  },
+  "devDependencies": {
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3"
+  }
+}

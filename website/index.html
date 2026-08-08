@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ploow</title>
+<meta name="description" content="">
+<link rel="icon" href="logo.png">
+<meta property="og:title" content="Ploow">
+<meta property="og:image" content="logo.png">
+<meta property="og:type" content="website">
+<style>
+/* ============================================================
+   PLOOW – PRODUKTSEITE
+   Eine einzelne Datei ohne Bibliotheken und ohne Build-Schritt,
+   wie die Anwendung selbst. Sieben Sprachen stehen im Skript,
+   Arabisch dreht die Seite auf rechts nach links.
+   ============================================================ */
+/* Dieselben Farbwerte wie die Anwendung – Werte aus index.html der App
+   übernommen, damit Bildschirmfotos nahtlos in die Seite übergehen und
+   nicht wie aufgeklebt wirken. Helles Thema: warmes Papier mit
+   kupfernem Akzent. Dunkles Thema: tiefes Violettgrau. */
+:root{
+  --grund:#f7f5f0; --flaeche:#ffffff; --flaeche2:#f2efe8; --flaecheHover:#faf8f4;
+  --text:#1e1c1a; --text2:#6a6459; --text3:#9a9384;
+  --akzent:#a9662f; --akzentSanft:#f4ebe1; --akzentText:#ffffff;
+  --linie:#e2ddd1; --linieFein:#ebe7dd; --linie2:#d6d0c2;
+  --chip:#eae4d7;
+  --schatten:0 2px 4px rgba(46,34,20,.05), 0 8px 24px rgba(46,34,20,.07);
+  --radius:12px; --radiusS:7px;
+}
+html[data-thema="dunkel"]{
+  --grund:#121116; --flaeche:#1a191f; --flaeche2:#232128; --flaecheHover:#201e26;
+  --text:#eceaf0; --text2:#8e8899; --text3:#615c6d;
+  --akzent:#e2a163; --akzentSanft:#2a2119; --akzentText:#20170e;
+  --linie:#282631; --linieFein:#201f27; --linie2:#353243;
+  --chip:#26242e;
+  --schatten:0 2px 6px rgba(0,0,0,.45), 0 10px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;}
+html,body{margin:0; padding:0;}
+body{
+  background:var(--grund); color:var(--text);
+  font:16px/1.7 -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Arabic",
+       "Noto Sans Devanagari", "Noto Sans SC", sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+html[dir="rtl"] body{ font-family:"Noto Sans Arabic","Segoe UI",Tahoma,sans-serif; }
+img{max-width:100%;}
+a{color:var(--akzent);}
+.huelle{max-width:1080px; margin:0 auto; padding:0 20px;}
+
+/* ---------- Kopfleiste ---------- */
+.kopf{position:sticky; top:0; z-index:50; background:color-mix(in srgb, var(--grund) 88%, transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--linie);}
+.kopfInhalt{display:flex; align-items:center; gap:14px; height:60px;}
+.marke{display:flex; align-items:center; gap:10px; font-weight:600; font-size:17px;
+  color:var(--text); text-decoration:none; flex-shrink:0;}
+.marke img{width:28px; height:28px;}
+.kopfNav{display:flex; gap:4px; margin-inline-start:auto; align-items:center; flex-wrap:wrap;}
+.kopfNav a{color:var(--text2); text-decoration:none; font-size:14px; padding:7px 11px;
+  border-radius:var(--radiusS);}
+.kopfNav a:hover{background:var(--flaeche2); color:var(--text);}
+.werkzeug{display:flex; gap:6px; align-items:center; flex-shrink:0;}
+select.sprachwahl{background:var(--flaeche); color:var(--text); border:1px solid var(--linie2);
+  border-radius:var(--radiusS); padding:6px 9px; font-size:13.5px; font-family:inherit;}
+.themaKnopf{background:var(--flaeche); color:var(--text); border:1px solid var(--linie2);
+  border-radius:var(--radiusS); width:34px; height:34px; font-size:14px; cursor:pointer;}
+.themaKnopf:hover{background:var(--flaeche2);}
+
+/* ---------- Kopfbereich ---------- */
+.buehne{padding:74px 0 56px; text-align:center;}
+.buehne img.gross{width:88px; height:88px; margin-bottom:22px;}
+.buehne h1{font-size:clamp(30px,5.2vw,46px); line-height:1.2; margin:0 0 16px; font-weight:650;
+  letter-spacing:-.01em;}
+.buehne p.unter{font-size:clamp(16px,2.3vw,19px); color:var(--text2); max-width:640px;
+  margin:0 auto 26px; line-height:1.65;}
+.merkmale{display:flex; gap:9px; justify-content:center; flex-wrap:wrap; margin-bottom:32px;}
+.merkmal{font-size:13px; color:var(--akzent); background:var(--akzentSanft);
+  border-radius:999px; padding:5px 14px; font-weight:550;}
+
+/* ---------- Knöpfe ---------- */
+.knopfReihe{display:flex; gap:11px; justify-content:center; flex-wrap:wrap;}
+.knopf{display:inline-flex; align-items:center; gap:9px; text-decoration:none; cursor:pointer;
+  border:1px solid var(--linie2); background:var(--flaeche); color:var(--text);
+  border-radius:var(--radius); padding:13px 22px; font-size:15px; font-weight:550;
+  font-family:inherit; line-height:1.35;}
+.knopf:hover{border-color:var(--akzent); background:var(--flaecheHover);}
+.knopf.haupt{background:var(--akzent); border-color:var(--akzent); color:var(--akzentText);}
+.knopf.haupt:hover{filter:brightness(1.08);}
+.knopf small{display:block; font-size:12px; font-weight:400; opacity:.8;}
+.knopf[aria-disabled="true"]{opacity:.5; cursor:default;}
+.knopf[aria-disabled="true"]:hover{border-color:var(--linie2);}
+.knopfText{text-align:start;}
+
+/* ---------- Abschnitte ---------- */
+section{padding:60px 0; border-top:1px solid var(--linie);}
+section h2{font-size:clamp(22px,3.4vw,30px); margin:0 0 10px; font-weight:640; letter-spacing:-.01em;}
+section > .huelle > p.vor{color:var(--text2); margin:0 0 34px; max-width:620px;}
+
+/* ---------- Funktionen ---------- */
+.funktion{display:grid; grid-template-columns:1fr 1fr; gap:38px; align-items:center;
+  margin-bottom:52px;}
+.funktion:nth-child(even) .fBild{order:-1;}
+.funktion h3{font-size:20px; margin:0 0 10px; font-weight:620;}
+.funktion p{color:var(--text2); margin:0; line-height:1.75;}
+.fBild{background:var(--flaeche2); border:1px solid var(--linie); border-radius:var(--radius); box-shadow:var(--schatten);
+  /* Bildschirmfotos eines Programmfensters sind breiter als 16:10. In
+     einem 16:10-Rahmen schnitte der Browser links und rechts ein Drittel
+     weg – mitten durch die Karten. Der Rahmen folgt deshalb dem Fenster. */
+  aspect-ratio:16/7; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+.fBild img{width:100%; height:100%; object-fit:cover; object-position:center top; display:block;}
+.platzhalter{color:var(--text3); font-size:13px; text-align:center; padding:20px; line-height:1.6;}
+.platzhalter b{display:block; color:var(--text2); font-size:14px; margin-bottom:4px;}
+.fBild img{cursor:zoom-in;}
+.fBild img:focus-visible{outline:2px solid var(--akzent); outline-offset:2px;}
+
+/* ---------- Bild in groß ----------
+   Ein Bildschirmfoto ist im halben Textspalten-Format kaum zu lesen.
+   Doppelklick legt es über die Seite – so groß, wie das Fenster es
+   zulässt, ohne es je über seine eigene Auflösung hinaus zu strecken. */
+.grossbild{position:fixed; inset:0; z-index:90; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.82); padding:28px; cursor:zoom-out;}
+.grossbild img{max-width:100%; max-height:100%; width:auto; height:auto; cursor:default;
+  border-radius:10px; box-shadow:0 24px 70px rgba(0,0,0,.55);}
+.grossbild figure{margin:0; display:flex; flex-direction:column; align-items:center; gap:10px; max-height:100%;}
+.grossbild figcaption{color:#e8e2d8; font-size:13px; text-align:center;}
+.gbZu{position:absolute; top:14px; inset-inline-end:16px; width:38px; height:38px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.28); background:rgba(0,0,0,.45); color:#fff;
+  font-size:20px; line-height:1; cursor:pointer;}
+.gbZu:hover{background:rgba(255,255,255,.16);}
+@media (max-width:700px){ .grossbild{padding:12px;} }
+
+/* ---------- Neuigkeiten ---------- */
+.meldung{background:var(--flaeche); border:1px solid var(--linie); border-radius:var(--radius);
+  padding:18px 20px; margin-bottom:12px; box-shadow:var(--schatten);}
+.meldung .datum{font-size:12.5px; color:var(--text3); margin-bottom:5px;}
+.meldung h3{margin:0 0 6px; font-size:16.5px; font-weight:600;}
+.meldung p{margin:0; color:var(--text2); font-size:14.5px;}
+
+/* ---------- Installation ---------- */
+.hilfeGitter{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+.hilfeKarte{background:var(--flaeche); border:1px solid var(--linie); border-radius:var(--radius);
+  padding:24px; box-shadow:var(--schatten);}
+.hilfeKarte h3{margin:0 0 12px; font-size:18px; font-weight:620; display:flex; align-items:center; gap:9px;}
+.hilfeKarte p{color:var(--text2); margin:0 0 12px; line-height:1.7;}
+.hilfeKarte ol{margin:0; padding-inline-start:22px; color:var(--text2); line-height:1.75;}
+.hilfeKarte li{margin-bottom:7px;}
+.hinweisKasten{background:var(--akzentSanft); border-radius:var(--radiusS); padding:14px 16px;
+  font-size:14px; color:var(--text2); line-height:1.7; margin-top:30px;}
+
+/* ---------- Fuß ---------- */
+footer{border-top:1px solid var(--linie); padding:34px 0 46px; color:var(--text3); font-size:14px;}
+.fussReihe{display:flex; gap:18px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+.fussReihe a{color:var(--text2); text-decoration:none;}
+.fussReihe a:hover{color:var(--akzent);}
+
+@media (max-width:820px){
+  .funktion{grid-template-columns:1fr; gap:18px;}
+  .funktion:nth-child(even) .fBild{order:0;}
+  .hilfeGitter{grid-template-columns:1fr;}
+  .kopfNav{display:none;}
+  .buehne{padding:52px 0 40px;}
+}
+</style>
+</head>
+<body>
+
+<header class="kopf"><div class="huelle kopfInhalt">
+  <a class="marke" href="#oben"><img src="logo.png" alt=""> Ploow</a>
+  <nav class="kopfNav">
+    <a href="#funktionen" data-t="nav.funktionen"></a>
+    <a href="#download"   data-t="nav.download"></a>
+    <a href="#neues"      data-t="nav.neuigkeiten"></a>
+    <a href="#hilfe"      data-t="nav.hilfe"></a>
+  </nav>
+  <div class="werkzeug">
+    <select class="sprachwahl" id="sprachwahl" onchange="setzeSprache(this.value)"></select>
+    <button class="themaKnopf" id="themaKnopf" onclick="themaWechseln()"></button>
+  </div>
+</div></header>
+
+<main id="oben">
+
+<div class="buehne huelle">
+  <img class="gross" src="logo.png" alt="Ploow">
+  <h1 data-t="hero.claim"></h1>
+  <p class="unter" data-t="hero.sub"></p>
+  <div class="merkmale">
+    <span class="merkmal" data-t="hero.frei"></span>
+    <span class="merkmal" data-t="hero.offline"></span>
+    <span class="merkmal" data-t="hero.sprachen"></span>
+  </div>
+  <div class="knopfReihe">
+    <a class="knopf haupt" id="dlHaupt" href="#download">
+      <span class="knopfText"><span data-t="dl.win"></span><small data-t="dl.winSub"></small></span>
+    </a>
+    <a class="knopf" href="#download" data-t="dl.alle"></a>
+  </div>
+</div>
+
+<section id="funktionen"><div class="huelle">
+  <h2 data-t="f.titel"></h2>
+  <div id="funktionsListe"></div>
+</div></section>
+
+<section id="download"><div class="huelle">
+  <h2 data-t="dl.titel"></h2>
+  <p class="vor" data-t="hero.sub"></p>
+  <div class="knopfReihe" style="justify-content:flex-start">
+    <a class="knopf haupt" data-dl="win">
+      <span class="knopfText"><span data-t="dl.win"></span><small data-t="dl.winSub"></small></span>
+    </a>
+    <a class="knopf" data-dl="winPortabel">
+      <span class="knopfText"><span data-t="dl.win"></span><small data-t="dl.winPortabel"></small></span>
+    </a>
+    <span class="knopf" aria-disabled="true">
+      <span class="knopfText"><span data-t="dl.store"></span><small data-t="dl.storeBald"></small></span>
+    </span>
+  </div>
+  <div class="knopfReihe" style="justify-content:flex-start; margin-top:11px">
+    <a class="knopf" data-dl="mac"><span class="knopfText"><span data-t="dl.mac"></span><small data-t="dl.groesse"></small></span></a>
+    <a class="knopf" data-dl="linux"><span class="knopfText"><span data-t="dl.linux"></span><small data-t="dl.groesse"></small></span></a>
+    <a class="knopf" data-dl="alle" data-t="dl.alle"></a>
+  </div>
+</div></section>
+
+<section id="neues"><div class="huelle">
+  <h2 data-t="an.titel"></h2>
+  <div id="meldungen"></div>
+</div></section>
+
+<section id="hilfe"><div class="huelle">
+  <h2 data-t="inst.titel"></h2>
+  <div class="hilfeGitter">
+    <div class="hilfeKarte">
+      <h3>⊞ <span data-t="inst.winT"></span></h3>
+      <p data-t="inst.winX"></p>
+    </div>
+    <div class="hilfeKarte">
+      <h3>⌘ <span data-t="inst.macT"></span></h3>
+      <p data-t="inst.macX"></p>
+      <ol>
+        <li data-t="inst.mac1"></li>
+        <li data-t="inst.mac2"></li>
+        <li data-t="inst.mac3"></li>
+      </ol>
+    </div>
+  </div>
+  <p class="hinweisKasten" data-t="inst.warum"></p>
+</div></section>
+
+</main>
+
+<footer><div class="huelle">
+  <div class="fussReihe">
+    <a data-dl="quelle" data-t="foot.quelle"></a>
+    <a data-dl="lizenz" data-t="foot.lizenz"></a>
+    <a data-dl="daten" data-t="foot.daten"></a>
+  </div>
+  <div data-t="foot.rechte"></div>
+</div></footer>
+
+<script>
+"use strict";
+/* ============================================================
+   EINSTELLUNGEN
+   Hier und nur hier stehen die Adressen. Wer das Projekt
+   umbenennt oder woanders veröffentlicht, ändert diesen Block.
+   ============================================================ */
+const KONFIG = {
+  /* GitHub-Benutzer und Repository – daraus entstehen alle Links. */
+  benutzer: "BITTE-EINTRAGEN",
+  repo:     "ploow",
+  /* Sobald Ploow im Store steht: Adresse eintragen, dann wird aus dem
+     grauen Kasten ein Knopf. Leer lassen heißt „demnächst". */
+  storeAdresse: "",
+  /* Dateinamen im Release. Müssen zu build.artifactName in
+     package.json passen – dort steht ${productName}-${version}-${arch}. */
+  version:      "1.12.0",
+  dateiWindows: "Ploow-1.12.0-x64.exe",
+  dateiPortabel:"Ploow-1.12.0-portabel.exe",
+  dateiMac:     "Ploow-1.12.0.dmg",
+  dateiLinux:   "Ploow-1.12.0.AppImage"
+};
+
+/* ============================================================
+   ANKÜNDIGUNGEN
+   Neue Meldung: einen Block oben einfügen. Jede Sprache, die
+   fehlt, fällt auf Englisch zurück – eine Meldung muss also
+   nicht sofort siebenfach übersetzt sein.
+   ============================================================ */
+const MELDUNGEN = [
+  {
+    datum: "2026-08-07",
+    de: {t:"Ploow 1.10 ist da", x:"Karten mit Markierungen, Staffeln für Folgen, freie Aktstruktur und ein Rundgang für den Anfang."},
+    en: {t:"Ploow 1.10 is out", x:"Maps with markers, seasons for episodes, a free act structure and a guided tour for the first start."},
+    zh: {t:"Ploow 1.10 已发布", x:"带标记的地图、剧集分季、自由的幕结构，以及首次启动的导览。"},
+    hi: {t:"Ploow 1.10 आ गया", x:"चिह्नों वाले नक्शे, कड़ियों के लिए सीज़न, स्वतंत्र अंक-संरचना और शुरुआत के लिए एक परिचय।"},
+    es: {t:"Ploow 1.10 ya está aquí", x:"Mapas con marcadores, temporadas para episodios, estructura de actos libre y un recorrido guiado al empezar."},
+    fr: {t:"Ploow 1.10 est disponible", x:"Cartes avec repères, saisons pour les épisodes, structure d’actes libre et une visite guidée au premier lancement."},
+    ar: {t:"صدر Ploow 1.10", x:"خرائط بعلامات، ومواسم للحلقات، وبنية فصول حرّة، وجولة إرشادية عند البدء."}
+  }
+];
+
+/* ============================================================
+   TEXTE
+   ============================================================ */
+const SPRACHEN = {
+  de:{name:"Deutsch",  rtl:false},
+  en:{name:"English",  rtl:false},
+  zh:{name:"中文",      rtl:false},
+  hi:{name:"हिन्दी",     rtl:false},
+  es:{name:"Español",  rtl:false},
+  fr:{name:"Français", rtl:false},
+  ar:{name:"العربية",   rtl:true}
+};
+const TEXTE = {
+  "meta.title":      {de:"Ploow – Buchprojekte planen", en:"Ploow – plan your book", zh:"Ploow – 规划你的书", hi:"Ploow – अपनी किताब की योजना", es:"Ploow – planifica tu libro", fr:"Ploow – planifiez votre livre", ar:"Ploow – خطّط كتابك"},
+  "meta.desc":       {de:"Handlung, Figuren und Welt an einem Ort. Vollständig offline, ohne Konto.", en:"Plot, characters and world in one place. Fully offline, no account.", zh:"情节、角色与世界，集中在一处。完全离线，无需账号。", hi:"कथानक, पात्र और दुनिया एक जगह। पूरी तरह ऑफ़लाइन, बिना खाते के।", es:"Trama, personajes y mundo en un solo lugar. Totalmente sin conexión, sin cuenta.", fr:"Intrigue, personnages et monde au même endroit. Entièrement hors ligne, sans compte.", ar:"الحبكة والشخصيات والعالم في مكان واحد. يعمل دون إنترنت، وبلا حساب."},
+  "nav.funktionen":  {de:"Funktionen", en:"Features", zh:"功能", hi:"सुविधाएँ", es:"Funciones", fr:"Fonctions", ar:"المزايا"},
+  "nav.download":    {de:"Herunterladen", en:"Download", zh:"下载", hi:"डाउनलोड", es:"Descargar", fr:"Télécharger", ar:"تنزيل"},
+  "nav.neuigkeiten": {de:"Neuigkeiten", en:"News", zh:"动态", hi:"समाचार", es:"Novedades", fr:"Nouveautés", ar:"أخبار"},
+  "nav.hilfe":       {de:"Installation", en:"Installing", zh:"安装", hi:"संस्थापन", es:"Instalación", fr:"Installation", ar:"التثبيت"},
+  "hero.claim":      {de:"Ihr Buch, bevor Sie es schreiben", en:"Your book, before you write it", zh:"动笔之前，先把书想清楚", hi:"लिखने से पहले आपकी किताब", es:"Tu libro, antes de escribirlo", fr:"Votre livre, avant de l’écrire", ar:"كتابك، قبل أن تكتبه"},
+  "hero.sub":        {de:"Kapitel, Figuren, Orte, Welt, Handlung und Zeitleisten an einem Ort – und alles bleibt auf Ihrem Rechner.", en:"Chapters, characters, places, world, plot and timelines in one place – and everything stays on your computer.", zh:"章节、角色、地点、世界观、情节与时间线集中在一处——而且一切都留在你自己的电脑上。", hi:"अध्याय, पात्र, स्थान, विश्व, कथानक और समयरेखाएँ एक जगह – और सब कुछ आपके ही कंप्यूटर पर रहता है।", es:"Capítulos, personajes, lugares, mundo, trama y líneas de tiempo en un solo sitio, y todo se queda en tu ordenador.", fr:"Chapitres, personnages, lieux, monde, intrigue et chronologies au même endroit – et tout reste sur votre ordinateur.", ar:"الفصول والشخصيات والأماكن والعالم والحبكة والخطوط الزمنية في مكان واحد – ويبقى كل شيء على جهازك."},
+  "hero.frei":       {de:"Kostenlos", en:"Free", zh:"免费", hi:"मुफ़्त", es:"Gratis", fr:"Gratuit", ar:"مجاني"},
+  "hero.offline":    {de:"Ohne Konto, ohne Internet", en:"No account, no internet", zh:"无需账号，无需联网", hi:"बिना खाते, बिना इंटरनेट", es:"Sin cuenta, sin internet", fr:"Sans compte, sans internet", ar:"بلا حساب وبلا إنترنت"},
+  "hero.sprachen":   {de:"11 Sprachen", en:"11 languages", zh:"11 种语言", hi:"11 भाषाएँ", es:"11 idiomas", fr:"11 langues", ar:"11 لغة"},
+  "dl.titel":        {de:"Herunterladen", en:"Download", zh:"下载", hi:"डाउनलोड", es:"Descargar", fr:"Télécharger", ar:"تنزيل"},
+  "dl.win":          {de:"Für Windows", en:"For Windows", zh:"Windows 版", hi:"Windows के लिए", es:"Para Windows", fr:"Pour Windows", ar:"لنظام Windows"},
+  "dl.winSub":       {de:"Installer (64 Bit)", en:"Installer (64-bit)", zh:"安装程序（64 位）", hi:"इंस्टॉलर (64 बिट)", es:"Instalador (64 bits)", fr:"Programme d’installation (64 bits)", ar:"مثبِّت (64 بت)"},
+  "dl.winPortabel":  {de:"Ohne Installation", en:"Portable", zh:"免安装版", hi:"बिना संस्थापन", es:"Sin instalación", fr:"Version portable", ar:"بلا تثبيت"},
+  "dl.store":        {de:"Microsoft Store", en:"Microsoft Store", zh:"Microsoft Store", hi:"Microsoft Store", es:"Microsoft Store", fr:"Microsoft Store", ar:"متجر Microsoft"},
+  "dl.storeBald":    {de:"Demnächst – empfohlener Weg für Windows", en:"Coming soon – the recommended way on Windows", zh:"即将上线——Windows 推荐方式", hi:"जल्द ही – Windows के लिए अनुशंसित", es:"Próximamente: la vía recomendada en Windows", fr:"Bientôt – la voie recommandée sous Windows", ar:"قريباً – الطريقة الموصى بها على Windows"},
+  "dl.mac":          {de:"Für macOS", en:"For macOS", zh:"macOS 版", hi:"macOS के लिए", es:"Para macOS", fr:"Pour macOS", ar:"لنظام macOS"},
+  "dl.linux":        {de:"Für Linux", en:"For Linux", zh:"Linux 版", hi:"Linux के लिए", es:"Para Linux", fr:"Pour Linux", ar:"لنظام Linux"},
+  "dl.alle":         {de:"Alle Fassungen und Versionshinweise", en:"All builds and release notes", zh:"全部版本与更新说明", hi:"सभी संस्करण और रिलीज़ नोट", es:"Todas las versiones y notas", fr:"Toutes les versions et notes", ar:"كل الإصدارات وملاحظاتها"},
+  "dl.groesse":      {de:"Etwa 100 MB", en:"About 100 MB", zh:"约 100 MB", hi:"लगभग 100 MB", es:"Unos 100 MB", fr:"Environ 100 Mo", ar:"نحو 100 ميغابايت"},
+  "f.titel":         {de:"Was Ploow kann", en:"What Ploow does", zh:"Ploow 能做什么", hi:"Ploow क्या करता है", es:"Qué hace Ploow", fr:"Ce que fait Ploow", ar:"ماذا يفعل Ploow"},
+  "f1.t":            {de:"Kapitel und Folgen", en:"Chapters and episodes", zh:"章节与剧集", hi:"अध्याय और कड़ियाँ", es:"Capítulos y episodios", fr:"Chapitres et épisodes", ar:"الفصول والحلقات"},
+  "f1.x":            {de:"Jedes Kapitel mit Status, Perspektive, Wortzahl und Zusammenfassung. Für Serien gibt es Staffeln und Folgen mit Schritt-Checkliste – umsortieren geht mit gedrückter Maustaste, die Nummern rücken von selbst nach. Wortzahlen lassen sich aus Ihrem Word-Manuskript einlesen.", en:"Every chapter with status, point of view, word count and summary. For series there are seasons and episodes with a step checklist – reorder by holding the mouse button, the numbers follow by themselves. Word counts can be read from your Word manuscript.", zh:"每一章都有状态、视角、字数和概要。剧集还支持季与分集，并带分步清单——按住鼠标即可调整顺序，编号会自动跟着变。字数可以直接从 Word 稿件读取。", hi:"हर अध्याय के साथ स्थिति, दृष्टिकोण, शब्द-संख्या और सारांश। सीरीज़ के लिए सीज़न और कड़ियाँ, चरण-सूची के साथ – माउस दबाकर क्रम बदलें, संख्याएँ स्वयं ठीक हो जाती हैं। शब्द-संख्या आपकी Word पांडुलिपि से पढ़ी जा सकती है।", es:"Cada capítulo con estado, punto de vista, número de palabras y resumen. Para series hay temporadas y episodios con lista de pasos: reordena manteniendo pulsado el ratón y los números se ajustan solos. El recuento de palabras se puede leer de tu manuscrito de Word.", fr:"Chaque chapitre avec statut, point de vue, nombre de mots et résumé. Pour les séries : saisons et épisodes avec liste d’étapes – réordonnez en maintenant la souris, les numéros suivent d’eux-mêmes. Le nombre de mots se lit depuis votre manuscrit Word.", ar:"كل فصل مع حالته ووجهة نظره وعدد كلماته وملخّصه. وللمسلسلات مواسم وحلقات بقائمة خطوات – أعد الترتيب بالضغط المستمر، وتتبع الأرقام تلقائياً. ويمكن قراءة عدد الكلمات من مخطوطة Word."},
+  "f2.t":            {de:"Figuren und Beziehungen", en:"Characters and relationships", zh:"角色与关系", hi:"पात्र और संबंध", es:"Personajes y relaciones", fr:"Personnages et relations", ar:"الشخصيات والعلاقات"},
+  "f2.x":            {de:"Rolle, Aussehen, Motivation, Entwicklungsbogen – und Beziehungen, die zwischen den Figuren leben statt in einem Textfeld. Drei Blicke darauf: Karten, ein Netz mit beschrifteten Linien und ein Stammbaum, der die Abstammung nach Generationen ordnet.", en:"Role, appearance, motivation, character arc – and relationships that live between characters instead of in a text field. Three views: cards, a network with labelled lines, and a family tree that sorts descent by generation.", zh:"角色定位、外貌、动机、成长弧线——关系存在于角色之间，而不是塞在一个文本框里。三种视图：卡片、带标注连线的关系网，以及按代际排列的家谱。", hi:"भूमिका, रूप-रंग, प्रेरणा, चरित्र-चाप – और संबंध जो पात्रों के बीच रहते हैं, किसी पाठ-क्षेत्र में नहीं। तीन दृश्य: कार्ड, नामांकित रेखाओं वाला जाल, और पीढ़ियों के अनुसार वंश-वृक्ष।", es:"Papel, aspecto, motivación, arco del personaje, y relaciones que viven entre personajes en lugar de en un campo de texto. Tres vistas: fichas, una red con líneas etiquetadas y un árbol genealógico ordenado por generaciones.", fr:"Rôle, apparence, motivation, arc du personnage – et des relations qui vivent entre les personnages plutôt que dans un champ de texte. Trois vues : fiches, un réseau aux liens nommés, et un arbre généalogique classé par génération.", ar:"الدور والمظهر والدافع وقوس الشخصية – وعلاقات تعيش بين الشخصيات لا داخل حقل نصي. ثلاثة عروض: بطاقات، وشبكة بخطوط مُسمّاة، وشجرة عائلة مرتّبة حسب الأجيال."},
+  "f3.t":            {de:"Welt und Karten", en:"World and maps", zh:"世界观与地图", hi:"विश्व और नक्शे", es:"Mundo y mapas", fr:"Monde et cartes", ar:"العالم والخرائط"},
+  "f3.x":            {de:"Völker, Magie, Fraktionen, Kreaturen – mit Vorschlägen für das, was ein Magiesystem ausmacht: hart oder weich, was es kostet, wer es darf. Dazu eigene Karten: Bild hochladen, Markierungen setzen, jede zeigt auf einen Eintrag oder auf die nächste Karte.", en:"Peoples, magic, factions, creatures – with suggestions for what defines a magic system: hard or soft, what it costs, who may use it. Plus your own maps: upload an image, place markers, each pointing to an entry or to the next map.", zh:"种族、魔法、派系、生物——并为魔法体系提供现成标签：硬或软、代价几何、谁可施展。还可上传自己的地图，放置标记，每个标记可指向某个条目或下一张地图。", hi:"जातियाँ, जादू, गुट, प्राणी – और जादू-व्यवस्था को परिभाषित करने वाले सुझाव: कठोर या कोमल, क्या कीमत, किसे अनुमति। साथ ही अपने नक्शे: चित्र अपलोड करें, चिह्न लगाएँ, हर चिह्न किसी प्रविष्टि या अगले नक्शे की ओर।", es:"Pueblos, magia, facciones, criaturas, con sugerencias sobre lo que define un sistema mágico: dura o blanda, qué cuesta, quién puede usarla. Y tus propios mapas: sube una imagen, coloca marcadores, cada uno apunta a una entrada o al siguiente mapa.", fr:"Peuples, magie, factions, créatures – avec des suggestions sur ce qui définit un système magique : dur ou souple, ce qu’il coûte, qui peut s’en servir. Et vos propres cartes : chargez une image, posez des repères, chacun menant à une entrée ou à la carte suivante.", ar:"الشعوب والسحر والفصائل والمخلوقات – مع اقتراحات لما يحدّد نظام السحر: صارم أم مرن، وما ثمنه، ومن يحقّ له. وخرائطك الخاصة: ارفع صورة، وضع علامات، كل واحدة تقود إلى مدخل أو إلى الخريطة التالية."},
+  "f4.t":            {de:"Handlung und Akte", en:"Plot and acts", zh:"情节与幕", hi:"कथानक और अंक", es:"Trama y actos", fr:"Intrigue et actes", ar:"الحبكة والفصول"},
+  "f4.x":            {de:"Plot-Punkte auf einem Board, das sich ziehen lässt, mit Handlungssträngen in Farbe. Die Aktstruktur ist frei: drei Akte, fünf Akte oder eigene Abschnitte – umbenennen, ergänzen, umsortieren. Kein Plot-Punkt geht dabei verloren.", en:"Plot points on a board you can drag, with colour-coded storylines. The act structure is free: three acts, five acts or your own sections – rename, add, reorder. No plot point is lost in the process.", zh:"情节点排在可拖动的看板上，故事线以颜色区分。幕结构完全自由：三幕、五幕或自定义分段——可重命名、增补、重排，且不会丢失任何情节点。", hi:"खींचे जा सकने वाले बोर्ड पर कथा-बिंदु, रंगीन कथा-सूत्रों के साथ। अंक-संरचना स्वतंत्र: तीन अंक, पाँच अंक या अपने अनुभाग – नाम बदलें, जोड़ें, क्रम बदलें। इसमें कोई कथा-बिंदु नहीं खोता।", es:"Puntos de trama en un tablero que puedes arrastrar, con líneas argumentales de colores. La estructura de actos es libre: tres actos, cinco o tus propias secciones; renombra, añade, reordena. Ningún punto de trama se pierde.", fr:"Des points d’intrigue sur un tableau que l’on fait glisser, avec des fils narratifs en couleur. La structure en actes est libre : trois actes, cinq actes ou vos propres sections – renommez, ajoutez, réordonnez. Aucun point d’intrigue n’est perdu.", ar:"نقاط الحبكة على لوحة قابلة للسحب، مع خيوط حبكة ملوّنة. وبنية الفصول حرّة: ثلاثة فصول أو خمسة أو أقسامك الخاصة – أعد التسمية والإضافة والترتيب. ولا تضيع أي نقطة حبكة."},
+  "f5.t":            {de:"Mindmap und Zeitleisten", en:"Mind map and timelines", zh:"思维导图与时间线", hi:"माइंड मैप और समयरेखाएँ", es:"Mapa mental y líneas de tiempo", fr:"Carte mentale et chronologies", ar:"الخريطة الذهنية والخطوط الزمنية"},
+  "f5.x":            {de:"Eine Fläche zum freien Denken: Kacheln, freier Text und Notizzettel, Verbindungen dazwischen, Bilder und Videos an den Knoten. Dazu beliebig viele Zeitleisten – auch eine eigene für eine einzelne Figur oder einen Ort.", en:"A surface for thinking freely: tiles, plain text and sticky notes, connections between them, images and videos on the nodes. Plus as many timelines as you like – including one just for a single character or place.", zh:"一块自由思考的画布：色块、纯文本、便签，以及它们之间的连线，节点上还能放图片和视频。时间线不限数量——也可以为某个角色或地点单开一条。", hi:"मुक्त सोच के लिए एक सतह: कार्ड, सादा पाठ और चिप्पियाँ, उनके बीच कड़ियाँ, नोड पर चित्र और वीडियो। साथ ही जितनी चाहें समयरेखाएँ – किसी एक पात्र या स्थान के लिए भी अलग।", es:"Una superficie para pensar libremente: tarjetas, texto suelto y notas adhesivas, conexiones entre ellas, imágenes y vídeos en los nodos. Y tantas líneas de tiempo como quieras, incluso una solo para un personaje o lugar.", fr:"Une surface pour penser librement : tuiles, texte libre et pense-bêtes, liens entre eux, images et vidéos sur les nœuds. Et autant de chronologies que vous voulez – y compris une pour un seul personnage ou lieu.", ar:"مساحة للتفكير الحر: بطاقات ونصوص حرة وملاحظات لاصقة، وروابط بينها، وصور وفيديوهات على العقد. وخطوط زمنية بلا حد – حتى واحد مخصّص لشخصية أو مكان بعينه."},
+  "f6.t":            {de:"Ihre Daten bleiben Ihre", en:"Your work stays yours", zh:"你的成果属于你", hi:"आपका काम आपका ही", es:"Tu trabajo es tuyo", fr:"Votre travail reste le vôtre", ar:"عملك يبقى ملكك"},
+  "f6.x":            {de:"Ploow baut keine Netzwerkverbindung auf. Projekte liegen als Datei in Ihren Dokumenten, mit Sicherungen bei jedem Speichern. Einlesen aus JSON, CSV und Markdown; ausgeben als ein Ordner voller Markdown-Dateien, den jeder Texteditor lesen kann – auch ohne Ploow.", en:"Ploow makes no network connections. Projects live as files in your Documents, with backups on every save. Import from JSON, CSV and Markdown; export as a folder of Markdown files any text editor can read – even without Ploow.", zh:"Ploow 不建立任何网络连接。项目以文件形式存放在你的文档目录中，每次保存都会留存备份。可从 JSON、CSV、Markdown 导入；也可导出为一整个 Markdown 文件夹，任何文本编辑器都能打开——即使没有 Ploow。", hi:"Ploow कोई नेटवर्क कनेक्शन नहीं बनाता। परियोजनाएँ आपके दस्तावेज़ों में फ़ाइल के रूप में रहती हैं, हर बार सहेजने पर बैकअप के साथ। JSON, CSV और Markdown से आयात; Markdown फ़ाइलों के फ़ोल्डर के रूप में निर्यात, जिसे कोई भी टेक्स्ट एडिटर पढ़ सकता है – Ploow के बिना भी।", es:"Ploow no establece ninguna conexión de red. Los proyectos son archivos en tus Documentos, con copias de seguridad en cada guardado. Importa desde JSON, CSV y Markdown; exporta como una carpeta de archivos Markdown que cualquier editor puede leer, incluso sin Ploow.", fr:"Ploow n’établit aucune connexion réseau. Les projets sont des fichiers dans vos Documents, avec des sauvegardes à chaque enregistrement. Importez depuis JSON, CSV et Markdown ; exportez sous forme de dossier de fichiers Markdown que tout éditeur peut lire – même sans Ploow.", ar:"لا ينشئ Ploow أي اتصال بالشبكة. تُحفظ المشاريع كملفات في مجلد المستندات، مع نسخ احتياطية عند كل حفظ. استورد من JSON وCSV وMarkdown؛ وصدّر كمجلد ملفات Markdown يقرؤه أي محرر نصوص – حتى بدون Ploow."},
+  "an.titel":        {de:"Neuigkeiten", en:"News", zh:"动态", hi:"समाचार", es:"Novedades", fr:"Nouveautés", ar:"أخبار"},
+  "an.leer":         {de:"Hier stehen künftig Ankündigungen zu neuen Fassungen.", en:"Announcements about new releases will appear here.", zh:"此处将发布新版本公告。", hi:"यहाँ नए संस्करणों की घोषणाएँ आएँगी।", es:"Aquí aparecerán los anuncios de nuevas versiones.", fr:"Les annonces de nouvelles versions apparaîtront ici.", ar:"ستظهر هنا إعلانات الإصدارات الجديدة."},
+  "inst.titel":      {de:"Beim ersten Start", en:"The first time you open it", zh:"首次打开时", hi:"पहली बार खोलने पर", es:"La primera vez que lo abres", fr:"Au premier lancement", ar:"عند أول تشغيل"},
+  "inst.winT":       {de:"Windows", en:"Windows", zh:"Windows", hi:"Windows", es:"Windows", fr:"Windows", ar:"Windows"},
+  "inst.winX":       {de:"Weil Ploow noch keine gekaufte Signatur trägt, meldet sich SmartScreen beim ersten Start. Klicken Sie auf „Weitere Informationen“ und dann auf „Trotzdem ausführen“. Sobald Ploow im Microsoft Store steht, entfällt das – der Store ist dann der bequemere Weg.", en:"Because Ploow does not yet carry a purchased signature, SmartScreen appears on first launch. Click “More info”, then “Run anyway”. Once Ploow is in the Microsoft Store this step disappears – the Store will then be the easier route.", zh:"由于 Ploow 尚未购买代码签名，首次启动时会出现 SmartScreen 提示。请点击「更多信息」，再点「仍要运行」。等 Ploow 上架 Microsoft Store 后就不再需要这一步——那时通过商店安装更方便。", hi:"चूँकि Ploow के पास अभी खरीदा हुआ हस्ताक्षर नहीं है, पहली बार चलाने पर SmartScreen आता है। „अधिक जानकारी“ पर, फिर „फिर भी चलाएँ“ पर क्लिक करें। जैसे ही Ploow Microsoft Store में आएगा, यह चरण हट जाएगा – तब स्टोर आसान रास्ता होगा।", es:"Como Ploow todavía no tiene una firma de pago, SmartScreen aparece al primer inicio. Pulsa «Más información» y luego «Ejecutar de todas formas». Cuando Ploow esté en Microsoft Store, este paso desaparece: la tienda será la vía más cómoda.", fr:"Comme Ploow ne dispose pas encore d’une signature payante, SmartScreen s’affiche au premier lancement. Cliquez sur « Informations complémentaires », puis « Exécuter quand même ». Dès que Ploow sera sur le Microsoft Store, cette étape disparaîtra – le Store sera alors la voie la plus simple.", ar:"لأن Ploow لا يحمل بعد توقيعاً مدفوعاً، يظهر SmartScreen عند أول تشغيل. اضغط «مزيد من المعلومات» ثم «تشغيل على أي حال». وحين يتوفر Ploow في متجر Microsoft يسقط هذا الإجراء – وسيكون المتجر الطريق الأيسر."},
+  "inst.macT":       {de:"macOS", en:"macOS", zh:"macOS", hi:"macOS", es:"macOS", fr:"macOS", ar:"macOS"},
+  "inst.macX":       {de:"Beim allerersten Öffnen bitte so vorgehen:", en:"The very first time, please do this:", zh:"第一次打开时，请按以下方式操作：", hi:"सबसे पहली बार कृपया ऐसे करें:", es:"La primera vez, hazlo así:", fr:"La toute première fois, procédez ainsi :", ar:"في المرة الأولى فقط، اتّبع ما يلي:"},
+  "inst.mac1":       {de:"Rechtsklick auf die App, dann „Öffnen“ wählen – nicht doppelklicken.", en:"Right-click the app and choose “Open” – do not double-click.", zh:"右键点击应用，选择「打开」——不要双击。", hi:"ऐप पर दायाँ क्लिक करें और „खोलें“ चुनें – डबल-क्लिक न करें।", es:"Haz clic derecho en la app y elige «Abrir»; no hagas doble clic.", fr:"Clic droit sur l’app, puis « Ouvrir » – ne double-cliquez pas.", ar:"انقر بزر الفأرة الأيمن على التطبيق واختر «فتح» – لا تنقر نقراً مزدوجاً."},
+  "inst.mac2":       {de:"Im Dialogfeld noch einmal auf „Öffnen“ klicken.", en:"In the dialog, click “Open” once more.", zh:"在弹出的对话框中再次点击「打开」。", hi:"संवाद-बॉक्स में फिर से „खोलें“ पर क्लिक करें।", es:"En el cuadro de diálogo, vuelve a pulsar «Abrir».", fr:"Dans la boîte de dialogue, cliquez encore sur « Ouvrir ».", ar:"في مربع الحوار اضغط «فتح» مرة أخرى."},
+  "inst.mac3":       {de:"Danach merkt sich macOS die Entscheidung – ab dann startet Ploow ganz normal.", en:"After that macOS remembers your decision – from then on Ploow starts normally.", zh:"此后 macOS 会记住你的选择——之后 Ploow 就能正常启动了。", hi:"इसके बाद macOS आपका निर्णय याद रखता है – फिर Ploow सामान्य रूप से खुलता है।", es:"Después macOS recuerda tu decisión: a partir de ahí Ploow se abre con normalidad.", fr:"Ensuite macOS retient votre choix – à partir de là, Ploow démarre normalement.", ar:"بعدها يتذكّر macOS اختيارك – ومن ثم يبدأ Ploow بشكل طبيعي."},
+  "inst.warum":      {de:"Warum diese Schritte? Betriebssysteme warnen vor Programmen ohne gekaufte Signatur. Das sagt nichts darüber, ob ein Programm sicher ist – nur, dass niemand dafür bezahlt hat.", en:"Why these steps? Operating systems warn about programs without a purchased signature. That says nothing about whether a program is safe – only that nobody has paid for one.", zh:"为什么要这样做？操作系统会对没有购买签名的程序发出警告。这并不说明程序是否安全，只说明没人为签名付过费。", hi:"ये चरण क्यों? ऑपरेटिंग सिस्टम बिना खरीदे हस्ताक्षर वाले प्रोग्राम पर चेतावनी देते हैं। इससे यह पता नहीं चलता कि प्रोग्राम सुरक्षित है या नहीं – केवल यह कि किसी ने उसके लिए भुगतान नहीं किया।", es:"¿Por qué estos pasos? Los sistemas operativos avisan sobre programas sin firma de pago. Eso no dice si un programa es seguro, solo que nadie ha pagado por una firma.", fr:"Pourquoi ces étapes ? Les systèmes d’exploitation alertent sur les programmes sans signature payante. Cela ne dit rien de la sûreté d’un programme – seulement que personne n’a payé pour cela.", ar:"لماذا هذه الخطوات؟ تحذّر أنظمة التشغيل من البرامج التي لا تحمل توقيعاً مدفوعاً. وهذا لا يقول شيئاً عن أمان البرنامج – بل يقول فقط إن أحداً لم يدفع ثمن التوقيع."},
+  "foot.quelle":     {de:"Quelltext auf GitHub", en:"Source on GitHub", zh:"GitHub 上的源码", hi:"GitHub पर स्रोत", es:"Código en GitHub", fr:"Code source sur GitHub", ar:"الشيفرة على GitHub"},
+  "foot.lizenz":     {de:"Lizenz", en:"Licence", zh:"许可", hi:"लाइसेंस", es:"Licencia", fr:"Licence", ar:"الترخيص"},
+  "foot.daten":      {de:"Datenschutz", en:"Privacy", zh:"隐私", hi:"गोपनीयता", es:"Privacidad", fr:"Confidentialité", ar:"الخصوصية"},
+  "foot.rechte":     {de:"Ploow läuft vollständig auf Ihrem Gerät. Es werden keine Daten erhoben.", en:"Ploow runs entirely on your device. No data is collected.", zh:"Ploow 完全在你的设备上运行，不收集任何数据。", hi:"Ploow पूरी तरह आपके डिवाइस पर चलता है। कोई डेटा एकत्र नहीं किया जाता।", es:"Ploow funciona por completo en tu dispositivo. No se recogen datos.", fr:"Ploow fonctionne entièrement sur votre appareil. Aucune donnée n’est collectée.", ar:"يعمل Ploow بالكامل على جهازك. ولا تُجمع أي بيانات."},
+  "ui.sprache":      {de:"Sprache", en:"Language", zh:"语言", hi:"भाषा", es:"Idioma", fr:"Langue", ar:"اللغة"},
+  "ui.thema":        {de:"Hell oder dunkel", en:"Light or dark", zh:"明暗切换", hi:"हल्का या गहरा", es:"Claro u oscuro", fr:"Clair ou sombre", ar:"فاتح أو داكن"},
+  "ui.bildFehlt":    {de:"Bildschirmfoto folgt", en:"Screenshot to follow", zh:"截图待补", hi:"स्क्रीनशॉट बाद में", es:"Captura pendiente", fr:"Capture à venir", ar:"لقطة الشاشة لاحقاً"},
+  "ui.vergroessern": {de:"Doppelklick zum Vergrößern", en:"Double-click to enlarge", zh:"双击放大", hi:"बड़ा करने के लिए डबल-क्लिक करें", es:"Doble clic para ampliar", fr:"Double-cliquez pour agrandir", ar:"انقر نقراً مزدوجاً للتكبير"},
+  "ui.schliessen":   {de:"Schließen", en:"Close", zh:"关闭", hi:"बंद करें", es:"Cerrar", fr:"Fermer", ar:"إغلاق"}
+};
+
+const FUNKTIONEN = [
+  {t:"f1.t", x:"f1.x", bild:"bilder/kapitel.png"},
+  {t:"f2.t", x:"f2.x", bild:"bilder/figuren.png"},
+  {t:"f3.t", x:"f3.x", bild:"bilder/welt-karten.png"},
+  {t:"f4.t", x:"f4.x", bild:"bilder/handlung.png"},
+  {t:"f5.t", x:"f5.x", bild:"bilder/mindmap.png"},
+  {t:"f6.t", x:"f6.x", bild:"bilder/import-export.png"}
+];
+
+let sprache = "en";
+
+function tx(schluessel){
+  const zeile = TEXTE[schluessel];
+  if(!zeile) return schluessel;
+  return zeile[sprache] || zeile.en || zeile.de || schluessel;
+}
+function esc(s){
+  return String(s==null?"":s).replace(/[&<>"']/g, c =>
+    ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* Die Release-Adressen. „latest/download" zeigt immer auf die neueste
+   Fassung – so bleibt die Seite richtig, ohne dass jemand sie anfasst. */
+function adressen(){
+  const wurzel = "https://github.com/" + KONFIG.benutzer + "/" + KONFIG.repo;
+  const datei  = n => wurzel + "/releases/latest/download/" + n;
+  return {
+    win:          datei(KONFIG.dateiWindows),
+    winPortabel:  datei(KONFIG.dateiPortabel),
+    mac:          datei(KONFIG.dateiMac),
+    linux:        datei(KONFIG.dateiLinux),
+    alle:         wurzel + "/releases",
+    quelle:       wurzel,
+    lizenz:       wurzel + "/blob/main/LICENSE.md",
+    daten:        wurzel + "/blob/main/PRIVACY.md"
+  };
+}
+
+/* Fehlt ein Bildschirmfoto noch, tritt an seine Stelle ein beschrifteter
+   Platzhalter mit dem erwarteten Dateinamen. So sieht man beim Nachliefern
+   sofort, welche Datei wohin gehört. */
+function bildFehlt(img){
+  const kasten = img.parentElement;
+  if(!kasten) return;
+  kasten.innerHTML = '<div class="platzhalter"><b>' + esc(img.alt) + '</b>'
+    + esc(document.body.dataset.bildFehlt || "") + '<br><code>' + esc(img.getAttribute("src")) + '</code></div>';
+}
+
+function zeichneFunktionen(){
+  const el = document.getElementById("funktionsListe");
+  el.innerHTML = FUNKTIONEN.map(f => `
+    <article class="funktion">
+      <div>
+        <h3>${esc(tx(f.t))}</h3>
+        <p>${esc(tx(f.x))}</p>
+      </div>
+      <div class="fBild">
+        <img src="${esc(f.bild)}" alt="${esc(tx(f.t))}" loading="lazy" onerror="bildFehlt(this)"
+             title="${esc(tx("ui.vergroessern"))}" tabindex="0" role="button"
+             ondblclick="bildGross(this)" onclick="tippGross(this)"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bildGross(this);}">
+      </div>
+    </article>`).join("");
+}
+
+/* Doppelklick vergrößert ein Bildschirmfoto. Geschlossen wird mit Esc,
+   dem Kreuz oder einem Klick daneben – auf das Bild selbst nicht, sonst
+   schlösse sich die Ansicht beim Versuch, etwas darauf zu betrachten. */
+let grossZu = null;
+/* Auf einem Gerät ohne Maus gibt es keinen Doppelklick – dort genügt ein
+   Tippen. Am Rechner bleibt es beim Doppelklick, damit ein versehentlicher
+   Klick beim Lesen nicht gleich die halbe Seite verdeckt. */
+function tippGross(img){
+  if(window.matchMedia && window.matchMedia("(hover: none)").matches) bildGross(img);
+}
+function bildGross(img){
+  if(!img || !img.getAttribute("src")) return;
+  bildSchliessen();
+  const ov = document.createElement("div");
+  ov.className = "grossbild";
+  ov.setAttribute("role", "dialog");
+  ov.setAttribute("aria-modal", "true");
+  ov.setAttribute("aria-label", img.alt || "");
+  ov.innerHTML = '<button class="gbZu" type="button" aria-label="' + esc(tx("ui.schliessen")) + '">\u00d7</button>'
+    + '<figure><img src="' + esc(img.getAttribute("src")) + '" alt="' + esc(img.alt || "") + '">'
+    + '<figcaption>' + esc(img.alt || "") + '</figcaption></figure>';
+  ov.addEventListener("click", e => { if(!e.target.closest("figure")) bildSchliessen(); });
+  ov.querySelector(".gbZu").addEventListener("click", bildSchliessen);
+  document.body.appendChild(ov);
+  document.body.style.overflow = "hidden";
+  ov.querySelector(".gbZu").focus();
+  grossZu = img;
+}
+function bildSchliessen(){
+  const ov = document.querySelector(".grossbild");
+  if(!ov) return;
+  ov.remove();
+  document.body.style.overflow = "";
+  if(grossZu && grossZu.focus) grossZu.focus();
+  grossZu = null;
+}
+document.addEventListener("keydown", e => { if(e.key === "Escape") bildSchliessen(); });
+
+function zeichneMeldungen(){
+  const el = document.getElementById("meldungen");
+  if(!MELDUNGEN.length){
+    el.innerHTML = `<p style="color:var(--text2)">${esc(tx("an.leer"))}</p>`;
+    return;
+  }
+  el.innerHTML = MELDUNGEN.map(m => {
+    const inhalt = m[sprache] || m.en || m.de || {t:"",x:""};
+    const datum = new Date(m.datum + "T12:00:00");
+    const gezeigt = isNaN(datum) ? m.datum
+      : datum.toLocaleDateString(sprache, {year:"numeric", month:"long", day:"numeric"});
+    return `<article class="meldung">
+      <div class="datum">${esc(gezeigt)}</div>
+      <h3>${esc(inhalt.t)}</h3>
+      <p>${esc(inhalt.x)}</p>
+    </article>`;
+  }).join("");
+}
+
+function setzeSprache(code){
+  if(!SPRACHEN[code]) code = "en";
+  sprache = code;
+  const rtl = SPRACHEN[code].rtl;
+
+  document.documentElement.lang = code;
+  document.documentElement.dir  = rtl ? "rtl" : "ltr";
+  document.title = tx("meta.title");
+  const beschreibung = document.querySelector('meta[name="description"]');
+  if(beschreibung) beschreibung.setAttribute("content", tx("meta.desc"));
+  document.body.dataset.bildFehlt = tx("ui.bildFehlt");
+
+  document.querySelectorAll("[data-t]").forEach(el => {
+    el.textContent = tx(el.dataset.t);
+  });
+
+  const wahl = document.getElementById("sprachwahl");
+  wahl.setAttribute("aria-label", tx("ui.sprache"));
+  wahl.value = code;
+  document.getElementById("themaKnopf").setAttribute("aria-label", tx("ui.thema"));
+
+  bildSchliessen();   /* sonst stünde die Bildunterschrift noch in der alten Sprache */
+  zeichneFunktionen();
+  zeichneMeldungen();
+  try{ localStorage.setItem("ploow.web.sprache", code); }catch(e){}
+}
+
+function themaSetzen(t){
+  document.documentElement.dataset.thema = t;
+  document.getElementById("themaKnopf").textContent = t === "dunkel" ? "☀" : "☾";
+  try{ localStorage.setItem("ploow.web.thema", t); }catch(e){}
+}
+function themaWechseln(){
+  themaSetzen(document.documentElement.dataset.thema === "dunkel" ? "hell" : "dunkel");
+}
+
+/* ---------- Start ---------- */
+(function(){
+  /* Auswahl der Sprachen füllen */
+  const wahl = document.getElementById("sprachwahl");
+  wahl.innerHTML = Object.entries(SPRACHEN)
+    .map(([c,s]) => `<option value="${c}">${esc(s.name)}</option>`).join("");
+
+  /* Adressen eintragen */
+  const a = adressen();
+  document.querySelectorAll("[data-dl]").forEach(el => {
+    const ziel = a[el.dataset.dl];
+    if(ziel) el.setAttribute("href", ziel);
+  });
+  const hauptKnopf = document.getElementById("dlHaupt");
+  if(hauptKnopf) hauptKnopf.setAttribute("href", a.win);
+
+  /* Steht der Store schon bereit, wird aus dem grauen Kasten ein Knopf. */
+  if(KONFIG.storeAdresse){
+    const kasten = document.querySelector('[aria-disabled="true"]');
+    if(kasten){
+      const knopf = document.createElement("a");
+      knopf.className = "knopf";
+      knopf.href = KONFIG.storeAdresse;
+      knopf.innerHTML = kasten.innerHTML;
+      const klein = knopf.querySelector("small");
+      if(klein) klein.remove();
+      kasten.replaceWith(knopf);
+    }
+  }
+
+  /* Thema: gespeicherte Wahl, sonst die Einstellung des Systems */
+  let thema = null;
+  try{ thema = localStorage.getItem("ploow.web.thema"); }catch(e){}
+  if(thema !== "hell" && thema !== "dunkel"){
+    thema = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dunkel" : "hell";
+  }
+  themaSetzen(thema);
+
+  /* Sprache: gespeicherte Wahl, sonst die des Browsers */
+  let code = null;
+  try{ code = localStorage.getItem("ploow.web.sprache"); }catch(e){}
+  if(!code || !SPRACHEN[code]){
+    const roh = (navigator.languages && navigator.languages[0]) || navigator.language || "en";
+    code = String(roh).slice(0,2).toLowerCase();
+    if(!SPRACHEN[code]) code = "en";
+  }
+  setzeSprache(code);
+})();
+</script>
+</body>
+</html>

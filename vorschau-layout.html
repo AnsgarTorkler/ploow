@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark"><head><meta charset="UTF-8">
+<title>StoryPlaner – Vorschau</title><style>
+/* ============================================================
+   FARBEN
+   Dunkel ist der Standard und bildet die Vorlage ab: kühle,
+   leicht violett gebrochene Graustufen, ein einziger warmer
+   Akzent in Messing. Hell ist die gleiche Struktur auf Papier.
+   ============================================================ */
+:root{
+  /* Flächen */
+  --bg:#f7f5f0; --bg2:#efece4; --panel:#ffffff; --panel2:#f2efe8; --panel-hover:#faf8f4;
+  --titlebar:#eceae3; --sidebar:#f2efe8;
+  /* Schrift */
+  --text:#1e1c1a; --text2:#6a6459; --text3:#9a9384;
+  /* Akzente */
+  --accent:#a9662f; --accent-light:#f4ebe1; --accent-ink:#ffffff; --accent2:#6f63c8;
+  --link:#5b55c9;
+  --ok:#3b7a57; --warn:#c2740b; --bad:#bc392b;
+  /* Linien */
+  --border:#e2ddd1; --border-subtle:#ebe7dd; --line-strong:#d6d0c2;
+  /* Tiefe: drei Stufen statt einer, damit Hover echte Hierarchie bekommt */
+  --shadow-sm:0 1px 2px rgba(46,34,20,.05), 0 2px 6px rgba(46,34,20,.04);
+  --shadow:0 2px 4px rgba(46,34,20,.05), 0 8px 24px rgba(46,34,20,.07);
+  --shadow-lg:0 4px 8px rgba(46,34,20,.06), 0 18px 44px rgba(46,34,20,.14);
+  --ring:0 0 0 3px var(--accent-light);
+  /* Radien */
+  --radius-sm:7px; --radius:12px; --radius-lg:16px;
+  --chip:#eae4d7;
+  /* Marken der Eintragsarten */
+  --kt-kapitel-bg:#f0e6d8; --kt-kapitel-fg:#8a5f28;
+  --kt-folge-bg:#f5e3d5;   --kt-folge-fg:#9a5424;
+  --kt-figur-bg:#e0e6f6;   --kt-figur-fg:#3f5591;
+  --kt-ort-bg:#d9ece9;     --kt-ort-fg:#2f6f68;
+  --kt-welt-bg:#e0eddd;    --kt-welt-fg:#3e6b45;
+  --kt-beat-bg:#e9e2f4;    --kt-beat-fg:#5f4a8c;
+  --kt-ereignis-bg:#f4ebd4;--kt-ereignis-fg:#8a6a1c;
+  --kt-notiz-bg:#f6e0e0;   --kt-notiz-fg:#94413c;
+  /* Maße der Hülle */
+  --title-h:34px; --side-w:262px;
+  /* Typografie */
+  --font-main:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:ui-monospace, SFMono-Regular, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+}
+[data-theme="dark"]{
+  --bg:#121116; --bg2:#0e0d11; --panel:#1a191f; --panel2:#232128; --panel-hover:#201e26;
+  --titlebar:#151419; --sidebar:#141317;
+  --text:#eceaf0; --text2:#8e8899; --text3:#615c6d;
+  --accent:#e2a163; --accent-light:#2a2119; --accent-ink:#20170e; --accent2:#8b83e0;
+  --link:#7d7ae2;
+  --ok:#5ea87a; --warn:#e0972f; --bad:#e0604f;
+  --border:#282631; --border-subtle:#201f27; --line-strong:#353243;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 2px 6px rgba(0,0,0,.45), 0 10px 28px rgba(0,0,0,.35);
+  --shadow-lg:0 4px 10px rgba(0,0,0,.5), 0 22px 52px rgba(0,0,0,.55);
+  --chip:#26242e;
+  --kt-kapitel-bg:#2b2117; --kt-kapitel-fg:#d9a066;
+  --kt-folge-bg:#2e1e15;   --kt-folge-fg:#dd9059;
+  --kt-figur-bg:#1c2136;   --kt-figur-fg:#8ba3e4;
+  --kt-ort-bg:#152a29;     --kt-ort-fg:#6dbdb2;
+  --kt-welt-bg:#1a2a1c;    --kt-welt-fg:#7fbb87;
+  --kt-beat-bg:#241f33;    --kt-beat-fg:#a695e0;
+  --kt-ereignis-bg:#2b2413;--kt-ereignis-fg:#d5b158;
+  --kt-notiz-bg:#2e1a1a;   --kt-notiz-fg:#dd8078;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{font-family:var(--font-main); background:var(--bg); color:var(--text); font-size:14px; line-height:1.5;
+  transition:background .2s ease,color .2s ease; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;}
+h1,h2,h3,h4{line-height:1.3; letter-spacing:-.01em; font-weight:650;}
+button{font-family:inherit; cursor:pointer; border:none; outline:none;}
+input,select,textarea{font-family:inherit; color:var(--text); background:var(--panel); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:9px 12px; font-size:13.5px; outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;}
+textarea{line-height:1.55; resize:vertical;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent); box-shadow:var(--ring);}
+input::placeholder,textarea::placeholder{color:var(--text3);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border); border-radius:6px; border:2px solid transparent; background-clip:content-box;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3); background-clip:content-box;}
+
+/* ============================================================
+   HÜLLE DES EINFACHEN MODUS
+   Titelleiste, Seitenleiste, Inhaltsspalte. Die Navigation steht
+   links und trägt Zähler, damit der Umfang des Projekts jederzeit
+   sichtbar ist, ohne dass man eine Ansicht öffnen muss.
+   ============================================================ */
+#simpleUI{display:flex; flex-direction:column; height:100vh; background:var(--bg);}
+
+/* ---------- TITELLEISTE ---------- */
+.titlebar{height:var(--title-h); flex-shrink:0; display:flex; align-items:center; gap:10px;
+  background:var(--titlebar); border-bottom:1px solid var(--border-subtle); padding:0 0 0 10px;
+  -webkit-app-region:drag; user-select:none; position:relative; z-index:30;}
+.tbDots{display:flex; gap:7px; -webkit-app-region:no-drag;}
+.tbDot{width:11px; height:11px; border-radius:50%; border:none; padding:0; background:var(--line-strong);
+  transition:background .15s ease, transform .12s ease;}
+.tbDot:hover{transform:scale(1.12);}
+.tbDot.c{background:#e05c52;} .tbDot.m{background:#e0a13c;} .tbDot.x{background:#4fb562;}
+.tbTitle{flex:1; text-align:center; font-family:var(--font-mono); font-size:11.5px; color:var(--text2);
+  letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 12px;}
+.tbRight{font-size:11px; color:var(--text3); padding-right:14px; white-space:nowrap; -webkit-app-region:no-drag;}
+.tbRight.dirty{color:var(--warn);}
+
+/* ---------- GRUNDRISS ---------- */
+.shell{flex:1; display:flex; min-height:0;}
+.sidebar{width:var(--side-w); flex-shrink:0; background:var(--sidebar); border-right:1px solid var(--border-subtle);
+  display:flex; flex-direction:column; min-height:0;}
+.sideScroll{flex:1; overflow-y:auto; padding:12px 10px 8px;}
+.mainCol{flex:1; min-width:0; display:flex; flex-direction:column; background:var(--bg);}
+#sContent{flex:1; overflow-y:auto; padding:6px 26px 40px; scroll-behavior:smooth;}
+
+/* ---------- PROJEKTKARTE ---------- */
+.projCard{display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:var(--panel);
+  border:1px solid var(--border); border-radius:var(--radius-sm); padding:9px 10px; margin-bottom:10px;
+  transition:border-color .15s ease, background .15s ease;}
+.projCard:hover{border-color:var(--line-strong); background:var(--panel-hover);}
+.projAv{width:26px; height:26px; border-radius:6px; background:var(--accent-light); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0;
+  border:1px solid var(--border);}
+.projCard .pTxt{flex:1; min-width:0; display:block; overflow:hidden;}
+.projCard .pT{display:block; font-size:13px; font-weight:650; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.projCard .pS{display:block; font-size:11px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
+.projCard .pC{font-size:9px; color:var(--text3); flex-shrink:0;}
+
+/* ---------- SUCHE IN DER SEITENLEISTE ---------- */
+.sideSearch{position:relative; margin-bottom:14px;}
+.sideSearch input{width:100%; background:var(--bg2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm);
+  padding:8px 46px 8px 30px; font-size:12.5px; color:var(--text);}
+.sideSearch input:focus{border-color:var(--accent); box-shadow:none;}
+.sideSearch .mag{position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--text3); pointer-events:none;}
+.kbd{position:absolute; right:7px; top:50%; transform:translateY(-50%); font-family:var(--font-mono); font-size:10px;
+  color:var(--text3); background:var(--panel2); border:1px solid var(--border-subtle); border-radius:4px;
+  padding:2px 5px; pointer-events:none;}
+
+/* ---------- NAVIGATION ---------- */
+.navSec{font-size:9.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--text3);
+  padding:16px 10px 6px;}
+.navItem{display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:none; border:none;
+  border-radius:var(--radius-sm); padding:7px 10px; font-size:13px; font-weight:550; color:var(--text2);
+  margin-bottom:1px; transition:background .13s ease, color .13s ease;}
+.navItem .ico{width:15px; text-align:center; font-size:12px; opacity:.75; flex-shrink:0;}
+.navItem .lbl{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.navItem .cnt{font-family:var(--font-mono); font-size:10.5px; color:var(--text3); font-variant-numeric:tabular-nums; flex-shrink:0;}
+.navItem:hover{background:var(--panel2); color:var(--text);}
+.navItem.active{background:var(--panel2); color:var(--text); font-weight:650;}
+.navItem.active .ico{color:var(--accent); opacity:1;}
+.navItem.action .ico{opacity:.6;}
+
+/* ---------- FUSSLEISTE DER SEITENLEISTE ---------- */
+.sideFoot{flex-shrink:0; display:flex; align-items:center; gap:8px; padding:10px 14px;
+  border-top:1px solid var(--border-subtle);}
+.sideFoot .fl{flex:1; font-size:11.5px; color:var(--text2);}
+.switch{width:34px; height:19px; border-radius:11px; background:var(--line-strong); border:none; padding:0;
+  position:relative; flex-shrink:0; transition:background .18s ease;}
+.switch::after{content:""; position:absolute; top:2px; left:2px; width:15px; height:15px; border-radius:50%;
+  background:#fff; transition:transform .18s cubic-bezier(.4,0,.2,1); box-shadow:0 1px 3px rgba(0,0,0,.35);}
+.switch.on{background:var(--accent);}
+.switch.on::after{transform:translateX(15px);}
+.iconBtn{width:24px; height:22px; border-radius:5px; background:none; border:1px solid var(--border-subtle);
+  color:var(--text2); font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  transition:background .13s ease, color .13s ease, border-color .13s ease;}
+.iconBtn:hover{background:var(--panel2); color:var(--text); border-color:var(--border);}
+
+/* ---------- KOPFZEILE DES INHALTS ---------- */
+.mainHead{display:flex; align-items:center; gap:12px; padding:16px 26px 14px; flex-wrap:wrap;}
+.mainHead h1{font-size:19px; font-weight:650; letter-spacing:-.015em;}
+.crumb{font-size:11.5px; color:var(--text3); display:flex; align-items:center; gap:6px;}
+.crumb b{font-weight:500;}
+.headActions{margin-left:auto; display:flex; align-items:center; gap:8px;}
+.btn{border:1px solid var(--border); border-radius:var(--radius-sm); padding:7px 13px; font-size:12.5px; font-weight:600;
+  background:var(--panel); color:var(--text); display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  white-space:nowrap; transition:background .15s ease, border-color .15s ease, transform .12s ease, box-shadow .15s ease;}
+.btn:hover{background:var(--panel2); border-color:var(--line-strong);}
+.btn:active{transform:translateY(1px);}
+.btn.primary{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-weight:650;}
+.btn.primary:hover{background:var(--accent); filter:brightness(1.08);}
+.btn.icon{padding:7px 10px;}
+.btn.small{padding:4px 9px; font-size:12px; border-radius:6px;}
+.btn .hk{font-family:var(--font-mono); font-size:10px; opacity:.6; margin-left:2px;}
+.btn .pill{font-family:var(--font-mono); font-size:10.5px; color:var(--text3); font-variant-numeric:tabular-nums;}
+.linkBtn{background:none; border:none; color:var(--link); font-size:12px; font-weight:600; padding:0;}
+.linkBtn:hover{text-decoration:underline;}
+
+/* ============================================================
+   ÜBERSICHT
+   Eine Kennzahlenleiste, darunter zwei Karten: die Buchdaten als
+   ruhige Beschriftungs-Tabelle, daneben die letzten Änderungen.
+   ============================================================ */
+.ovWrap{display:flex; flex-direction:column; gap:16px;}
+.statStrip{display:flex; align-items:center; gap:34px; background:var(--panel); border:1px solid var(--border);
+  border-radius:var(--radius); padding:18px 22px; flex-wrap:wrap;}
+.statCell{display:flex; flex-direction:column; gap:5px;}
+.statBig{font-size:27px; font-weight:350; letter-spacing:-.02em; color:var(--accent); line-height:1;
+  font-variant-numeric:tabular-nums;}
+.statBig .u{font-size:14px; font-weight:500; margin-left:1px;}
+.statBig .sm{font-size:15px; color:var(--text3);}
+.statLab{font-size:9.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text3);}
+.sparkWrap{margin-left:auto; display:flex; align-items:flex-end; gap:14px;}
+.spark{display:flex; align-items:flex-end; gap:2px; height:44px;}
+.spark i{width:5px; background:var(--line-strong); border-radius:1px; min-height:2px; display:block;
+  transition:height .4s cubic-bezier(.4,0,.2,1);}
+.spark i.today{background:var(--accent);}
+.sparkMeta{text-align:right; padding-bottom:2px;}
+.sparkMeta .d{font-size:12.5px; font-weight:600; color:var(--accent); font-variant-numeric:tabular-nums;}
+.sparkMeta .l{font-size:10px; color:var(--text3); margin-top:2px;}
+
+.ovCols{display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start;}
+.panelCard{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px 18px;
+  display:flex; flex-direction:column; min-height:0;}
+.pcHead{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+.pcHead h2{font-size:14px; font-weight:650; letter-spacing:-.01em;}
+.pcHead .r{margin-left:auto;}
+.dataRow{display:flex; gap:16px; padding:9px 0; border-bottom:1px solid var(--border-subtle); align-items:flex-start;}
+.dataRow:last-of-type{border-bottom:none;}
+.dataRow .k{width:88px; flex-shrink:0; font-size:9.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--text3); padding-top:2px;}
+.dataRow .v{flex:1; min-width:0; font-size:13px; line-height:1.5; color:var(--text); white-space:pre-wrap; word-break:break-word;}
+.dataRow .v.empty{color:var(--text3); font-style:italic;}
+.chRow{display:flex; align-items:center; gap:10px; padding:7px 0;}
+.chRow .nm{flex:1; min-width:0; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.chRow .ag{font-size:10.5px; color:var(--text3); font-family:var(--font-mono); white-space:nowrap;}
+.chRow:hover .nm{color:var(--accent);}
+.kTag{font-family:var(--font-mono); font-size:9.5px; font-weight:700; letter-spacing:.06em; padding:2px 5px;
+  border-radius:3px; flex-shrink:0; width:34px; text-align:center;}
+.pcFoot{margin-top:auto; padding-top:14px; display:flex; gap:8px;}
+.pcFoot .btn{flex:1;}
+@media(max-width:1000px){ .ovCols{grid-template-columns:1fr;} }
+
+/* Kürzel-Marken der Eintragsarten (Übersicht, Beziehungen, Akte).
+   Die Farben stehen als Variablen bei den übrigen Themenfarben, damit
+   das Thema an einer Stelle gepflegt wird und nicht hier verstreut. */
+.kTag{background:var(--kt-bg); color:var(--kt-fg);}
+.kt-kapitel {--kt-bg:var(--kt-kapitel-bg);  --kt-fg:var(--kt-kapitel-fg);}
+.kt-folge   {--kt-bg:var(--kt-folge-bg);    --kt-fg:var(--kt-folge-fg);}
+.kt-figur   {--kt-bg:var(--kt-figur-bg);    --kt-fg:var(--kt-figur-fg);}
+.kt-ort     {--kt-bg:var(--kt-ort-bg);      --kt-fg:var(--kt-ort-fg);}
+.kt-welt    {--kt-bg:var(--kt-welt-bg);     --kt-fg:var(--kt-welt-fg);}
+.kt-beat    {--kt-bg:var(--kt-beat-bg);     --kt-fg:var(--kt-beat-fg);}
+.kt-ereignis{--kt-bg:var(--kt-ereignis-bg); --kt-fg:var(--kt-ereignis-fg);}
+.kt-notiz   {--kt-bg:var(--kt-notiz-bg);    --kt-fg:var(--kt-notiz-fg);}
+
+/* ============================================================
+   BEZIEHUNGEN
+   Liest die Beziehungsfelder der Figuren und macht daraus echte,
+   klickbare Verbindungen – inklusive der Gegenrichtung.
+   ============================================================ */
+.relGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px;}
+.relCard{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:15px 16px;}
+.relCard .rh{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.relCard .rh .av{width:30px; height:30px; border-radius:8px; background:var(--accent-light); display:flex;
+  align-items:center; justify-content:center; font-size:15px; flex-shrink:0;}
+.relCard .rh h3{font-size:14px; font-weight:650;}
+.relCard .rh .rl{font-size:11px; color:var(--text3);}
+.relLine{display:flex; align-items:baseline; gap:8px; padding:5px 0; font-size:12.5px; flex-wrap:wrap;}
+.relLine .dir{font-size:9.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--text3); width:52px; flex-shrink:0;}
+.relNote{font-size:12.5px; color:var(--text2); line-height:1.5; margin-top:8px; padding-top:8px; border-top:1px solid var(--border-subtle);}
+.relEmpty{font-size:12.5px; color:var(--text3); font-style:italic;}
+
+/* ============================================================
+   AKTE & SZENEN
+   Die Drei-Akt-Struktur als durchgehende Leiste: Plot-Punkte in
+   Reihenfolge, jeder mit seinem Kapitel und Handlungsstrang.
+   ============================================================ */
+.actSec{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:14px; overflow:hidden;}
+.actHead{display:flex; align-items:center; gap:12px; padding:14px 18px; border-bottom:1px solid var(--border-subtle);}
+.actHead h2{font-size:14.5px; font-weight:650;}
+.actHead .sub{font-size:11.5px; color:var(--text3);}
+.actHead .num{margin-left:auto; font-family:var(--font-mono); font-size:11px; color:var(--text3); text-align:right;}
+.actShare{height:3px; background:var(--panel2);}
+.actShare>div{height:100%; background:var(--accent);}
+.sceneRow{display:flex; align-items:center; gap:11px; padding:9px 18px; border-bottom:1px solid var(--border-subtle);
+  cursor:pointer; transition:background .13s ease;}
+.sceneRow:last-child{border-bottom:none;}
+.sceneRow:hover{background:var(--panel-hover);}
+.sceneRow .idx{font-family:var(--font-mono); font-size:10.5px; color:var(--text3); width:22px; flex-shrink:0; font-variant-numeric:tabular-nums;}
+.sceneRow .st{width:3px; height:26px; border-radius:2px; flex-shrink:0; background:var(--accent);}
+.sceneRow .grow{flex:1; min-width:0; display:block; overflow:hidden;}
+.sceneRow .t{display:block; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.sceneRow .m{display:block; font-size:11px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
+.actEmpty{padding:16px 18px; font-size:12.5px; color:var(--text3); font-style:italic;}
+
+/* ---------- SPEICHERWARNUNG ---------- */
+#saveBanner{display:none; position:fixed; left:0; right:0; bottom:0; z-index:9999; background:var(--bad); color:#fff; padding:11px 16px; font-size:13.5px; line-height:1.45; align-items:center; gap:14px; flex-wrap:wrap; box-shadow:0 -4px 18px rgba(0,0,0,.25);}
+#saveBanner.show{display:flex;}
+#saveBanner .grow{flex:1; min-width:220px;}
+#saveBanner b{display:block; font-size:14px;}
+#saveBanner button{border:none; border-radius:8px; padding:7px 13px; font-size:13px; font-weight:700; background:#fff; color:var(--bad);}
+.storBar{height:7px; background:var(--panel2); border-radius:4px; overflow:hidden; margin:6px 0 4px;}
+.storBar>div{height:100%; border-radius:4px; transition:width .3s;}
+
+/* ---------- EIGENE AUSWAHLOPTIONEN ---------- */
+.optGrp{margin-bottom:18px;}
+.optGrp h4{font-size:13.5px; color:var(--accent); margin-bottom:6px;}
+.optRow{display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border);}
+.optRow:last-child{border-bottom:none;}
+.optRow .grow{flex:1; min-width:0; font-size:13.5px;}
+.optRow .base{font-size:12px; color:var(--text2);}
+
+.cardGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(275px,1fr)); gap:18px;}
+.mCard{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-sm);
+  padding:16px; display:flex; flex-direction:column; gap:9px; position:relative;
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;}
+.mCard:hover{transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--border);}
+.mCard .top{display:flex; align-items:flex-start; gap:10px;}
+.typeIcon{font-size:21px; width:42px; height:42px; display:flex; align-items:center; justify-content:center;
+  border-radius:11px; background:var(--accent-light); flex-shrink:0;}
+.mCard h3{font-size:15px; line-height:1.3; word-break:break-word;}
+.mCard .meta{font-size:12px; color:var(--text2);}
+.mCard .desc{font-size:12.5px; color:var(--text2); line-height:1.45; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+.statusBadge{font-size:11px; font-weight:650; padding:3px 10px 3px 8px; border-radius:20px; display:inline-flex;
+  align-items:center; gap:5px; letter-spacing:.01em; border:1px solid transparent; vertical-align:middle;}
+/* Der Punkt trägt die Farbe, die Fläche bleibt zurückhaltend – lesbar auch bei vielen Badges nebeneinander */
+.statusBadge::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; opacity:.9;}
+.st-idee{background:#eef0fb; color:#4a4a8c; border-color:#dfe2f4;}
+.st-geplant{background:#e9f0f8; color:#3a6489; border-color:#d8e4f0;}
+.st-entwurf{background:#f8f0e2; color:#8a6520; border-color:#eee2ca;}
+.st-ueberarbeitung{background:#f9ece1; color:#96552a; border-color:#efdcc9;}
+.st-fertig{background:#e8f2ea; color:#3b7a57; border-color:#d6e8db;}
+[data-theme="dark"] .st-idee{background:#22243a; color:#a8adde; border-color:#2e3150;}
+[data-theme="dark"] .st-geplant{background:#1c2733; color:#8fb6da; border-color:#26343f;}
+[data-theme="dark"] .st-entwurf{background:#2c2517; color:#d8b876; border-color:#3b3220;}
+[data-theme="dark"] .st-ueberarbeitung{background:#2e2118; color:#d99a6b; border-color:#3d2c20;}
+[data-theme="dark"] .st-fertig{background:#1b2a21; color:#7cbb95; border-color:#26382d;}
+.roleBadge{font-size:11px; font-weight:650; padding:3px 10px; border-radius:20px; background:var(--chip); color:var(--text2);
+  display:inline-block; border:1px solid var(--border-subtle);}
+.progressBar{height:7px; background:var(--panel2); border-radius:6px; overflow:hidden; box-shadow:inset 0 1px 2px rgba(46,34,20,.06);}
+.progressBar>div{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:6px; transition:width .4s cubic-bezier(.4,0,.2,1);}
+.progRow{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text2);}
+.progRow .progressBar{flex:1;}
+.tagChip{font-size:11px; background:var(--panel2); color:var(--text2); padding:3px 9px; border-radius:12px;
+  margin:2px 3px 0 0; display:inline-block; border:1px solid var(--border-subtle);}
+.cardBtns{display:flex; gap:6px; margin-top:auto; padding-top:6px; flex-wrap:wrap;}
+.emptyMsg{text-align:center; color:var(--text2); padding:60px 20px; font-size:15px;}
+.emptyMsg .big{font-size:48px; display:block; margin-bottom:12px;}
+.filterBar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center;}
+.chipToggle{border:1px solid var(--border); background:var(--panel); border-radius:20px; padding:6px 14px; font-size:12.5px;
+  font-weight:600; color:var(--text2); transition:all .15s ease;}
+.chipToggle:hover{border-color:var(--accent); color:var(--accent);}
+.chipToggle.active{background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 2px 6px rgba(158,98,49,.25);}
+
+.dashGrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px;}
+.dashCard{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-sm); padding:20px;}
+.dashCard h2{font-size:14px; font-weight:700; letter-spacing:.01em; margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+.statNums{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.statNum{background:var(--panel2); border-radius:11px; padding:14px 12px; text-align:center;}
+.statNum b{font-size:23px; font-weight:700; display:block; color:var(--accent); letter-spacing:-.02em; font-variant-numeric:tabular-nums;}
+.statNum span{font-size:11.5px; color:var(--text2); letter-spacing:.01em;}
+.miniItem{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border);}
+.miniItem:last-child{border-bottom:none;}
+.miniItem .grow{flex:1; min-width:0;}
+.miniItem .t{display:block; font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.bookForm label{display:block; font-size:12px; font-weight:600; color:var(--text2); margin:10px 0 4px;}
+.bookForm input,.bookForm textarea,.bookForm select{width:100%;}
+.ring{width:92px; height:92px; flex-shrink:0;}
+.ring circle{fill:none; stroke-width:9;}
+.ring .bgC{stroke:var(--panel2);}
+.ring .fgC{stroke:var(--accent); stroke-linecap:round; transition:stroke-dashoffset .5s;}
+.ring text{fill:var(--text); font-size:16px; font-weight:700;}
+
+/* Kapitel-Liste */
+.chapRow{display:flex; align-items:center; gap:13px; background:var(--panel); border:1px solid var(--border);
+  border-radius:12px; padding:13px 15px; margin-bottom:9px; box-shadow:var(--shadow-sm);
+  transition:transform .18s ease, box-shadow .18s ease;}
+.chapRow:hover{transform:translateY(-2px); box-shadow:var(--shadow);}
+.chapNum{width:38px; height:38px; border-radius:10px; background:var(--accent-light); display:flex; align-items:center;
+  justify-content:center; font-weight:700; color:var(--accent); flex-shrink:0; font-variant-numeric:tabular-nums;}
+.chapRow .grow{flex:1; min-width:0;}
+.chapRow h3{font-size:14.5px;}
+.chapRow .meta{font-size:12px; color:var(--text2); margin-top:2px;}
+.moveBtns{display:flex; flex-direction:column; gap:2px;}
+.moveBtns button{border:none; background:var(--panel2); border-radius:6px; font-size:10px; padding:2px 7px; color:var(--text2);}
+.moveBtns button:hover{color:var(--accent);}
+
+/* Plot-Board */
+.kanban{display:flex; gap:14px; align-items:flex-start; overflow-x:auto; padding-bottom:10px;}
+.kCol{background:var(--panel2); border-radius:var(--radius); padding:10px; min-width:260px; width:260px; flex-shrink:0;}
+.kCol h3{font-size:13px; font-weight:700; padding:4px 6px 2px; color:var(--text2); display:flex; justify-content:space-between;}
+.kCol .sub{font-size:11px; color:var(--text2); padding:0 6px 10px;}
+.kCard{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:8px; cursor:grab; font-size:13px; box-shadow:var(--shadow); border-left:4px solid var(--accent);}
+.kCard:active{cursor:grabbing;}
+.kCol.dragOver{outline:2px dashed var(--accent); outline-offset:-4px;}
+.plotDot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:5px;}
+
+/* Zeitleiste */
+.tlWrap{max-width:760px; margin:0 auto; position:relative; padding-left:26px;}
+.tlWrap::before{content:""; position:absolute; left:7px; top:0; bottom:0; width:3px; background:var(--border); border-radius:2px;}
+.tlItem{position:relative; background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:12px; box-shadow:var(--shadow);}
+.tlItem::before{content:""; position:absolute; left:-24px; top:18px; width:13px; height:13px; border-radius:50%; background:var(--accent); border:3px solid var(--bg);}
+.tlItem .date{font-size:12px; font-weight:700; color:var(--accent);}
+.tlItem h3{font-size:14.5px; margin:2px 0 4px;}
+.tlItem p{font-size:13px; color:var(--text2); line-height:1.45;}
+.tlBtns{position:absolute; top:10px; right:10px; display:flex; gap:4px;}
+
+/* Statistiken */
+.barRow{display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:13px;}
+.barRow .lbl{width:130px; text-align:right; color:var(--text2); flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.barRow .bar{flex:1; background:var(--panel2); border-radius:6px; height:20px; overflow:hidden;}
+.barRow .bar>div{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:6px; min-width:2px; transition:width .4s;}
+.barRow .val{width:46px; font-weight:700;}
+
+/* ---------- PROFI-MODUS ----------
+   Kompakte Werkzeugoberfläche: dichter, mit Menüleiste, Tabelle und
+   Eigenschaftenspalte. Der Unterschied zum einfachen Modus liegt in
+   Dichte und Anordnung – nicht in der Farbe.
+
+   Deshalb sind die --p-*-Variablen nur noch Rollennamen, die auf
+   dieselben Farben zeigen wie der einfache Modus. Ein Hell/Dunkel-
+   Wechsel wirkt damit automatisch in beiden Oberflächen, und es gibt
+   keine zweite Palette mehr, die man beim Nachbessern vergessen kann. */
+body.pro{
+  --p-bg:var(--bg);                 /* Hauptfläche              */
+  --p-bg2:var(--sidebar);           /* Seitenspalten            */
+  --p-bg3:var(--chip);              /* erhabene Flächen, Hover  */
+  --p-bg4:var(--titlebar);          /* Menü- und Statusleiste   */
+  --p-feld:var(--panel);            /* Eingabefelder            */
+  --p-line:var(--border);
+  --p-line2:var(--border-subtle);
+  --p-hover:var(--line-strong);
+  --p-txt:var(--text);
+  --p-txt2:var(--text2);
+  --p-txt3:var(--text3);
+  --p-acc:var(--accent);
+  --p-sel:var(--accent2);           /* Auswahl                  */
+  --row:23px;
+}
+/* Die Auswahlfarbe braucht zusätzlich eine durchscheinende Fassung für
+   markierte Tabellenzeilen – die lässt sich aus einer Variablen nicht
+   ableiten, deshalb je Thema einmal ausgeschrieben. */
+:root{ --p-sel-weak:rgba(111,99,200,.15); }
+[data-theme="dark"]{ --p-sel-weak:rgba(139,131,224,.20); }
+#proUI{display:none; flex-direction:column; height:100vh; background:var(--p-bg); color:var(--p-txt); font-size:12px; line-height:1.45;}
+body.pro #proUI{display:flex;} body.pro #simpleUI{display:none;}
+.pMenubar{display:flex; align-items:center; background:var(--p-bg4); border-bottom:1px solid var(--p-line); padding:0 0 0 6px; height:28px; user-select:none; -webkit-app-region:drag;}
+.pMenubar .appIco{color:var(--p-acc); font-weight:700; padding:0 10px 0 4px; font-size:12px; letter-spacing:.02em;}
+/* Ohne Fensterrahmen braucht auch der Profi-Modus eigene Fensterknöpfe */
+.pWinBtns{margin-left:auto; display:flex; -webkit-app-region:no-drag;}
+.pWinBtns button{background:none; border:none; color:var(--p-txt2); width:42px; height:28px; font-size:11px;
+  display:flex; align-items:center; justify-content:center; border-radius:0;}
+.pWinBtns button:hover{background:var(--p-bg3); color:var(--p-txt);}
+.pWinBtns button.x:hover{background:var(--bad); color:#fff;}
+.pMenu{position:relative; -webkit-app-region:no-drag;}
+.pMenu>button{background:none; border:none; color:var(--p-txt2); padding:5px 10px; font-size:12px; border-radius:3px;}
+.pMenu>button:hover,.pMenu.open>button{background:var(--p-bg3); color:var(--p-txt);}
+.pDrop{display:none; position:absolute; top:27px; left:0; background:var(--panel); border:1px solid var(--p-line); border-radius:var(--radius-sm); min-width:250px; padding:4px; z-index:60; box-shadow:var(--shadow-lg);}
+.pMenu.open .pDrop{display:block;}
+.pDrop button{display:flex; justify-content:space-between; gap:20px; width:100%; background:none; border:none; color:var(--p-txt); padding:5px 11px; font-size:12px; text-align:left; border-radius:3px;}
+.pDrop button:hover{background:var(--p-sel); color:#fff;}
+.pDrop button:hover .kb{color:rgba(255,255,255,.72);}
+.pDrop .sep{height:1px; background:var(--p-line2); margin:4px 6px;}
+.pDrop .kb{color:var(--p-txt3); font-size:11px; font-family:var(--font-mono);}
+.pWsBar{display:flex; align-items:center; background:var(--p-bg2); border-bottom:1px solid var(--p-line); padding:0 6px; height:30px; gap:1px;}
+.pWs{background:none; border:none; color:var(--p-txt2); padding:6px 13px; font-size:12px; border-radius:4px 4px 0 0;}
+.pWs:hover{color:var(--p-txt); background:var(--p-bg3);}
+.pWs.active{background:var(--p-bg); color:var(--p-txt); box-shadow:inset 0 -2px 0 var(--p-acc);}
+.pWsBar input{margin-left:auto; background:var(--p-feld); border:1px solid var(--p-line); color:var(--p-txt); font-size:11.5px; padding:4px 9px; border-radius:var(--radius-sm); width:210px;}
+.pWsBar input:focus{border-color:var(--p-acc); box-shadow:none;}
+.pBody{flex:1; display:flex; overflow:hidden;}
+/* Die linke Spalte trägt oben die Liste und unten den Moduswechsel */
+.pSideWrap{width:218px; flex-shrink:0; display:flex; flex-direction:column; min-height:0;
+  background:var(--p-bg2); border-right:1px solid var(--p-line);}
+.pSide{flex:1; overflow-y:auto; padding:6px; min-height:0;}
+body.pro .sideFoot{border-top:1px solid var(--p-line); padding:8px 10px; gap:7px;}
+body.pro .sideFoot .fl{color:var(--p-txt2); font-size:11px;}
+body.pro .switch{background:var(--p-line2);}
+body.pro .switch.on{background:var(--p-acc);}
+body.pro .iconBtn{border-color:var(--p-line); color:var(--p-txt2); background:var(--p-bg3);}
+body.pro .iconBtn:hover{background:var(--p-hover); color:var(--p-txt); border-color:var(--line-strong);}
+.pSide h4{font-size:10px; text-transform:uppercase; letter-spacing:.7px; color:var(--p-txt3); padding:9px 6px 4px; font-weight:700;}
+.pSideItem{display:flex; justify-content:space-between; align-items:center; padding:3px 8px; min-height:var(--row); border-radius:3px; cursor:pointer; color:var(--p-txt2);}
+.pSideItem:hover{background:var(--p-bg3); color:var(--p-txt);}
+.pSideItem.active{background:var(--p-sel); color:#fff;}
+.pSideItem .n{color:var(--p-txt3); font-size:11px; font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
+.pSideItem.active .n{color:rgba(255,255,255,.72);}
+.pMain{flex:1; overflow:auto; background:var(--p-bg); position:relative;}
+.pProps{width:288px; background:var(--p-bg2); border-left:1px solid var(--p-line); overflow-y:auto; padding:10px; flex-shrink:0;}
+.pProps h4{font-size:10px; text-transform:uppercase; letter-spacing:.7px; color:var(--p-txt3); margin:12px 0 6px; font-weight:700;}
+.pProps h4:first-child{margin-top:2px;}
+.pProps label{display:block; font-size:11px; color:var(--p-txt2); margin:8px 0 3px;}
+.pProps input,.pProps select,.pProps textarea{width:100%; background:var(--p-feld); border:1px solid var(--p-line); color:var(--p-txt); font-size:11.5px; padding:5px 8px; border-radius:var(--radius-sm);}
+.pProps input:focus,.pProps select:focus,.pProps textarea:focus{border-color:var(--p-acc); box-shadow:none;}
+.pStatusbar{display:flex; align-items:center; gap:18px; background:var(--p-bg4); border-top:1px solid var(--p-line); padding:4px 14px; font-size:11px; color:var(--p-txt2); height:24px; white-space:nowrap; overflow-x:auto;}
+.pStatusbar::-webkit-scrollbar{height:0;}
+.pTable{width:100%; border-collapse:collapse; font-size:12px;}
+.pTable th{position:sticky; top:0; background:var(--p-bg3); color:var(--p-txt2); text-align:left; padding:6px 10px; border-bottom:1px solid var(--p-line); cursor:pointer; user-select:none; white-space:nowrap; z-index:5; font-weight:650; font-size:11px; text-transform:uppercase; letter-spacing:.4px;}
+.pTable th:hover{color:var(--p-txt);}
+.pTable td{padding:4px 10px; height:var(--row); border-bottom:1px solid var(--p-line2); color:var(--p-txt); white-space:nowrap; max-width:300px; overflow:hidden; text-overflow:ellipsis;}
+.pTable tbody tr:hover{background:var(--p-bg3);}
+.pTable tr.sel{background:var(--p-sel-weak);} .pTable tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--p-acc);}
+.pBtn{background:var(--p-bg3); border:1px solid var(--p-line); color:var(--p-txt); padding:5px 12px; font-size:11.5px; border-radius:4px;}
+.pBtn:hover{background:var(--p-hover);} .pBtn.accent{background:var(--p-acc); border-color:transparent; color:var(--accent-ink); font-weight:650;} .pBtn.accent:hover{filter:brightness(1.08);}
+body.pro .kCol{background:var(--p-bg2);} body.pro .kCard{background:var(--panel); border-color:var(--p-line); color:var(--p-txt); box-shadow:none;}
+body.pro .kCol h3{color:var(--p-txt2);} body.pro .kCol .sub{color:var(--p-txt3);}
+body.pro .tlWrap::before{background:var(--border);}
+body.pro .tlItem{background:var(--panel); border-color:var(--p-line); box-shadow:none;} body.pro .tlItem::before{border-color:var(--p-bg); background:var(--p-acc);}
+body.pro .tlItem .date{color:var(--p-acc);} body.pro .tlItem p{color:var(--p-txt2);}
+body.pro .barRow .bar{background:var(--p-bg3);} body.pro .barRow .bar>div{background:var(--p-acc);}
+body.pro .barRow .lbl{color:var(--p-txt2);}
+body.pro .moveBtns button{background:var(--p-bg3); color:var(--p-txt2);}
+body.pro .btn{background:var(--p-bg3); border-color:var(--p-line); color:var(--p-txt);}
+body.pro .btn:hover{background:var(--p-hover);}
+body.pro .btn.primary{background:var(--p-acc); color:var(--accent-ink); border-color:transparent;}
+body.pro .progressBar{background:var(--p-bg3); box-shadow:none;}
+
+/* Bilder */
+.cardImg{width:100%; height:150px; object-fit:cover; border-radius:10px; background:var(--panel2); cursor:zoom-in;}
+.formImgPrev{max-width:100%; max-height:170px; border-radius:10px; display:block; cursor:zoom-in;}
+.mCard[onclick],.chapRow[onclick]{cursor:pointer;}
+
+/* Lightbox */
+.lightbox{position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:400; display:flex; align-items:center; justify-content:center; cursor:zoom-out;}
+.lightbox img{max-width:94vw; max-height:92vh; border-radius:8px; box-shadow:0 20px 80px rgba(0,0,0,.6);}
+
+/* ============================================================
+   DETAILSEITE
+   Zuerst die Zusammenfassung als Fließtext, darunter die kurzen
+   Angaben als Beschriftung/Wert-Zeilen, zuletzt die Beziehungen
+   als eigene Karten. Wenig Rahmen, viel Ruhe – man liest hier,
+   man bedient nicht.
+   ============================================================ */
+.detailModal{width:640px; max-width:100%;}
+.dKopf{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
+.dKopf h2{font-size:19px; margin:0; min-width:0; overflow-wrap:anywhere;}
+.dArt{font-size:12px; color:var(--text2); font-weight:600;}
+.dKnoepfe{display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end;}
+
+.dBilder{margin-bottom:16px;}
+.dBildGross{width:100%; max-height:280px; object-fit:cover; border-radius:var(--radius); cursor:zoom-in; display:block;}
+.dBildReihe{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
+.dBildReihe img{width:84px; height:84px; object-fit:cover; border-radius:10px; cursor:zoom-in;}
+
+.dBlock{margin-bottom:22px;}
+.dBlock h3{font-size:14.5px; font-weight:650; margin-bottom:8px;}
+.dBlockKopf{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+.dBlockKopf h3{margin:0; flex:1; min-width:0;}
+.dBlockKnoepfe{display:flex; gap:6px; flex-shrink:0;}
+.dFliess{font-size:14px; line-height:1.65; color:var(--text); white-space:pre-wrap; overflow-wrap:anywhere;}
+.dLeer{font-size:13px; color:var(--text3); line-height:1.55;}
+
+/* Kurze Angaben: Beschriftung links, Wert rechts, dünne Linie dazwischen */
+.dTabelle{margin-bottom:22px;}
+.dRow{display:flex; gap:18px; align-items:flex-start; padding:11px 0; border-bottom:1px solid var(--border-subtle);}
+.dRow:last-child{border-bottom:none;}
+.dK{width:36%; max-width:190px; flex-shrink:0; font-size:13.5px; font-weight:650; color:var(--text);
+  overflow-wrap:anywhere;}
+.dV{flex:1; min-width:0; font-size:13.5px; line-height:1.55; color:var(--text2); white-space:pre-wrap; overflow-wrap:anywhere;}
+.dTags{margin-bottom:18px;}
+
+/* Beziehungen als Karten mit Richtung, Namensmarke und Beschreibung */
+.bezListe{display:flex; flex-direction:column; gap:8px;}
+.bezKarte{display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  border:1px solid var(--border); border-radius:var(--radius); padding:10px 11px; background:var(--bg2);}
+.bezPfeil{flex-shrink:0; width:26px; height:26px; border-radius:7px; background:var(--panel);
+  border:1px solid var(--border-subtle); display:flex; align-items:center; justify-content:center;
+  font-size:13px; color:var(--text2);}
+.bezChip{flex:1; min-width:0; text-align:left; background:var(--kt-kapitel-bg); color:var(--kt-kapitel-fg);
+  border:none; border-radius:6px; padding:3px 9px; font-size:12.5px; font-weight:650;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;}
+.bezChip:hover{filter:brightness(1.06);}
+.bezWeg{flex-shrink:0; width:22px; height:22px; border-radius:50%; border:1px solid var(--border);
+  background:var(--panel); color:var(--text3); font-size:11px; display:flex; align-items:center; justify-content:center;}
+.bezWeg:hover{border-color:var(--bad); color:var(--bad);}
+.bezText{flex-basis:100%; font-size:13.5px; color:var(--text); line-height:1.5; overflow-wrap:anywhere;}
+.bezNotiz{margin-top:10px; padding-top:10px; border-top:1px solid var(--border-subtle);
+  font-size:12.5px; color:var(--text2); line-height:1.55; overflow-wrap:anywhere;}
+body.pro .bezKarte{background:var(--p-bg3); border-color:var(--p-line);}
+body.pro .bezPfeil{background:var(--p-bg2); border-color:var(--p-line); color:var(--p-txt2);}
+body.pro .bezWeg{background:var(--p-bg2); border-color:var(--p-line); color:var(--p-txt2);}
+@media(max-width:520px){ .dRow{flex-direction:column; gap:3px;} .dK{width:100%; max-width:none;} }
+
+/* Detailseite */
+.dField{margin-bottom:10px;}
+.dField .lb{font-size:11.5px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.4px;}
+.dField .vl{font-size:14px; line-height:1.5; white-space:pre-wrap;}
+body.pro .dField .lb{color:var(--p-txt2);}
+.dSection{margin-top:16px; padding-top:12px; border-top:1px solid var(--border);}
+body.pro .dSection{border-color:var(--p-line2);}
+.dSection h4{font-size:13px; margin-bottom:8px; color:var(--text2);}
+.linkChip{display:inline-flex; align-items:center; gap:5px; background:var(--chip); border:1px solid var(--border); border-radius:20px; padding:4px 12px; font-size:13px; font-weight:600; margin:0 6px 6px 0; cursor:pointer; color:var(--text);}
+.linkChip:hover{border-color:var(--accent); color:var(--accent);}
+body.pro .linkChip{background:var(--p-bg3); border-color:var(--p-line); color:var(--p-txt);}
+.dTl{border-left:3px solid var(--accent); padding-left:12px; margin:4px 0 4px 4px;}
+.dTl .dt{font-size:12px; font-weight:700; color:var(--accent);}
+.dTl .tt{font-size:13.5px; cursor:pointer;}
+.dTl .tt:hover{color:var(--accent);}
+.stepRow{display:flex; align-items:center; gap:9px; padding:6px 0; border-bottom:1px solid var(--border); font-size:13.5px;}
+.stepRow:last-of-type{border-bottom:none;}
+.stepRow input[type=checkbox]{width:17px; height:17px; accent-color:var(--accent); cursor:pointer; flex-shrink:0;}
+.stepDone{text-decoration:line-through; color:var(--text2);}
+body.pro .stepRow{border-color:var(--p-line2);}
+
+/* Mindmap */
+.mmToolbar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; align-items:center;}
+.mmToolbar select{font-size:13px; padding:6px 9px; max-width:190px;}
+.mmWrap{position:relative; background:var(--panel); border:1px solid var(--border); border-radius:14px; overflow:hidden; height:calc(100vh - 250px); min-height:420px; box-shadow:var(--shadow);}
+body.pro .mmWrap{background:var(--p-bg4); border-color:var(--p-line); border-radius:var(--radius);}
+.mmWrap svg{width:100%; height:100%; display:block; cursor:grab; touch-action:none;}
+.mmWrap svg.panning{cursor:grabbing;}
+.mmNode{cursor:pointer;}
+.mmNode rect{stroke:rgba(0,0,0,.15); stroke-width:1.5; filter:drop-shadow(0 2px 4px rgba(0,0,0,.18));}
+.mmNode.sel rect{stroke:var(--accent); stroke-width:3;}
+body.pro .mmNode.sel rect{stroke:var(--p-acc);}
+.mmNode text{fill:#fff; font-size:14px; font-weight:600; pointer-events:none; user-select:none;}
+.mmEdge{stroke:var(--border); stroke-width:2.5; fill:none;}
+body.pro .mmEdge{stroke:var(--line-strong);}
+.mmHint{position:absolute; bottom:10px; left:12px; font-size:11.5px; color:var(--text2); pointer-events:none; background:var(--panel); padding:4px 10px; border-radius:8px; opacity:.9;}
+body.pro .mmHint{background:var(--p-bg2); color:var(--p-txt2);}
+.colorDot{width:22px; height:22px; border-radius:50%; border:2px solid var(--border); cursor:pointer; padding:0;}
+.colorDot:hover{transform:scale(1.15);}
+.mmNode image{pointer-events:none;}
+.mmPlay{cursor:pointer;}
+.mmPlay circle{fill:rgba(0,0,0,.55);}
+.mmPlay:hover circle{fill:rgba(0,0,0,.8);}
+.mmPlay text{fill:#fff; font-size:13px; pointer-events:none;}
+.videoOverlay{position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:300; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; padding:20px;}
+.videoOverlay video{max-width:92vw; max-height:80vh; border-radius:12px; background:#000;}
+.videoOverlay button{border:none; background:#fff; color:#222; font-weight:700; padding:9px 22px; border-radius:10px; font-size:14px;}
+
+/* ---------- Modal & Toast ---------- */
+.overlay{position:fixed; inset:0; background:rgba(28,20,10,.5); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
+  display:none; align-items:flex-start; justify-content:center; z-index:100; padding:34px 14px; overflow-y:auto;}
+.overlay.show{display:flex;}
+.modal{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-lg);
+  width:680px; max-width:100%; padding:26px; animation:modalIn .18s cubic-bezier(.4,0,.2,1);}
+@keyframes modalIn{from{opacity:0; transform:translateY(-8px) scale(.99);} to{opacity:1; transform:none;}}
+body.pro .modal{background:var(--panel); color:var(--p-txt); border:1px solid var(--p-line);}
+body.pro .modal input,body.pro .modal select,body.pro .modal textarea{background:var(--p-feld); border-color:var(--p-line); color:var(--p-txt);}
+body.pro .modal .btn{background:var(--p-bg3); color:var(--p-txt);} body.pro .modal .btn.primary{background:var(--p-acc); color:var(--accent-ink);}
+.modal h2{font-size:18px; margin-bottom:16px;}
+.formGrid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.formGrid .full{grid-column:1/-1;}
+.formGrid label{display:block; font-size:12px; font-weight:600; color:var(--text2); margin-bottom:4px;}
+body.pro .formGrid label{color:var(--p-txt2);}
+.formGrid input,.formGrid select,.formGrid textarea{width:100%;}
+.modalBtns{display:flex; justify-content:flex-end; gap:10px; margin-top:18px; flex-wrap:wrap; align-items:center;}
+#toasts{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:8px; align-items:center;}
+.toast{background:#2a211a; color:#f6f1ea; padding:12px 20px; border-radius:12px; font-size:13.5px; line-height:1.45;
+  box-shadow:var(--shadow-lg); display:flex; gap:14px; align-items:center; animation:tin .25s cubic-bezier(.4,0,.2,1);
+  max-width:90vw; border:1px solid rgba(255,255,255,.07);}
+.toast button{background:none; border:none; color:#e8a76a; font-weight:700; font-size:13.5px;}
+.toast button:hover{color:#f5c08a;}
+@keyframes tin{from{opacity:0; transform:translateY(12px);} to{opacity:1;}}
+@media(max-width:900px){ .pSideWrap,.pProps{display:none;} .formGrid{grid-template-columns:1fr;}
+  :root{--side-w:210px;} .mainHead{padding:14px 16px 12px;} #sContent{padding:6px 16px 32px;} }
+
+
+/* ================= FEINSCHLIFF =================
+   Barrierefreiheit, Ziffernsatz und Verhalten auf kleinen Bildschirmen. */
+
+/* Tastaturbedienung sichtbar machen – vorher hatten nur Eingabefelder einen Fokusring */
+.btn:focus-visible,.navItem:focus-visible,.projCard:focus-visible,.chipToggle:focus-visible,
+.switch:focus-visible,.iconBtn:focus-visible,.linkBtn:focus-visible,.sceneRow:focus-visible,
+.pBtn:focus-visible,.pWs:focus-visible,.linkChip:focus-visible,.moveBtns button:focus-visible{
+  outline:2px solid var(--accent); outline-offset:2px;}
+body.pro .btn:focus-visible,.pBtn:focus-visible,.pWs:focus-visible{outline-color:var(--p-acc);}
+
+/* Zahlen laufen in Tabellen und Statistiken sonst optisch auseinander */
+.pTable td,.barRow .val,.statNum b,.pSideItem .n,.storBar+div,.progRow span,.chapNum,.tlItem .date{
+  font-variant-numeric:tabular-nums;}
+
+/* Überschriften im Inhaltsbereich */
+.mCard h3,.chapRow h3,.tlItem h3{font-size:14.5px; font-weight:650; letter-spacing:-.005em;}
+.mCard .desc{line-height:1.5;}
+.dField .vl{line-height:1.6;}
+.emptyMsg{color:var(--text2); line-height:1.6;}
+.emptyMsg .big{opacity:.45;}
+
+/* Mindmap und Lightbox an die neuen Radien angleichen */
+.mmWrap{border-radius:var(--radius); box-shadow:var(--shadow-sm);}
+.mmHint{background:var(--panel); border:1px solid var(--border-subtle); color:var(--text2);}
+.cardImg,.formImgPrev{border-radius:11px;}
+.linkChip{background:var(--panel2); border-color:var(--border-subtle); transition:all .15s ease;}
+.linkChip:hover{border-color:var(--accent); color:var(--accent); background:var(--accent-light);}
+.kCard{box-shadow:var(--shadow-sm); border-radius:9px;}
+.kCol{background:var(--panel2); border:1px solid var(--border-subtle);}
+.tlItem{box-shadow:var(--shadow-sm);}
+.dashCard h2,.kCol h3{text-transform:none;}
+
+/* Bewegung reduzieren, wenn das System es verlangt */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important;
+    transition-duration:.01ms !important; scroll-behavior:auto !important;}
+  .mCard:hover,.chapRow:hover,.btn:hover{transform:none;}
+}
+
+/* ============================================================
+   EIGENE DIALOGE UND MENÜS
+   ============================================================ */
+.dlgOverlay{align-items:center; z-index:500;}
+.dlgModal{width:460px; padding:22px 24px;}
+.dlgModal h2{font-size:16px; margin-bottom:10px;}
+.dlgText{font-size:13.5px; line-height:1.55; color:var(--text2); white-space:pre-wrap; margin-bottom:6px;
+  max-height:46vh; overflow-y:auto;}
+.bildVorschau{display:flex; flex-wrap:wrap; gap:8px;}
+.bildWahl{display:flex; gap:8px; margin-top:8px; align-items:center;}
+.bildWahl input[type=file]{flex:1; padding:5px; min-width:0;}
+.feldLabel{display:block; font-size:12px; font-weight:600; color:var(--text2); margin-bottom:4px;}
+#kindPickWrap{margin-bottom:14px;}
+#kindPickWrap select{width:100%;}
+.dlgLabel{display:block; font-size:12px; font-weight:600; color:var(--text2); margin:14px 0 5px;}
+.dlgInput{width:100%; font-size:13.5px;}
+.btn.danger{background:var(--bad); color:#fff; border-color:transparent; font-weight:650;}
+.btn.danger:hover{background:var(--bad); filter:brightness(1.1);}
+body.pro .dlgModal{background:var(--panel); color:var(--p-txt); border-color:var(--p-line);}
+body.pro .dlgText{color:var(--p-txt2);}
+body.pro .dlgLabel{color:var(--p-txt2);}
+body.pro .dlgInput{background:var(--p-feld); border-color:var(--p-line); color:var(--p-txt);}
+
+.popupMenu{position:fixed; z-index:520; min-width:262px; max-height:calc(100vh - 60px); overflow-y:auto;
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-lg); padding:5px;}
+.popItem{display:flex; align-items:baseline; gap:10px; width:100%; text-align:left; background:none; border:none;
+  border-radius:var(--radius-sm); padding:7px 10px; font-size:13px; color:var(--text); flex-wrap:wrap;}
+.popItem:hover{background:var(--panel2);}
+.popItem.aus{color:var(--text3); cursor:default;}
+.popItem.aus:hover{background:none;}
+.popItem .pl{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.popItem .pk{font-family:var(--font-mono); font-size:10.5px; color:var(--text3); white-space:nowrap;}
+.popItem .ps{flex-basis:100%; font-size:10.5px; color:var(--text3); margin-top:-2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.popSep{height:1px; background:var(--border-subtle); margin:4px 8px;}
+body.pro .popupMenu{background:var(--panel); border-color:var(--p-line);}
+body.pro .popItem{color:var(--p-txt);} body.pro .popItem:hover{background:var(--p-bg3);}
+body.pro .popItem .pk,body.pro .popItem .ps{color:var(--p-txt3);}
+body.pro .popSep{background:var(--p-line2);}
+
+/* Punkt an der Projektkarte: es gibt ungesicherte Änderungen */
+.projCard .pDot{color:var(--accent); font-size:15px; line-height:0; vertical-align:middle;}
+
+/* ============================================================
+   JSON EINLESEN
+   Der Dialog zeigt je Datensatz eine Tabelle Quellfeld → Zielfeld.
+   Bewusst breit: die Zuordnung prüft man nur, wenn man Feldname,
+   Ziel und Beispielwert nebeneinander sieht.
+   ============================================================ */
+.jsonModal{width:820px; max-width:100%;}
+.jsSatz{border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-bottom:12px;
+  background:var(--bg2); transition:opacity .15s ease;}
+.jsSatz.aus{opacity:.45;}
+.jsKopf{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+.jsAn{display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; cursor:pointer;}
+.jsAn input{width:16px; height:16px; accent-color:var(--accent); cursor:pointer;}
+.jsPfad{font-family:var(--font-mono); font-size:11.5px; color:var(--text2); background:var(--panel2);
+  border:1px solid var(--border-subtle); border-radius:5px; padding:2px 7px; word-break:break-all;}
+.jsAnzahl{font-size:11.5px; color:var(--text3); margin-left:auto; white-space:nowrap;}
+.jsKopf select{font-size:12.5px; padding:5px 8px;}
+.jsTabelle{width:100%; border-collapse:collapse; font-size:12.5px;}
+.jsTabelle th{text-align:left; font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--text3); padding:4px 8px 6px; border-bottom:1px solid var(--border-subtle);}
+.jsTabelle td{padding:4px 8px; border-bottom:1px solid var(--border-subtle); vertical-align:middle;}
+.jsTabelle tr:last-child td{border-bottom:none;}
+.jsTabelle tr.jsAus{opacity:.5;}
+.jsTabelle code{font-family:var(--font-mono); font-size:11.5px; color:var(--text); word-break:break-all;}
+.jsTabelle select{width:100%; font-size:12px; padding:4px 6px;}
+.jsTabelle td:first-child{width:30%;} .jsTabelle td:nth-child(2){width:32%;}
+.jsTabelle td.jsWert{color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:0;}
+.jsSumme{margin-right:auto; font-size:12.5px; color:var(--text2); align-self:center;}
+body.pro .jsSatz{background:var(--p-bg2); border-color:var(--p-line);}
+body.pro .jsPfad{background:var(--p-bg3); border-color:var(--p-line); color:var(--p-txt2);}
+body.pro .jsTabelle code{color:var(--p-txt);}
+@media(max-width:700px){ .jsWert{display:none;} .jsTabelle td:first-child{width:45%;} }
+
+/* ---------- BIBLIOTHEK ----------
+   Eine Karte je Geschichte. Der ganze Kopfbereich ist ein Knopf,
+   damit man nicht auf ein kleines Ziel treffen muss. */
+.bibGitter{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px;}
+.bibKarte{display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--border);
+  border-radius:var(--radius); overflow:hidden; min-width:0; transition:border-color .15s ease;}
+.bibKarte:hover{border-color:var(--line-strong);}
+.bibKarte.offen{border-color:var(--accent);}
+.bibKarte.kaputt{opacity:.7;}
+.bibOeffnen{display:block; width:100%; text-align:left; background:none; border:none; padding:14px 15px 10px; min-width:0;}
+.bibOeffnen:hover{background:var(--panel-hover);}
+.bibKopf{display:flex; align-items:center; gap:10px; margin-bottom:9px; min-width:0;}
+.bibAv{width:32px; height:32px; flex-shrink:0; border-radius:8px; background:var(--accent-light); color:var(--accent);
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; border:1px solid var(--border);}
+.bibText{flex:1; min-width:0; display:block; overflow:hidden;}
+.bibTitel{display:block; font-size:14px; font-weight:650; color:var(--text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.bibUnter{display:block; font-size:11.5px; color:var(--text3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
+.bibMarke{flex-shrink:0; font-size:10px; font-weight:650; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--text3); background:var(--chip); border:1px solid var(--border-subtle); border-radius:20px; padding:2px 8px;}
+.bibMarke.offen{color:var(--accent-ink); background:var(--accent); border-color:transparent;}
+.bibZahlen{display:block; font-size:12px; color:var(--text2); margin-bottom:6px;}
+.bibFehler{display:block; font-size:12px; color:var(--bad); margin-bottom:6px;}
+.bibOeffnen .progressBar{display:block; height:5px; margin-bottom:8px;}
+.bibOeffnen .progressBar>span{display:block; height:100%; background:var(--accent); border-radius:6px;}
+.bibFuss{display:block; font-size:10.5px; color:var(--text3); font-variant-numeric:tabular-nums;}
+.bibKnoepfe{display:flex; gap:6px; padding:0 12px 12px; flex-wrap:wrap;}
+.bibKnoepfe .btn{flex:1; padding:4px 6px; font-size:11.5px;}
+.bibOrdner{display:block; font-size:11.5px; color:var(--text3); margin-left:auto; min-width:0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:46%;}
+.bibOrdner code{font-family:var(--font-mono); font-size:11px; color:var(--text2);}
+body.pro .bibKarte{background:var(--panel); border-color:var(--p-line);}
+
+/* ---------- SPRACHAUSWAHL ----------
+   Jede Sprache steht in ihrer eigenen Schrift und darunter auf
+   Deutsch: wer die Oberfläche versehentlich umgestellt hat,
+   findet den Weg zurück, ohne die Schrift lesen zu können. */
+.sprachGitter{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:7px;}
+.sprachKnopf{display:flex; flex-direction:column; gap:2px; align-items:flex-start; text-align:left;
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:8px 10px; color:var(--text); min-width:0;}
+.sprachKnopf:hover{border-color:var(--line-strong); background:var(--panel-hover);}
+.sprachKnopf.aktiv{border-color:var(--accent); background:var(--accent-light);}
+.sprachKnopf .se{display:block; font-size:13.5px; font-weight:650; white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis; max-width:100%;}
+.sprachKnopf .sd{display:block; font-size:10.5px; color:var(--text3); white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis; max-width:100%;}
+.sprachKnopf[dir="rtl"] .se,.sprachKnopf[dir="rtl"] .sd{text-align:right; width:100%;}
+body.pro .sprachKnopf{background:var(--p-bg3); border-color:var(--p-line); color:var(--p-txt);}
+body.pro .sprachKnopf.aktiv{border-color:var(--p-acc);}
+
+/* ---------- VON RECHTS NACH LINKS ----------
+   Arabisch und Urdu. dir="rtl" auf dem Dokument dreht Textfluss und
+   Flex-Reihenfolge bereits mit; hier bleiben die Stellen, die eine
+   feste Seite haben und sonst auf der falschen landen. */
+body.rtl .sceneRow .st{transform:scaleX(-1);}
+body.rtl .kCard{border-left:none; border-right:4px solid var(--accent);}
+body.rtl .dTl{border-left:none; border-right:3px solid var(--accent); padding-left:0; padding-right:12px;}
+body.rtl .tlWrap{padding-left:0; padding-right:26px;}
+body.rtl .tlWrap::before{left:auto; right:7px;}
+body.rtl .tlItem::before{left:auto; right:-24px;}
+body.rtl .tlBtns{right:auto; left:10px;}
+body.rtl .barRow .lbl{text-align:left;}
+body.rtl .sideSearch input{padding:8px 30px 8px 46px;}
+body.rtl .sideSearch .mag{left:auto; right:10px;}
+body.rtl .kbd{right:auto; left:7px;}
+/* Zahlen und Kürzel bleiben von links nach rechts lesbar */
+body.rtl .cnt,body.rtl .statBig,body.rtl .kTag,body.rtl .pk,body.rtl .ag{direction:ltr; unicode-bidi:embed;}
+
+/* ---------- ANGEHÄNGTE DATEIEN ----------
+   Eine Zeile je Datei statt Chips: nur so ist Platz für die
+   Zusatzknöpfe, und lange Dateinamen kürzen sauber. */
+.anhangListe{display:flex; flex-direction:column; gap:6px;}
+.anhangZeile{display:flex; align-items:center; gap:6px; background:var(--panel2);
+  border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:5px 7px 5px 5px;}
+.anhangName{flex:1; min-width:0; display:flex; align-items:center; gap:8px; background:none; border:none;
+  text-align:left; color:var(--text); font-size:13px; padding:3px 4px; border-radius:5px;}
+.anhangName:hover{background:var(--panel-hover); color:var(--accent);}
+.anhangName .ic{flex-shrink:0; font-size:15px;}
+.anhangName .nm{flex:1; min-width:0; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.anhangZeile .btn{padding:3px 8px; font-size:11.5px;}
+body.pro .anhangZeile{background:var(--p-bg3); border-color:var(--p-line);}
+body.pro .anhangName{color:var(--p-txt);}
+
+/* ============================================================
+   NICHTS LÄUFT AUS SEINEM KASTEN
+   Zwei wiederkehrende Ursachen, beide hier abgestellt:
+
+   1. Ein Knopf in einem Flex-Kasten schrumpft unter seine
+      Textbreite. Zusammen mit white-space:nowrap tritt der Text
+      dann seitlich aus dem Rahmen aus – so geschehen bei
+      „Speichern und beenden" im Beenden-Dialog.
+   2. overflow:hidden und text-overflow wirken nicht auf inline-
+      Elemente. Ein <span> mit Auslassungspunkten kürzt also
+      nicht, sondern läuft weiter – so geschehen beim Dateinamen
+      in der Projektkarte.
+   ============================================================ */
+.btn{flex-shrink:0; max-width:100%;}
+/* Ist wirklich kein Platz mehr, lieber umbrechen als austreten */
+.modalBtns .btn{white-space:normal; text-align:center;}
+
+/* Sehr lange Wörter – Dateipfade, erfundene Namen – sprengen sonst die Karte */
+.dlgText,.relNote,.dataRow .v,.mCard .desc,.chapRow .meta,.tlItem p,.emptyMsg{overflow-wrap:anywhere;}
+.mCard h3,.chapRow h3,.tlItem h3,.relCard .rh h3,.pcHead h2{overflow-wrap:anywhere; min-width:0;}
+.toast{overflow-wrap:anywhere;}
+
+/* Flex-Kinder dürfen nicht breiter werden als ihr Kasten */
+.mCard,.chapRow .grow,.miniItem .grow,.relCard,.panelCard,.statStrip{min-width:0;}
+.mCard>*{min-width:0; max-width:100%;}
+.cardBtns,.filterBar,.headActions{flex-wrap:wrap;}
+
+/* Kleine Bildschirme: mehr Platz für Inhalt, weniger für Rahmen */
+@media (max-width:640px){
+  .sidebar{display:none;}
+  .mainHead{padding:12px 14px 10px;}
+  #sContent{padding:6px 14px 28px;}
+  .cardGrid{grid-template-columns:1fr; gap:14px;}
+  .relGrid{grid-template-columns:1fr;}
+  .modal{padding:20px 16px; border-radius:var(--radius);}
+  .btn{padding:7px 11px;}
+  .statStrip{gap:20px; padding:14px 16px;}
+  .sparkWrap{margin-left:0;}
+}
+
+/* ============================================================
+   ANGLEICHUNG DER ÜBRIGEN ANSICHTEN
+   Die neue Oberfläche lebt von Kanten statt Schatten. Karten,
+   Zeilen und Spalten werden entsprechend flacher gestellt.
+   ============================================================ */
+.mCard,.dashCard,.chapRow,.tlItem,.kCard{box-shadow:none;}
+.mCard{border-radius:var(--radius); padding:15px;}
+.mCard:hover{transform:none; border-color:var(--line-strong); background:var(--panel-hover);}
+.chapRow{border-radius:var(--radius); padding:12px 14px; margin-bottom:7px;}
+.chapRow:hover{transform:none; border-color:var(--line-strong); background:var(--panel-hover);}
+.dashCard{border-radius:var(--radius); padding:18px;}
+.dashCard h2{font-size:13.5px; color:var(--text); margin-bottom:12px;}
+.chapNum{border-radius:8px; font-size:13px;}
+.typeIcon{border-radius:9px;}
+.tlItem{border-radius:var(--radius);}
+.kCol{border-radius:var(--radius); background:var(--panel2); border:1px solid var(--border-subtle);}
+.kCard{border-radius:8px; background:var(--panel); border-color:var(--border);}
+.kCard:hover{border-color:var(--line-strong);}
+.chipToggle{border-radius:var(--radius-sm); padding:5px 11px; font-size:12px;}
+.chipToggle.active{box-shadow:none; color:var(--accent-ink);}
+.statNum{background:var(--panel2); border-radius:9px;}
+.statNum b{font-weight:400; font-size:22px;}
+.linkChip{border-radius:var(--radius-sm); padding:3px 10px; font-size:12.5px; font-weight:550;}
+.progressBar{box-shadow:none; background:var(--panel2);}
+.progressBar>div{background:var(--accent);}
+.barRow .bar>div{background:var(--accent);}
+.modal{border-radius:var(--radius);}
+.toast{background:var(--panel2); color:var(--text); border:1px solid var(--border); border-radius:var(--radius);}
+.toast button{color:var(--accent);}
+.mmWrap{border-radius:var(--radius); box-shadow:none;}
+.filterBar{margin-bottom:14px;}
+.emptyMsg .big{font-size:38px;}
+</style></head><body><div id="simpleUI">
+
+  <!-- Eigene Titelleiste (das Electron-Fenster läuft rahmenlos) -->
+  <div class="titlebar">
+    <div class="tbDots">
+      <button class="tbDot c" onclick="winClose()" title="Schließen" aria-label="Schließen"></button>
+      <button class="tbDot m" onclick="winMin()" title="Minimieren" aria-label="Minimieren"></button>
+      <button class="tbDot x" onclick="winMax()" title="Maximieren" aria-label="Maximieren"></button>
+    </div>
+    <div class="tbTitle" id="tbTitle">StoryPlaner — Die Aschekrone.story •</div>
+    <div class="tbRight" id="tbSaved">unsaved changes</div>
+  </div>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sideScroll">
+        <div id="projSlot"><button class="projCard" onclick="projektMenue(this)" title="Projekt: anlegen, öffnen, speichern, einlesen, ausgeben">
+    <span class="projAv">D</span>
+    <span class="pTxt"><span class="pT">Die Aschekrone <span class="pDot" title="ungesicherte Änderungen">•</span></span>
+      <span class="pS">Fantasy · Coming of Age · 90.000 Wörter · nicht gespeichert</span></span>
+    <span class="pC">▾</span></button></div>
+        <div class="sideSearch">
+          <span class="mag">🔍</span>
+          <input id="sSearch" type="search" placeholder="Suchen …" aria-label="Suchen"
+            title="Durchsucht Namen, Titel, Tags und Beschreibungen">
+          <span class="kbd">Strg K</span>
+        </div>
+        <nav id="sideNav"><button class="navItem" data-view="bibliothek">
+        <span class="ico">❑</span><span class="lbl">My stories</span>
+        </button><button class="navItem active" data-view="dash" aria-current="page">
+        <span class="ico">▣</span><span class="lbl">Overview</span>
+        </button><button class="navItem" data-view="kapitel">
+        <span class="ico">▤</span><span class="lbl">Chapters</span>
+        <span class="cnt">4</span></button><button class="navItem" data-view="folge">
+        <span class="ico">▦</span><span class="lbl">Episodes</span>
+        <span class="cnt">1</span></button><div class="navSec">Characters &amp; world</div><button class="navItem" data-view="figur">
+        <span class="ico">◉</span><span class="lbl">Characters</span>
+        <span class="cnt">3</span></button><button class="navItem" data-view="ort">
+        <span class="ico">◈</span><span class="lbl">Places</span>
+        <span class="cnt">2</span></button><button class="navItem" data-view="welt">
+        <span class="ico">○</span><span class="lbl">World elements</span>
+        <span class="cnt">3</span></button><button class="navItem" data-view="rel">
+        <span class="ico">∴</span><span class="lbl">Relationships</span>
+        </button><div class="navSec">Structure</div><button class="navItem" data-view="beat">
+        <span class="ico">◇</span><span class="lbl">Plot points</span>
+        <span class="cnt">5</span></button><button class="navItem" data-view="akte">
+        <span class="ico">▥</span><span class="lbl">Acts &amp; scenes</span>
+        </button><button class="navItem" data-view="ereignis">
+        <span class="ico">∿</span><span class="lbl">Timeline</span>
+        </button><div class="navSec">Tools</div><button class="navItem" data-view="stats">
+        <span class="ico">▨</span><span class="lbl">Statistics</span>
+        </button><button class="navItem" data-view="mind">
+        <span class="ico">⁂</span><span class="lbl">Mind map</span>
+        </button><button class="navItem action" data-act="impuls"><span class="ico">✳</span><span class="lbl">Writing prompt</span></button><button class="navItem action" data-act="expose"><span class="ico">↗</span><span class="lbl">Synopsis export</span></button><button class="navItem" data-view="notiz">
+        <span class="ico">◌</span><span class="lbl">Notes &amp; ideas</span>
+        <span class="cnt">2</span></button></nav>
+      </div>
+      <div class="sideFoot">
+        <span class="fl" id="proLabel">Profi-Modus</span>
+        <button class="switch" id="proSwitch" onclick="setPro(true)" title="Zur professionellen Oberfläche wechseln"
+          role="switch" aria-checked="false" aria-label="Profi-Modus"></button>
+        <button class="iconBtn" onclick="openOpts()" title="Einstellungen" aria-label="Einstellungen">⚙</button>
+        <button class="iconBtn" id="themeBtn" onclick="toggleTheme()" title="Hell/Dunkel umschalten" aria-label="Hell/Dunkel umschalten">☀</button>
+      </div>
+    </aside>
+    <div class="mainCol">
+      <header class="mainHead" id="mainHead"><h1>Overview</h1>
+    <span class="crumb">/ <b>Project</b> / <b>Overview</b></span>
+    <span class="headActions">
+      <button class="btn" onclick="go('notiz')" title="Notes &amp; ideas">◔ Ideas <span class="pill">2</span></button>
+      <button class="btn primary" onclick="openForm()" title="Add">＋ Add <span class="hk">N</span></button>
+    </span></header>
+      <main id="sContent"><div class="ovWrap">
+    <div class="statStrip">
+      <div class="statCell"><span class="statBig">6<span class="u">%</span></span><span class="statLab">Progress</span></div>
+      <div class="statCell"><span class="statBig">5,000</span>
+        <span class="statLab">of 90,000 words</span></div>
+      <div class="statCell"><span class="statBig">1<span class="sm">/4</span></span><span class="statLab">Chapters done</span></div>
+      <div class="sparkWrap">
+        <div class="spark" title="Words written per day"><i class="" style="height:2px" title="2026-07-07: +0"></i><i class="" style="height:2px" title="2026-07-08: +0"></i><i class="" style="height:2px" title="2026-07-09: +0"></i><i class="" style="height:2px" title="2026-07-10: +0"></i><i class="" style="height:2px" title="2026-07-11: +0"></i><i class="" style="height:2px" title="2026-07-12: +0"></i><i class="" style="height:2px" title="2026-07-13: +0"></i><i class="" style="height:2px" title="2026-07-14: +0"></i><i class="" style="height:2px" title="2026-07-15: +0"></i><i class="" style="height:2px" title="2026-07-16: +0"></i><i class="" style="height:2px" title="2026-07-17: +0"></i><i class="" style="height:2px" title="2026-07-18: +0"></i><i class="" style="height:2px" title="2026-07-19: +0"></i><i class="" style="height:2px" title="2026-07-20: +0"></i><i class="" style="height:2px" title="2026-07-21: +0"></i><i class="" style="height:2px" title="2026-07-22: +0"></i><i class="" style="height:2px" title="2026-07-23: +0"></i><i class="" style="height:2px" title="2026-07-24: +0"></i><i class="" style="height:2px" title="2026-07-25: +0"></i><i class="" style="height:2px" title="2026-07-26: +0"></i><i class="" style="height:2px" title="2026-07-27: +0"></i><i class="" style="height:2px" title="2026-07-28: +0"></i><i class="" style="height:2px" title="2026-07-29: +0"></i><i class="" style="height:2px" title="2026-07-30: +0"></i><i class="" style="height:2px" title="2026-07-31: +0"></i><i class="" style="height:2px" title="2026-08-01: +0"></i><i class="" style="height:2px" title="2026-08-02: +0"></i><i class="today" style="height:2px" title="2026-08-03: +0"></i></div>
+        <div class="sparkMeta"><div class="d">0 today</div>
+          <div class="l">28-day history</div></div></div>
+    </div>
+
+    <div class="ovCols">
+      <div class="panelCard">
+        <div class="pcHead"><h2>Book details</h2>
+          <span class="r"><button class="linkBtn" onclick="toggleBookEdit()">edit</button></span></div>
+        
+    <div class="dataRow"><span class="k">Title</span><span class="v">Die Aschekrone</span></div>
+    <div class="dataRow"><span class="k">Genre</span><span class="v">Fantasy · Coming of Age</span></div>
+    <div class="dataRow"><span class="k">Premise</span><span class="v">Eine junge Schmiedin entdeckt, dass die zerstörte Krone des gefallenen Königreichs in ihrem eigenen Blut weiterlebt – und alle Mächte des Kontinents beginnen, sie zu jagen.</span></div>
+    <div class="dataRow"><span class="k">Theme</span><span class="v">Macht verändert – die Frage ist, wen du an deiner Seite hast.</span></div>
+    <div class="dataRow"><span class="k">Audience</span><span class="v">Jugendliche &amp; Erwachsene</span></div>
+    <div class="dataRow"><span class="k">Word goal</span><span class="v">90,000</span></div>
+      </div>
+      <div class="panelCard">
+        <div class="pcHead"><h2>Recent changes</h2></div>
+        <div class="chRow" onclick="openDetail('msdmbg1ndujqd')" title="Öffnen">
+          <span class="kTag kt-kapitel">CHP</span>
+          <span class="nm">Funken in der Asche</span>
+          <span class="ag">9 h ago</span></div><div class="chRow" onclick="openDetail('msdmbg1n022io')" title="Öffnen">
+          <span class="kTag kt-folge">EPS</span>
+          <span class="nm">Die Ankunft</span>
+          <span class="ag">9 h ago</span></div><div class="chRow" onclick="openDetail('msdmbg1nzdpyr')" title="Öffnen">
+          <span class="kTag kt-kapitel">CHP</span>
+          <span class="nm">Der Ruf des Nordens</span>
+          <span class="ag">9 h ago</span></div><div class="chRow" onclick="openDetail('msdmbg1nalhbc')" title="Öffnen">
+          <span class="kTag kt-kapitel">CHP</span>
+          <span class="nm">Die Nebelklamm</span>
+          <span class="ag">9 h ago</span></div><div class="chRow" onclick="openDetail('msdmbg1ndya0y')" title="Öffnen">
+          <span class="kTag kt-kapitel">CHP</span>
+          <span class="nm">Was das Blut erinnert</span>
+          <span class="ag">9 h ago</span></div><div class="chRow" onclick="openDetail('msdmbg1nt86rz')" title="Öffnen">
+          <span class="kTag kt-figur">CHR</span>
+          <span class="nm">Mira von Aschfeld</span>
+          <span class="ag">9 h ago</span></div>
+        <div class="pcFoot">
+          <button class="btn" onclick="inspiration()">Schreib-Impuls</button>
+          <button class="btn" onclick="exportMarkdown()">Exposé exportieren</button></div>
+      </div>
+    </div>
+  </div></main>
+    </div>
+  </div>
+</div>
+
+<div id="proUI">
+  <div class="pMenubar" id="pMenubar">
+    <span class="appIco">◆ StoryPlaner Pro</span>
+    <div class="pMenu"><button>Datei</button><div class="pDrop">
+      <button onclick="projektNeu()">Neues Projekt <span class="kb">Strg+N</span></button>
+      <button onclick="projektOeffnen()">Projekt öffnen… <span class="kb">Strg+O</span></button>
+      <button onclick="speichereJetzt(false)">Speichern <span class="kb">Strg+S</span></button>
+      <button onclick="speichereJetzt(true)">Speichern unter… <span class="kb">Strg+Umsch+S</span></button>
+      <div class="sep"></div>
+      <button onclick="openForm()">Neuer Eintrag <span class="kb">N</span></button>
+      <button onclick="manuskriptEinlesen()">Wortzahlen aus Manuskript…</button>
+      <div class="sep"></div>
+      <button onclick="importJSON()">Sicherung einlesen…</button>
+      <button onclick="jsonImport()">JSON-Datei einlesen…</button>
+      <button onclick="kiExport()">Für eine KI ausgeben…</button>
+      <button onclick="exportJSON()">Sicherung ausgeben, mit Anhängen <span class="kb">Strg+E</span></button>
+      <button onclick="exportJSON(false)">Sicherung ausgeben, ohne Anhänge</button>
+      <button onclick="exportMarkdown()">Exposé ausgeben (Markdown)</button>
+      <div class="sep"></div>
+      <button onclick="openOpts()">Einstellungen & eigene Optionen…</button>
+      <button onclick="loadDemo()">Demodaten laden</button>
+      <button onclick="wipeAll()">Alle Daten löschen…</button>
+    </div></div>
+    <div class="pMenu"><button>Bearbeiten</button><div class="pDrop">
+      <button onclick="rueckgaengig()">Rückgängig <span class="kb">Strg+Z</span></button>
+      <button onclick="wiederherstellen()">Wiederherstellen <span class="kb">Strg+Y</span></button>
+      <div class="sep"></div>
+      <button onclick="editSelected()">Auswahl bearbeiten <span class="kb">F2</span></button>
+      <button onclick="deleteSelected()">Auswahl löschen <span class="kb">Entf</span></button>
+      <div class="sep"></div>
+      <button onclick="selectAllRows()">Alles auswählen <span class="kb">Strg+A</span></button>
+    </div></div>
+    <div class="pMenu"><button>Ansicht</button><div class="pDrop">
+      <button onclick="setWs('table')">Tabelle <span class="kb">1</span></button>
+      <button onclick="setWs('beat')">Handlungs-Board <span class="kb">2</span></button>
+      <button onclick="setWs('ereignis')">Zeitleiste <span class="kb">3</span></button>
+      <button onclick="setWs('mind')">Mindmap <span class="kb">4</span></button>
+      <button onclick="setWs('stats')">Statistik <span class="kb">5</span></button>
+      <div class="sep"></div>
+      <button onclick="setPro(false)">Zum einfachen Modus wechseln</button>
+    </div></div>
+    <div class="pMenu"><button>Hilfe</button><div class="pDrop">
+      <button onclick="showShortcuts()">Tastenkürzel</button>
+      <button onclick="ueberDialog()">Über StoryPlaner…</button>
+    </div></div>
+    <div class="pWinBtns" id="pWinBtns">
+      <button onclick="winMin()" title="Minimieren" aria-label="Minimieren">─</button>
+      <button onclick="winMax()" title="Maximieren" aria-label="Maximieren">▢</button>
+      <button class="x" onclick="winClose()" title="Schließen" aria-label="Schließen">✕</button>
+    </div>
+  </div>
+  <div class="pWsBar">
+    <button class="pWs active" data-ws="table" onclick="setWs('table')">Tabelle</button>
+    <button class="pWs" data-ws="beat" onclick="setWs('beat')">Handlungs-Board</button>
+    <button class="pWs" data-ws="ereignis" onclick="setWs('ereignis')">Zeitleiste</button>
+    <button class="pWs" data-ws="mind" onclick="setWs('mind')">Mindmap</button>
+    <button class="pWs" data-ws="stats" onclick="setWs('stats')">Statistik</button>
+    <input id="pSearch" type="search" placeholder="Suchen…">
+  </div>
+  <div class="pBody">
+    <aside class="pSideWrap">
+      <div class="pSide" id="pSide">
+    <div class="pSideItem active" onclick="sideFilter=null;renderPro()"><span>◆ Alle Einträge</span><span class="n">23</span></div>
+    <h4>Sammlungen</h4>
+    <div class="pSideItem "
+    onclick="setSideFilter('kind','kapitel')"><span>📄 Kapitel</span><span class="n">4</span></div><div class="pSideItem "
+    onclick="setSideFilter('kind','folge')"><span>📺 Folgen</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('kind','figur')"><span>👤 Figuren</span><span class="n">3</span></div><div class="pSideItem "
+    onclick="setSideFilter('kind','ort')"><span>🗺️ Orte</span><span class="n">2</span></div><div class="pSideItem "
+    onclick="setSideFilter('kind','welt')"><span>🌍 Welt</span><span class="n">3</span></div><div class="pSideItem "
+    onclick="setSideFilter('kind','beat')"><span>🧩 Handlung</span><span class="n">5</span></div><div class="pSideItem "
+    onclick="setSideFilter('kind','ereignis')"><span>⏳ Zeitleiste</span><span class="n">3</span></div><div class="pSideItem "
+    onclick="setSideFilter('kind','notiz')"><span>💡 Ideen</span><span class="n">2</span></div>
+    <h4>Tags</h4><div class="pSideItem "
+    onclick="setSideFilter('tag','Actionszene')"><span># Actionszene</span><span class="n">2</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Anfang')"><span># Anfang</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Pilot')"><span># Pilot</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Rückblick')"><span># Rückblick</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','POV')"><span># POV</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Gegenspieler')"><span># Gegenspieler</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Startort')"><span># Startort</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Magiesystem')"><span># Magiesystem</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Wendepunkt')"><span># Wendepunkt</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Finale')"><span># Finale</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Meta')"><span># Meta</span><span class="n">1</span></div><div class="pSideItem "
+    onclick="setSideFilter('tag','Recherche')"><span># Recherche</span><span class="n">1</span></div>
+    <h4>Aktionen</h4>
+    <div class="pSideItem" onclick="openForm()"><span>＋ Neuer Eintrag</span></div>
+    <div class="pSideItem" onclick="exportMarkdown()"><span>📝 Exposé-Export</span></div></div>
+      <!-- Gleiche Fußleiste wie im einfachen Modus, damit der Wechsel überall gleich funktioniert -->
+      <div class="sideFoot">
+        <span class="fl">Profi-Modus</span>
+        <button class="switch on" id="proSwitchPro" onclick="setPro(false)" title="Zurück zur einfachen Oberfläche"
+          role="switch" aria-checked="true" aria-label="Profi-Modus"></button>
+        <button class="iconBtn" onclick="openOpts()" title="Einstellungen" aria-label="Einstellungen">⚙</button>
+        <button class="iconBtn" id="themeBtnPro" onclick="toggleTheme()" title="Hell/Dunkel umschalten" aria-label="Hell/Dunkel umschalten">☀</button>
+      </div>
+    </aside>
+    <main class="pMain" id="pMain"><table class="pTable"><thead><tr>
+    <th style="width:30px"><input type="checkbox"  onclick="toggleAll(this.checked)"></th>
+    <th onclick="proSort('name')">Name/Titel</th><th onclick="proSort('kind')">Typ</th><th onclick="proSort('info')">Info</th><th onclick="proSort('order')">Reihenfolge</th><th onclick="proSort('added')">Angelegt ▼</th><th>Beschreibung</th><th>Tags</th><th></th></tr></thead>
+    <tbody><tr class="" onclick="rowClick(event,'msdmbg1ndujqd')" ondblclick="openForm('msdmbg1ndujqd')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1ndujqd')"></td>
+      <td title="Funken in der Asche">Funken in der Asche</td>
+      <td>📄 Kapitel</td>
+      <td>Fertig · 3.200 W.</td>
+      <td>1 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1ndujqd',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1ndujqd',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Mira arbeitet in der Schmiede von Eldenmoor. Ein fremder Ritter bringt ein zerbrochenes Kr</td>
+      <td>#Anfang</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1ndujqd')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1n022io')" ondblclick="openForm('msdmbg1n022io')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1n022io')"></td>
+      <td title="Die Ankunft">Die Ankunft</td>
+      <td>📺 Folge</td>
+      <td>Entwurf · 2/4 Schritte</td>
+      <td>1 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1n022io',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1n022io',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Auftaktfolge: Alltag in der Schmiede, dann bringt der fremde Ritter das Kronenfragment.</td>
+      <td>#Pilot</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1n022io')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nzdpyr')" ondblclick="openForm('msdmbg1nzdpyr')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nzdpyr')"></td>
+      <td title="Der Ruf des Nordens">Der Ruf des Nordens</td>
+      <td>📄 Kapitel</td>
+      <td>Entwurf · 1.800 W.</td>
+      <td>2 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nzdpyr',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nzdpyr',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Der Orden der Aschewächter taucht auf. Mira flieht mit dem Fragment und trifft den Deserte</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nzdpyr')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nalhbc')" ondblclick="openForm('msdmbg1nalhbc')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nalhbc')"></td>
+      <td title="Die Nebelklamm">Die Nebelklamm</td>
+      <td>📄 Kapitel</td>
+      <td>Geplant · 0 W.</td>
+      <td>3 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nalhbc',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nalhbc',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Flucht durch die Nebelklamm. Erste Konfrontation mit einem Aschewandler.</td>
+      <td>#Actionszene</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nalhbc')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1ndya0y')" ondblclick="openForm('msdmbg1ndya0y')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1ndya0y')"></td>
+      <td title="Was das Blut erinnert">Was das Blut erinnert</td>
+      <td>📄 Kapitel</td>
+      <td>Idee · 0 W.</td>
+      <td>4 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1ndya0y',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1ndya0y',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Rückblick: die wahre Geschichte des Königshauses – Miras Herkunft deutet sich an.</td>
+      <td>#Rückblick</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1ndya0y')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nt86rz')" ondblclick="openForm('msdmbg1nt86rz')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nt86rz')"></td>
+      <td title="Mira von Aschfeld">Mira von Aschfeld</td>
+      <td>👤 Figur</td>
+      <td>⭐ Protagonist/in</td>
+      <td>1 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nt86rz',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nt86rz',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Will nur ihre Schmiede und ihre kranke Mutter retten – wird in ein Schicksal gezwungen, da</td>
+      <td>#POV</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nt86rz')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nmmem1')" ondblclick="openForm('msdmbg1nmmem1')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nmmem1')"></td>
+      <td title="Kael Dornhart">Kael Dornhart</td>
+      <td>👤 Figur</td>
+      <td>🤝 Verbündete/r</td>
+      <td>2 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nmmem1',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nmmem1',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Sucht Wiedergutmachung für den Befehl, den er nicht verweigert hat.</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nmmem1')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nhrv04')" ondblclick="openForm('msdmbg1nhrv04')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nhrv04')"></td>
+      <td title="Hochmeister Veyron">Hochmeister Veyron</td>
+      <td>👤 Figur</td>
+      <td>⚔️ Antagonist/in</td>
+      <td>3 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nhrv04',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nhrv04',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Glaubt, nur totale Kontrolle über die Kronenmagie verhindert einen zweiten Untergang.</td>
+      <td>#Gegenspieler</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nhrv04')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1ndfg56')" ondblclick="openForm('msdmbg1ndfg56')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1ndfg56')"></td>
+      <td title="Eldenmoor">Eldenmoor</td>
+      <td>🗺️ Ort</td>
+      <td>🏙️ Stadt · Grenzland des verbrannten Königreichs</td>
+      <td>1 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1ndfg56',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1ndfg56',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Grenzstadt am Rand des verbrannten Königreichs. Lebt vom Handel mit Aschglas – dem verglas</td>
+      <td>#Startort</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1ndfg56')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1n0slet')" ondblclick="openForm('msdmbg1n0slet')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1n0slet')"></td>
+      <td title="Die Nebelklamm">Die Nebelklamm</td>
+      <td>🗺️ Ort</td>
+      <td>🌲 Natur/Landschaft · Gebirgspass nach Norden</td>
+      <td>2 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1n0slet',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1n0slet',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Enge Schlucht, in der ewiger Nebel hängt. Einziger Weg aus dem Grenzland – und Jagdrevier </td>
+      <td>#Actionszene</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1n0slet')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nwr257')" ondblclick="openForm('msdmbg1nwr257')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nwr257')"></td>
+      <td title="Aschemagie">Aschemagie</td>
+      <td>🌍 Welt-Element</td>
+      <td>✨ Magie/Technologie</td>
+      <td>2 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nwr257',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nwr257',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Magie, die aus den Überresten des gefallenen Königreichs strömt. Nur Blutsträger der König</td>
+      <td>#Magiesystem</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nwr257')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1noitma')" ondblclick="openForm('msdmbg1noitma')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1noitma')"></td>
+      <td title="Orden der Aschewächter">Orden der Aschewächter</td>
+      <td>🌍 Welt-Element</td>
+      <td>🛡️ Fraktion/Gruppe</td>
+      <td>3 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1noitma',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1noitma',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Militärischer Orden, der nach dem Untergang die Kronensplitter einsammelt und verwahrt.</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1noitma')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1no032u')" ondblclick="openForm('msdmbg1no032u')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1no032u')"></td>
+      <td title="Aschewandler">Aschewandler</td>
+      <td>🌍 Welt-Element</td>
+      <td>🐉 Kreatur</td>
+      <td>4 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1no032u',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1no032u',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Wesen aus verglaster Asche – Echos der Menschen, die beim Untergang starben. Von Splittern</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1no032u')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1n8qx2r')" ondblclick="openForm('msdmbg1n8qx2r')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1n8qx2r')"></td>
+      <td title="Auslöser: Das Fragment glüht">Auslöser: Das Fragment glüht</td>
+      <td>🧩 Plot-Punkt</td>
+      <td>Akt 1 · Hauptplot: Die Krone</td>
+      <td>1 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1n8qx2r',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1n8qx2r',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Mira berührt das Kronenfragment – ihr Blut reagiert. Ihr altes Leben ist vorbei.</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1n8qx2r')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1n41pb3')" ondblclick="openForm('msdmbg1n41pb3')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1n41pb3')"></td>
+      <td title="Flucht aus Eldenmoor">Flucht aus Eldenmoor</td>
+      <td>🧩 Plot-Punkt</td>
+      <td>Akt 1 · Hauptplot: Die Krone</td>
+      <td>2 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1n41pb3',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1n41pb3',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Der Orden riegelt die Stadt ab. Mira muss ihre Mutter zurücklassen – offene Wunde für den </td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1n41pb3')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nt3067')" ondblclick="openForm('msdmbg1nt3067')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nt3067')"></td>
+      <td title="Kael gesteht seinen Verrat">Kael gesteht seinen Verrat</td>
+      <td>🧩 Plot-Punkt</td>
+      <td>Akt 2 · Nebenplot: Verrat im Orden</td>
+      <td>3 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nt3067',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nt3067',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Mittelpunkt-Wende: Kael war am Massaker von Aschfeld beteiligt. Vertrauensbruch.</td>
+      <td>#Wendepunkt</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nt3067')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nyi9rh')" ondblclick="openForm('msdmbg1nyi9rh')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nyi9rh')"></td>
+      <td title="Tiefste Krise: Erinnerungen verbrennen">Tiefste Krise: Erinnerungen verbrennen</td>
+      <td>🧩 Plot-Punkt</td>
+      <td>Akt 2 · Hauptplot: Die Krone</td>
+      <td>4 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nyi9rh',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nyi9rh',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Mira wirkt zu viel Magie und vergisst das Gesicht ihrer Mutter.</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nyi9rh')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nq6kv3')" ondblclick="openForm('msdmbg1nq6kv3')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nq6kv3')"></td>
+      <td title="Showdown in der Kronenkammer">Showdown in der Kronenkammer</td>
+      <td>🧩 Plot-Punkt</td>
+      <td>Akt 3 · Hauptplot: Die Krone</td>
+      <td>5 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nq6kv3',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nq6kv3',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Mira kann die Krone neu schmieden oder für immer zerstören. Sie entscheidet sich – Preis i</td>
+      <td>#Finale</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nq6kv3')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1na00xg')" ondblclick="openForm('msdmbg1na00xg')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1na00xg')"></td>
+      <td title="Der Untergang des Königreichs Cindral">Der Untergang des Königreichs Cindral</td>
+      <td>⏳ Ereignis (Zeitleiste)</td>
+      <td>87 Jahre vor Handlung</td>
+      <td>1 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1na00xg',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1na00xg',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Die Krone zerbirst, das Kernland verglast zu Asche. Beginn der Ordensherrschaft.</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1na00xg')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nguc77')" ondblclick="openForm('msdmbg1nguc77')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nguc77')"></td>
+      <td title="Massaker von Aschfeld">Massaker von Aschfeld</td>
+      <td>⏳ Ereignis (Zeitleiste)</td>
+      <td>12 Jahre vor Handlung</td>
+      <td>2 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nguc77',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nguc77',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Der Orden löscht ein Dorf mit vermuteten Blutsträgern aus. Miras Vater stirbt – sie weiß e</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nguc77')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nnqstl')" ondblclick="openForm('msdmbg1nnqstl')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nnqstl')"></td>
+      <td title="Beginn der Handlung">Beginn der Handlung</td>
+      <td>⏳ Ereignis (Zeitleiste)</td>
+      <td>Jahr 87 nach dem Fall, Frühjahr</td>
+      <td>3 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nnqstl',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nnqstl',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Ein Ritter bringt das erste Fragment nach Eldenmoor.</td>
+      <td></td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nnqstl')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nuabl5')" ondblclick="openForm('msdmbg1nuabl5')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nuabl5')"></td>
+      <td title="Titel-Alternativen">Titel-Alternativen</td>
+      <td>💡 Idee / Notiz</td>
+      <td>Die Aschekrone / Was das Blut erinnert / Glut unter Glas</td>
+      <td>1 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nuabl5',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nuabl5',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Die Aschekrone / Was das Blut erinnert / Glut unter Glas</td>
+      <td>#Meta</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nuabl5')">✕</button></td>
+    </tr><tr class="" onclick="rowClick(event,'msdmbg1nl33ay')" ondblclick="openForm('msdmbg1nl33ay')">
+      <td><input type="checkbox"  onclick="event.stopPropagation();toggleSel('msdmbg1nl33ay')"></td>
+      <td title="Recherche">Recherche</td>
+      <td>💡 Idee / Notiz</td>
+      <td>Schmiedetechniken im Spätmittelalter; wie fühlt sich Amnesie</td>
+      <td>2 <button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nl33ay',-1)">▲</button><button class="pBtn" style="padding:0 6px" onclick="event.stopPropagation();moveItem('msdmbg1nl33ay',1)">▼</button></td>
+      <td>2026-08-03</td>
+      <td style="color:#8a8a8a">Schmiedetechniken im Spätmittelalter; wie fühlt sich Amnesie an? (für Magie-Preis)</td>
+      <td>#Recherche</td>
+      <td><button class="pBtn" style="padding:2px 8px" onclick="event.stopPropagation();delItem('msdmbg1nl33ay')">✕</button></td>
+    </tr></tbody></table>
+    </main>
+    <aside class="pProps" id="pProps"><h4>Buch-Eigenschaften</h4>
+      <label>Titel</label><input value="Die Aschekrone" onchange="state.book.title=this.value;save();renderPro()">
+      <label>Genre</label><input value="Fantasy · Coming of Age" onchange="state.book.genre=this.value;save()">
+      <label>Prämisse</label><textarea rows="3" onchange="state.book.premise=this.value;save()">Eine junge Schmiedin entdeckt, dass die zerstörte Krone des gefallenen Königreichs in ihrem eigenen Blut weiterlebt – und alle Mächte des Kontinents beginnen, sie zu jagen.</textarea>
+      <label>Thema</label><input value="Macht verändert – die Frage ist, wen du an deiner Seite hast." onchange="state.book.theme=this.value;save()">
+      <label>Zielgruppe</label><input value="Jugendliche &amp; Erwachsene" onchange="state.book.audience=this.value;save()">
+      <label>Wortziel</label><input type="number" value="90000" onchange="state.book.targetWords=+this.value||0;save();renderPro()">
+      <h4>Auswahl</h4>
+      <div style="color:#777;font-size:12px">Klicke eine Zeile an, um sie hier zu bearbeiten. Doppelklick öffnet das Formular.</div>
+      </aside>
+  </div>
+  <div class="pStatusbar" id="pStatusbar"><span>◆ Die Aschekrone</span>
+    <span>23 Einträge</span><span>0 ausgewählt</span>
+    <span>✍️ 5.000 / 90.000 Wörter</span>
+    <span>📄 4 · 👤 3 · 🌍 3 · 🧩 5</span>
+    <span style="margin-left:auto">N = Neu · F2 = Bearbeiten · Entf = Löschen · Strg+E = Export</span></div>
+</div>
+
+
+<script>
+/* ===== SPRACHEN-ANFANG (erzeugt aus src/sprachen.js) ===== */
+/* ============================================================
+   SPRACHEN
+   Deutsch ist die Quellsprache: dort steht der verbindliche
+   Wortlaut, alle anderen sind Übersetzungen davon. Fehlt in
+   einer Sprache ein Eintrag, greift Englisch, dann Deutsch –
+   so steht nie ein leeres Feld auf dem Bildschirm.
+
+   Die Auswahl folgt den Sprecherzahlen (Ethnologue 2026):
+   Deutsch plus die zehn meistgesprochenen Sprachen der Welt.
+   Arabisch und Urdu laufen von rechts nach links; dafür setzt
+   die Oberfläche dir="rtl" auf das Dokument.
+
+   Diese Datei wird sowohl von der Oberfläche als auch von der
+   Testreihe geladen, damit beide dieselben Texte sehen.
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  /* eigen  = Name in der Sprache selbst (so gehört er in die Auswahl)
+     deutsch = Name auf Deutsch, für die Einstellungen
+     rtl     = Schreibrichtung von rechts nach links */
+  const SPRACHEN = {
+    de: { eigen: 'Deutsch',    deutsch: 'Deutsch',        rtl: false },
+    en: { eigen: 'English',    deutsch: 'Englisch',       rtl: false },
+    zh: { eigen: '中文',        deutsch: 'Chinesisch',     rtl: false },
+    hi: { eigen: 'हिन्दी',       deutsch: 'Hindi',          rtl: false },
+    es: { eigen: 'Español',    deutsch: 'Spanisch',       rtl: false },
+    ar: { eigen: 'العربية',     deutsch: 'Arabisch',       rtl: true  },
+    fr: { eigen: 'Français',   deutsch: 'Französisch',    rtl: false },
+    bn: { eigen: 'বাংলা',       deutsch: 'Bengalisch',     rtl: false },
+    pt: { eigen: 'Português',  deutsch: 'Portugiesisch',  rtl: false },
+    id: { eigen: 'Indonesia',  deutsch: 'Indonesisch',    rtl: false },
+    ur: { eigen: 'اردو',        deutsch: 'Urdu',           rtl: true  }
+  };
+
+  /* Reihenfolge in der Auswahl: Deutsch zuerst, dann nach Sprecherzahl. */
+  const REIHENFOLGE = ['de', 'en', 'zh', 'hi', 'es', 'ar', 'fr', 'bn', 'pt', 'id', 'ur'];
+
+  /* ----------------------------------------------------------
+     TEXTE
+     Nach Schlüssel geordnet, nicht nach Sprache: so stehen alle
+     Fassungen einer Zeile untereinander und Lücken fallen auf.
+     ---------------------------------------------------------- */
+  const TEXTE = {
+
+    /* ---------- Navigation ---------- */
+    'nav.uebersicht':   { de:'Übersicht', en:'Overview', zh:'概览', hi:'अवलोकन', es:'Resumen', ar:'نظرة عامة', fr:'Aperçu', bn:'সারসংক্ষেপ', pt:'Visão geral', id:'Ikhtisar', ur:'جائزہ' },
+    'nav.kapitel':      { de:'Kapitel', en:'Chapters', zh:'章节', hi:'अध्याय', es:'Capítulos', ar:'الفصول', fr:'Chapitres', bn:'অধ্যায়', pt:'Capítulos', id:'Bab', ur:'ابواب' },
+    'nav.folgen':       { de:'Folgen', en:'Episodes', zh:'剧集', hi:'एपिसोड', es:'Episodios', ar:'الحلقات', fr:'Épisodes', bn:'পর্ব', pt:'Episódios', id:'Episode', ur:'اقساط' },
+    'nav.figuren':      { de:'Figuren', en:'Characters', zh:'角色', hi:'पात्र', es:'Personajes', ar:'الشخصيات', fr:'Personnages', bn:'চরিত্র', pt:'Personagens', id:'Tokoh', ur:'کردار' },
+    'nav.orte':         { de:'Orte', en:'Places', zh:'地点', hi:'स्थान', es:'Lugares', ar:'الأماكن', fr:'Lieux', bn:'স্থান', pt:'Lugares', id:'Tempat', ur:'مقامات' },
+    'nav.welt':         { de:'Welt-Elemente', en:'World elements', zh:'世界设定', hi:'विश्व तत्व', es:'Elementos del mundo', ar:'عناصر العالم', fr:'Éléments du monde', bn:'জগতের উপাদান', pt:'Elementos do mundo', id:'Elemen dunia', ur:'دنیا کے عناصر' },
+    'nav.beziehungen':  { de:'Beziehungen', en:'Relationships', zh:'关系', hi:'संबंध', es:'Relaciones', ar:'العلاقات', fr:'Relations', bn:'সম্পর্ক', pt:'Relações', id:'Hubungan', ur:'تعلقات' },
+    'nav.plotpunkte':   { de:'Plot-Punkte', en:'Plot points', zh:'情节点', hi:'कथानक बिंदु', es:'Puntos de trama', ar:'نقاط الحبكة', fr:'Points d’intrigue', bn:'কাহিনি বিন্দু', pt:'Pontos de trama', id:'Titik plot', ur:'کہانی کے نکات' },
+    'nav.akte':         { de:'Akte & Szenen', en:'Acts & scenes', zh:'幕与场景', hi:'अंक और दृश्य', es:'Actos y escenas', ar:'الفصول والمشاهد', fr:'Actes et scènes', bn:'অঙ্ক ও দৃশ্য', pt:'Atos e cenas', id:'Babak & adegan', ur:'ایکٹ اور مناظر' },
+    'nav.zeitstrahl':   { de:'Zeitstrahl', en:'Timeline', zh:'时间线', hi:'समयरेखा', es:'Línea de tiempo', ar:'الخط الزمني', fr:'Chronologie', bn:'সময়রেখা', pt:'Linha do tempo', id:'Lini masa', ur:'ٹائم لائن' },
+    'nav.statistik':    { de:'Statistik', en:'Statistics', zh:'统计', hi:'आँकड़े', es:'Estadísticas', ar:'الإحصاءات', fr:'Statistiques', bn:'পরিসংখ্যান', pt:'Estatísticas', id:'Statistik', ur:'اعداد و شمار' },
+    'nav.mindmap':      { de:'Mindmap', en:'Mind map', zh:'思维导图', hi:'माइंड मैप', es:'Mapa mental', ar:'خريطة ذهنية', fr:'Carte mentale', bn:'মাইন্ড ম্যাপ', pt:'Mapa mental', id:'Peta pikiran', ur:'مائنڈ میپ' },
+    'nav.impuls':       { de:'Schreib-Impuls', en:'Writing prompt', zh:'写作灵感', hi:'लेखन प्रेरणा', es:'Impulso de escritura', ar:'محفّز الكتابة', fr:'Élan d’écriture', bn:'লেখার প্রেরণা', pt:'Estímulo de escrita', id:'Pemantik menulis', ur:'لکھنے کی تحریک' },
+    'nav.expose':       { de:'Exposé-Export', en:'Synopsis export', zh:'导出梗概', hi:'सारांश निर्यात', es:'Exportar sinopsis', ar:'تصدير الملخص', fr:'Export du synopsis', bn:'সারাংশ রপ্তানি', pt:'Exportar sinopse', id:'Ekspor sinopsis', ur:'خلاصہ برآمد' },
+    'nav.ideen':        { de:'Notizen & Ideen', en:'Notes & ideas', zh:'笔记与想法', hi:'नोट्स और विचार', es:'Notas e ideas', ar:'ملاحظات وأفكار', fr:'Notes et idées', bn:'নোট ও ভাবনা', pt:'Notas e ideias', id:'Catatan & ide', ur:'نوٹس اور خیالات' },
+
+    'sek.figurenwelt':  { de:'Figuren & Welt', en:'Characters & world', zh:'角色与世界', hi:'पात्र और विश्व', es:'Personajes y mundo', ar:'الشخصيات والعالم', fr:'Personnages et monde', bn:'চরিত্র ও জগৎ', pt:'Personagens e mundo', id:'Tokoh & dunia', ur:'کردار اور دنیا' },
+    'sek.struktur':     { de:'Struktur', en:'Structure', zh:'结构', hi:'संरचना', es:'Estructura', ar:'البنية', fr:'Structure', bn:'কাঠামো', pt:'Estrutura', id:'Struktur', ur:'ساخت' },
+    'sek.werkzeuge':    { de:'Werkzeuge', en:'Tools', zh:'工具', hi:'उपकरण', es:'Herramientas', ar:'الأدوات', fr:'Outils', bn:'সরঞ্জাম', pt:'Ferramentas', id:'Alat', ur:'اوزار' },
+
+    /* ---------- Kopfzeile ---------- */
+    'kopf.projekt':     { de:'Projekt', en:'Project', zh:'项目', hi:'परियोजना', es:'Proyecto', ar:'المشروع', fr:'Projet', bn:'প্রকল্প', pt:'Projeto', id:'Proyek', ur:'منصوبہ' },
+    'kopf.ideen':       { de:'Ideen', en:'Ideas', zh:'想法', hi:'विचार', es:'Ideas', ar:'أفكار', fr:'Idées', bn:'ভাবনা', pt:'Ideias', id:'Ide', ur:'خیالات' },
+    'kopf.hinzufuegen': { de:'Hinzufügen', en:'Add', zh:'添加', hi:'जोड़ें', es:'Añadir', ar:'إضافة', fr:'Ajouter', bn:'যোগ করুন', pt:'Adicionar', id:'Tambah', ur:'شامل کریں' },
+    'kopf.suchen':      { de:'Suchen …', en:'Search …', zh:'搜索 …', hi:'खोजें …', es:'Buscar …', ar:'بحث …', fr:'Rechercher …', bn:'অনুসন্ধান …', pt:'Pesquisar …', id:'Cari …', ur:'تلاش …' },
+
+    /* ---------- Übersicht ---------- */
+    'ov.fortschritt':   { de:'Fortschritt', en:'Progress', zh:'进度', hi:'प्रगति', es:'Progreso', ar:'التقدم', fr:'Progression', bn:'অগ্রগতি', pt:'Progresso', id:'Kemajuan', ur:'پیش رفت' },
+    'ov.vonWoertern':   { de:'von {0} Wörtern', en:'of {0} words', zh:'共 {0} 字', hi:'{0} शब्दों में से', es:'de {0} palabras', ar:'من {0} كلمة', fr:'sur {0} mots', bn:'{0} শব্দের মধ্যে', pt:'de {0} palavras', id:'dari {0} kata', ur:'{0} الفاظ میں سے' },
+    'ov.woerterGesamt': { de:'Wörter gesamt', en:'Words total', zh:'总字数', hi:'कुल शब्द', es:'Palabras en total', ar:'إجمالي الكلمات', fr:'Mots au total', bn:'মোট শব্দ', pt:'Palavras no total', id:'Total kata', ur:'کل الفاظ' },
+    'ov.kapitelFertig': { de:'Kapitel fertig', en:'Chapters done', zh:'完成章节', hi:'अध्याय पूर्ण', es:'Capítulos listos', ar:'فصول مكتملة', fr:'Chapitres terminés', bn:'অধ্যায় সম্পন্ন', pt:'Capítulos prontos', id:'Bab selesai', ur:'مکمل ابواب' },
+    'ov.heute':         { de:'heute', en:'today', zh:'今天', hi:'आज', es:'hoy', ar:'اليوم', fr:'aujourd’hui', bn:'আজ', pt:'hoje', id:'hari ini', ur:'آج' },
+    'ov.verlauf':       { de:'28-Tage-Verlauf', en:'28-day history', zh:'28 天走势', hi:'28-दिन का इतिहास', es:'Historial de 28 días', ar:'سجل 28 يوماً', fr:'Historique sur 28 jours', bn:'২৮ দিনের ধারা', pt:'Histórico de 28 dias', id:'Riwayat 28 hari', ur:'28 دن کی تاریخ' },
+    'ov.proTag':        { de:'Geschriebene Wörter pro Tag', en:'Words written per day', zh:'每日写作字数', hi:'प्रति दिन लिखे शब्द', es:'Palabras escritas por día', ar:'الكلمات المكتوبة يومياً', fr:'Mots écrits par jour', bn:'দৈনিক লেখা শব্দ', pt:'Palavras escritas por dia', id:'Kata per hari', ur:'روزانہ لکھے گئے الفاظ' },
+    'ov.buchdaten':     { de:'Buchdaten', en:'Book details', zh:'作品信息', hi:'पुस्तक विवरण', es:'Datos del libro', ar:'بيانات الكتاب', fr:'Données du livre', bn:'বইয়ের তথ্য', pt:'Dados do livro', id:'Data buku', ur:'کتاب کی تفصیل' },
+    'ov.aenderungen':   { de:'Letzte Änderungen', en:'Recent changes', zh:'最近更改', hi:'हाल के बदलाव', es:'Cambios recientes', ar:'آخر التغييرات', fr:'Modifications récentes', bn:'সাম্প্রতিক পরিবর্তন', pt:'Alterações recentes', id:'Perubahan terbaru', ur:'حالیہ تبدیلیاں' },
+    'ov.nichtsAngelegt':{ de:'Noch nichts angelegt.', en:'Nothing created yet.', zh:'尚未创建任何内容。', hi:'अभी कुछ नहीं बनाया गया।', es:'Aún no hay nada.', ar:'لم يُنشأ شيء بعد.', fr:'Rien de créé pour l’instant.', bn:'এখনো কিছু তৈরি হয়নি।', pt:'Ainda não há nada.', id:'Belum ada apa pun.', ur:'ابھی کچھ نہیں بنایا گیا۔' },
+
+    'feld.titel':       { de:'Titel', en:'Title', zh:'标题', hi:'शीर्षक', es:'Título', ar:'العنوان', fr:'Titre', bn:'শিরোনাম', pt:'Título', id:'Judul', ur:'عنوان' },
+    'feld.genre':       { de:'Genre', en:'Genre', zh:'类型', hi:'शैली', es:'Género', ar:'النوع', fr:'Genre', bn:'ধরন', pt:'Gênero', id:'Genre', ur:'صنف' },
+    'feld.praemisse':   { de:'Prämisse', en:'Premise', zh:'前提', hi:'मूल विचार', es:'Premisa', ar:'الفكرة', fr:'Prémisse', bn:'মূলভাব', pt:'Premissa', id:'Premis', ur:'بنیادی خیال' },
+    'feld.thema':       { de:'Thema', en:'Theme', zh:'主题', hi:'विषय', es:'Tema', ar:'الموضوع', fr:'Thème', bn:'বিষয়', pt:'Tema', id:'Tema', ur:'موضوع' },
+    'feld.zielgruppe':  { de:'Zielgruppe', en:'Audience', zh:'目标读者', hi:'लक्षित पाठक', es:'Público', ar:'الجمهور', fr:'Public', bn:'পাঠকগোষ্ঠী', pt:'Público', id:'Sasaran pembaca', ur:'ہدف قارئین' },
+    'feld.wortziel':    { de:'Wortziel', en:'Word goal', zh:'字数目标', hi:'शब्द लक्ष्य', es:'Meta de palabras', ar:'هدف الكلمات', fr:'Objectif de mots', bn:'শব্দ লক্ষ্য', pt:'Meta de palavras', id:'Target kata', ur:'الفاظ کا ہدف' },
+
+    /* ---------- Knöpfe ---------- */
+    'btn.bearbeiten':   { de:'bearbeiten', en:'edit', zh:'编辑', hi:'संपादित करें', es:'editar', ar:'تحرير', fr:'modifier', bn:'সম্পাদনা', pt:'editar', id:'ubah', ur:'ترمیم' },
+    'btn.fertig':       { de:'fertig', en:'done', zh:'完成', hi:'हो गया', es:'listo', ar:'تم', fr:'terminé', bn:'সম্পন্ন', pt:'pronto', id:'selesai', ur:'مکمل' },
+    'btn.abbrechen':    { de:'Abbrechen', en:'Cancel', zh:'取消', hi:'रद्द करें', es:'Cancelar', ar:'إلغاء', fr:'Annuler', bn:'বাতিল', pt:'Cancelar', id:'Batal', ur:'منسوخ' },
+    'btn.speichern':    { de:'Speichern', en:'Save', zh:'保存', hi:'सहेजें', es:'Guardar', ar:'حفظ', fr:'Enregistrer', bn:'সংরক্ষণ', pt:'Guardar', id:'Simpan', ur:'محفوظ کریں' },
+    'btn.loeschen':     { de:'Löschen', en:'Delete', zh:'删除', hi:'हटाएँ', es:'Eliminar', ar:'حذف', fr:'Supprimer', bn:'মুছুন', pt:'Eliminar', id:'Hapus', ur:'حذف کریں' },
+    'btn.uebernehmen':  { de:'Übernehmen', en:'Apply', zh:'应用', hi:'लागू करें', es:'Aplicar', ar:'تطبيق', fr:'Appliquer', bn:'প্রয়োগ', pt:'Aplicar', id:'Terapkan', ur:'لاگو کریں' },
+    'btn.verstanden':   { de:'Verstanden', en:'Got it', zh:'知道了', hi:'समझ गया', es:'Entendido', ar:'فهمت', fr:'Compris', bn:'বুঝেছি', pt:'Entendido', id:'Mengerti', ur:'سمجھ گیا' },
+    'btn.schliessen':   { de:'Schließen', en:'Close', zh:'关闭', hi:'बंद करें', es:'Cerrar', ar:'إغلاق', fr:'Fermer', bn:'বন্ধ', pt:'Fechar', id:'Tutup', ur:'بند کریں' },
+    'btn.jetztPruefen': { de:'Jetzt prüfen', en:'Check now', zh:'立即检查', hi:'अभी जाँचें', es:'Comprobar ahora', ar:'تحقق الآن', fr:'Vérifier maintenant', bn:'এখন যাচাই', pt:'Verificar agora', id:'Periksa sekarang', ur:'ابھی جانچیں' },
+    'btn.ordnerZeigen': { de:'Ordner zeigen', en:'Show folder', zh:'显示文件夹', hi:'फ़ोल्डर दिखाएँ', es:'Mostrar carpeta', ar:'إظهار المجلد', fr:'Afficher le dossier', bn:'ফোল্ডার দেখান', pt:'Mostrar pasta', id:'Tampilkan folder', ur:'فولڈر دکھائیں' },
+    'btn.dateiAnhaengen':{ de:'Datei anhängen', en:'Attach file', zh:'附加文件', hi:'फ़ाइल संलग्न करें', es:'Adjuntar archivo', ar:'إرفاق ملف', fr:'Joindre un fichier', bn:'ফাইল সংযুক্ত করুন', pt:'Anexar ficheiro', id:'Lampirkan berkas', ur:'فائل منسلک کریں' },
+    'btn.wortzahl':     { de:'Wortzahl', en:'Word count', zh:'字数', hi:'शब्द गणना', es:'Recuento', ar:'عدد الكلمات', fr:'Nombre de mots', bn:'শব্দসংখ্যা', pt:'Contagem', id:'Jumlah kata', ur:'الفاظ کی گنتی' },
+
+    /* ---------- Titelleiste ---------- */
+    'tb.gespeichert':   { de:'gespeichert {0}', en:'saved {0}', zh:'已保存 {0}', hi:'सहेजा गया {0}', es:'guardado {0}', ar:'حُفظ {0}', fr:'enregistré {0}', bn:'সংরক্ষিত {0}', pt:'guardado {0}', id:'disimpan {0}', ur:'محفوظ {0}' },
+    'tb.ungesichert':   { de:'ungesicherte Änderungen', en:'unsaved changes', zh:'未保存的更改', hi:'सहेजे नहीं गए बदलाव', es:'cambios sin guardar', ar:'تغييرات غير محفوظة', fr:'modifications non enregistrées', bn:'অসংরক্ষিত পরিবর্তন', pt:'alterações por guardar', id:'perubahan belum disimpan', ur:'غیر محفوظ تبدیلیاں' },
+    'tb.nochNicht':     { de:'noch nicht gespeichert', en:'not saved yet', zh:'尚未保存', hi:'अभी सहेजा नहीं गया', es:'aún sin guardar', ar:'لم يُحفظ بعد', fr:'pas encore enregistré', bn:'এখনো সংরক্ষিত নয়', pt:'ainda não guardado', id:'belum disimpan', ur:'ابھی محفوظ نہیں' },
+    'tb.nichtGesp':     { de:'nicht gespeichert', en:'not saved', zh:'未保存', hi:'सहेजा नहीं गया', es:'sin guardar', ar:'غير محفوظ', fr:'non enregistré', bn:'সংরক্ষিত নয়', pt:'não guardado', id:'tidak tersimpan', ur:'محفوظ نہیں' },
+
+    /* ---------- Einstellungen ---------- */
+    'ein.titel':        { de:'Einstellungen', en:'Settings', zh:'设置', hi:'सेटिंग्स', es:'Ajustes', ar:'الإعدادات', fr:'Paramètres', bn:'সেটিংস', pt:'Definições', id:'Pengaturan', ur:'ترتیبات' },
+    'ein.sprache':      { de:'Sprache', en:'Language', zh:'语言', hi:'भाषा', es:'Idioma', ar:'اللغة', fr:'Langue', bn:'ভাষা', pt:'Idioma', id:'Bahasa', ur:'زبان' },
+    'ein.sprachHinweis':{ de:'Die Bedienoberfläche wechselt sofort. Deine Texte bleiben unverändert – übersetzt wird das Programm, nicht dein Buch.',
+                          en:'The interface switches immediately. Your own text stays untouched – the program is translated, not your book.',
+                          zh:'界面立即切换。你的文字不受影响——翻译的是程序，不是你的书。',
+                          hi:'इंटरफ़ेस तुरंत बदल जाता है। आपका लिखा हुआ अछूता रहता है – अनुवाद प्रोग्राम का होता है, आपकी किताब का नहीं।',
+                          es:'La interfaz cambia de inmediato. Tus textos no se tocan: se traduce el programa, no tu libro.',
+                          ar:'تتغيّر الواجهة فوراً. نصوصك تبقى كما هي – المترجَم هو البرنامج لا كتابك.',
+                          fr:'L’interface change aussitôt. Vos textes restent intacts : c’est le programme qui est traduit, pas votre livre.',
+                          bn:'ইন্টারফেস সঙ্গে সঙ্গে বদলায়। আপনার লেখা অপরিবর্তিত থাকে – অনুবাদ হয় প্রোগ্রামের, আপনার বইয়ের নয়।',
+                          pt:'A interface muda de imediato. Os seus textos ficam intactos: traduz-se o programa, não o seu livro.',
+                          id:'Antarmuka langsung berganti. Tulisan Anda tidak berubah – yang diterjemahkan adalah programnya, bukan buku Anda.',
+                          ur:'انٹرفیس فوراً بدل جاتا ہے۔ آپ کی تحریر ویسی ہی رہتی ہے – ترجمہ پروگرام کا ہوتا ہے، آپ کی کتاب کا نہیں۔' },
+    'ein.projekt':      { de:'Projekt', en:'Project', zh:'项目', hi:'परियोजना', es:'Proyecto', ar:'المشروع', fr:'Projet', bn:'প্রকল্প', pt:'Projeto', id:'Proyek', ur:'منصوبہ' },
+    'ein.aktualisierung':{ de:'Aktualisierung', en:'Updates', zh:'更新', hi:'अपडेट', es:'Actualizaciones', ar:'التحديثات', fr:'Mises à jour', bn:'হালনাগাদ', pt:'Atualizações', id:'Pembaruan', ur:'اپ ڈیٹس' },
+    'ein.updateSuchen': { de:'Beim Start nach neuen Versionen suchen', en:'Check for new versions at startup', zh:'启动时检查新版本', hi:'शुरू होने पर नए संस्करण जाँचें', es:'Buscar versiones nuevas al iniciar', ar:'البحث عن إصدارات جديدة عند البدء', fr:'Chercher des mises à jour au démarrage', bn:'চালুর সময় নতুন সংস্করণ খুঁজুন', pt:'Procurar novas versões ao iniciar', id:'Periksa versi baru saat mulai', ur:'شروع پر نئے ورژن تلاش کریں' },
+    'ein.eigeneOpt':    { de:'Eigene Auswahloptionen', en:'Custom options', zh:'自定义选项', hi:'अपने विकल्प', es:'Opciones propias', ar:'خيارات خاصة', fr:'Options personnalisées', bn:'নিজস্ব বিকল্প', pt:'Opções próprias', id:'Pilihan sendiri', ur:'اپنے اختیارات' },
+    'ein.keineGrenze':  { de:'Eine Größenbeschränkung gibt es nicht.', en:'There is no size limit.', zh:'没有大小限制。', hi:'कोई आकार सीमा नहीं है।', es:'No hay límite de tamaño.', ar:'لا يوجد حد للحجم.', fr:'Il n’y a aucune limite de taille.', bn:'কোনো আকার সীমা নেই।', pt:'Não há limite de tamanho.', id:'Tidak ada batas ukuran.', ur:'سائز کی کوئی حد نہیں۔' },
+    'ein.nichtGesp':    { de:'Noch nicht gespeichert', en:'Not saved yet', zh:'尚未保存', hi:'अभी सहेजा नहीं गया', es:'Aún sin guardar', ar:'لم يُحفظ بعد', fr:'Pas encore enregistré', bn:'এখনো সংরক্ষিত নয়', pt:'Ainda não guardado', id:'Belum disimpan', ur:'ابھی محفوظ نہیں' },
+
+    /* ---------- Profi-Modus ---------- */
+    'pro.modus':        { de:'Profi-Modus', en:'Pro mode', zh:'专业模式', hi:'प्रो मोड', es:'Modo profesional', ar:'الوضع المحترف', fr:'Mode expert', bn:'প্রো মোড', pt:'Modo profissional', id:'Mode pro', ur:'پرو موڈ' },
+
+    /* ---------- Projektmenü ---------- */
+    'pm.neu':           { de:'Neues Projekt', en:'New project', zh:'新建项目', hi:'नई परियोजना', es:'Proyecto nuevo', ar:'مشروع جديد', fr:'Nouveau projet', bn:'নতুন প্রকল্প', pt:'Novo projeto', id:'Proyek baru', ur:'نیا منصوبہ' },
+    'pm.oeffnen':       { de:'Projekt öffnen …', en:'Open project …', zh:'打开项目 …', hi:'परियोजना खोलें …', es:'Abrir proyecto …', ar:'فتح مشروع …', fr:'Ouvrir un projet …', bn:'প্রকল্প খুলুন …', pt:'Abrir projeto …', id:'Buka proyek …', ur:'منصوبہ کھولیں …' },
+    'pm.speichern':     { de:'Speichern', en:'Save', zh:'保存', hi:'सहेजें', es:'Guardar', ar:'حفظ', fr:'Enregistrer', bn:'সংরক্ষণ', pt:'Guardar', id:'Simpan', ur:'محفوظ کریں' },
+    'pm.speichernUnter':{ de:'Speichern unter …', en:'Save as …', zh:'另存为 …', hi:'इस रूप में सहेजें …', es:'Guardar como …', ar:'حفظ باسم …', fr:'Enregistrer sous …', bn:'নামসহ সংরক্ষণ …', pt:'Guardar como …', id:'Simpan sebagai …', ur:'بطور محفوظ کریں …' },
+    'pm.manuskript':    { de:'Wortzahlen aus Manuskript …', en:'Word counts from manuscript …', zh:'从稿件读取字数 …', hi:'पांडुलिपि से शब्द गणना …', es:'Recuentos desde el manuscrito …', ar:'عدد الكلمات من المخطوطة …', fr:'Nombre de mots du manuscrit …', bn:'পাণ্ডুলিপি থেকে শব্দসংখ্যা …', pt:'Contagens do manuscrito …', id:'Jumlah kata dari naskah …', ur:'مسودے سے الفاظ کی گنتی …' },
+    'pm.sicherungLesen':{ de:'Sicherung einlesen …', en:'Import backup …', zh:'导入备份 …', hi:'बैकअप आयात करें …', es:'Importar copia …', ar:'استيراد نسخة احتياطية …', fr:'Importer une sauvegarde …', bn:'ব্যাকআপ আমদানি …', pt:'Importar cópia …', id:'Impor cadangan …', ur:'بیک اپ درآمد …' },
+    'pm.jsonLesen':     { de:'JSON-Datei einlesen …', en:'Import JSON file …', zh:'导入 JSON 文件 …', hi:'JSON फ़ाइल आयात करें …', es:'Importar archivo JSON …', ar:'استيراد ملف JSON …', fr:'Importer un fichier JSON …', bn:'JSON ফাইল আমদানি …', pt:'Importar ficheiro JSON …', id:'Impor berkas JSON …', ur:'JSON فائل درآمد …' },
+    'pm.kiExport':      { de:'Für eine KI ausgeben …', en:'Export for an AI …', zh:'导出给 AI …', hi:'एआई के लिए निर्यात …', es:'Exportar para una IA …', ar:'تصدير لذكاء اصطناعي …', fr:'Exporter pour une IA …', bn:'এআই-এর জন্য রপ্তানি …', pt:'Exportar para uma IA …', id:'Ekspor untuk AI …', ur:'اے آئی کے لیے برآمد …' },
+    'pm.sicherungGeben':{ de:'Sicherung ausgeben', en:'Export backup', zh:'导出备份', hi:'बैकअप निर्यात', es:'Exportar copia', ar:'تصدير نسخة احتياطية', fr:'Exporter une sauvegarde', bn:'ব্যাকআপ রপ্তানি', pt:'Exportar cópia', id:'Ekspor cadangan', ur:'بیک اپ برآمد' },
+    'pm.ueber':         { de:'Über StoryPlaner …', en:'About StoryPlaner …', zh:'关于 StoryPlaner …', hi:'StoryPlaner के बारे में …', es:'Acerca de StoryPlaner …', ar:'عن StoryPlaner …', fr:'À propos de StoryPlaner …', bn:'StoryPlaner সম্পর্কে …', pt:'Acerca do StoryPlaner …', id:'Tentang StoryPlaner …', ur:'StoryPlaner کے بارے میں …' },
+
+    /* ---------- Anhänge ---------- */
+    'an.titel':         { de:'Angehängte Dateien ({0})', en:'Attached files ({0})', zh:'附件（{0}）', hi:'संलग्न फ़ाइलें ({0})', es:'Archivos adjuntos ({0})', ar:'الملفات المرفقة ({0})', fr:'Fichiers joints ({0})', bn:'সংযুক্ত ফাইল ({0})', pt:'Ficheiros anexados ({0})', id:'Berkas terlampir ({0})', ur:'منسلک فائلیں ({0})' },
+    'an.leer':          { de:'Noch keine Dateien.', en:'No files yet.', zh:'还没有文件。', hi:'अभी कोई फ़ाइल नहीं।', es:'Todavía no hay archivos.', ar:'لا ملفات بعد.', fr:'Aucun fichier pour l’instant.', bn:'এখনো কোনো ফাইল নেই।', pt:'Ainda não há ficheiros.', id:'Belum ada berkas.', ur:'ابھی کوئی فائل نہیں۔' },
+
+    /* ---------- Einstellungen: Projekt ---------- */
+    'ein.umfang':       { de:'Umfang: rund {0} MB · {1} Einträge.', en:'Size: about {0} MB · {1} entries.', zh:'大小：约 {0} MB · {1} 条目。', hi:'आकार: लगभग {0} MB · {1} प्रविष्टियाँ।', es:'Tamaño: unos {0} MB · {1} entradas.', ar:'الحجم: نحو {0} ميغابايت · {1} مُدخلاً.', fr:'Taille : environ {0} Mo · {1} entrées.', bn:'আকার: প্রায় {0} MB · {1} ভুক্তি।', pt:'Tamanho: cerca de {0} MB · {1} entradas.', id:'Ukuran: sekitar {0} MB · {1} entri.', ur:'حجم: تقریباً {0} MB · {1} اندراجات۔' },
+    'ein.entwurf':      { de:'Das Projekt liegt bisher nur als Entwurf vor. Mit Strg+S sicherst du es als Datei.', en:'The project exists only as a draft so far. Press Ctrl+S to save it as a file.', zh:'该项目目前只是草稿。按 Ctrl+S 保存为文件。', hi:'परियोजना अभी केवल मसौदे के रूप में है। Ctrl+S से फ़ाइल के रूप में सहेजें।', es:'El proyecto solo existe como borrador. Pulsa Ctrl+S para guardarlo como archivo.', ar:'المشروع ما زال مسودة. اضغط Ctrl+S لحفظه كملف.', fr:'Le projet n’existe que comme brouillon. Ctrl+S pour l’enregistrer comme fichier.', bn:'প্রকল্পটি এখনো কেবল খসড়া। Ctrl+S চেপে ফাইল হিসেবে সংরক্ষণ করুন।', pt:'O projeto existe apenas como rascunho. Prima Ctrl+S para o guardar como ficheiro.', id:'Proyek ini masih berupa draf. Tekan Ctrl+S untuk menyimpannya sebagai berkas.', ur:'منصوبہ ابھی صرف مسودہ ہے۔ فائل کے طور پر محفوظ کرنے کے لیے Ctrl+S دبائیں۔' },
+    'ein.inhalt':       { de:'Bilder und angehängte Dateien liegen mit in der Projektdatei; sie wird beim Speichern komprimiert.', en:'Images and attachments are stored inside the project file; it is compressed when saved.', zh:'图片和附件都保存在项目文件中，保存时会压缩。', hi:'चित्र और संलग्नक परियोजना फ़ाइल में ही रहते हैं; सहेजते समय वह संपीड़ित होती है।', es:'Las imágenes y los adjuntos van dentro del archivo del proyecto; se comprime al guardar.', ar:'الصور والمرفقات محفوظة داخل ملف المشروع، ويُضغط عند الحفظ.', fr:'Images et pièces jointes sont dans le fichier du projet ; il est compressé à l’enregistrement.', bn:'ছবি ও সংযুক্তি প্রকল্প ফাইলেই থাকে; সংরক্ষণের সময় তা সংকুচিত হয়।', pt:'Imagens e anexos ficam no ficheiro do projeto; é comprimido ao guardar.', id:'Gambar dan lampiran tersimpan di dalam berkas proyek; berkas dikompresi saat disimpan.', ur:'تصاویر اور منسلکات منصوبے کی فائل میں ہی رہتے ہیں؛ محفوظ کرتے وقت وہ سکیڑی جاتی ہے۔' },
+    'ein.sicherungen':  { de:'Vor jedem Speichern wandert der vorherige Stand in den Ordner {0} – die letzten zwölf bleiben erhalten.', en:'Before each save the previous version moves to the folder {0} – the last twelve are kept.', zh:'每次保存前，上一版本会移入文件夹 {0}，保留最近十二个。', hi:'हर बार सहेजने से पहले पिछला संस्करण फ़ोल्डर {0} में जाता है – अंतिम बारह रखे जाते हैं।', es:'Antes de cada guardado la versión anterior pasa a la carpeta {0}; se conservan las últimas doce.', ar:'قبل كل حفظ تنتقل النسخة السابقة إلى المجلد {0} – ويُحتفظ بآخر اثنتي عشرة.', fr:'Avant chaque enregistrement, la version précédente va dans le dossier {0} ; les douze dernières sont conservées.', bn:'প্রতিবার সংরক্ষণের আগে আগের সংস্করণ {0} ফোল্ডারে যায় – শেষ বারোটি রাখা হয়।', pt:'Antes de cada gravação a versão anterior vai para a pasta {0}; guardam-se as últimas doze.', id:'Sebelum tiap penyimpanan, versi sebelumnya pindah ke folder {0} – dua belas terakhir disimpan.', ur:'ہر محفوظ کرنے سے پہلے پچھلا نسخہ فولڈر {0} میں چلا جاتا ہے – آخری بارہ محفوظ رہتے ہیں۔' },
+    'ein.browserGrenze':{ de:'Speicherbelegung (Browserbetrieb)', en:'Storage used (browser mode)', zh:'已用存储（浏览器模式）', hi:'भंडारण उपयोग (ब्राउज़र मोड)', es:'Almacenamiento usado (modo navegador)', ar:'المساحة المستخدمة (وضع المتصفح)', fr:'Stockage utilisé (mode navigateur)', bn:'ব্যবহৃত সঞ্চয় (ব্রাউজার মোড)', pt:'Armazenamento usado (modo navegador)', id:'Penyimpanan terpakai (mode peramban)', ur:'استعمال شدہ جگہ (براؤزر موڈ)' },
+    'ein.browserText':  { de:'{0} MB von rund 5 MB belegt ({1} %). Diese Grenze gilt nur, weil die App gerade im Browser läuft. In der installierten Anwendung werden Projekte als Dateien gespeichert und sind unbegrenzt groß.', en:'{0} MB of about 5 MB used ({1}%). This limit applies only because the app is running in a browser. In the installed application projects are saved as files and have no size limit.', zh:'已用 {0} MB，约 5 MB 上限（{1}%）。此限制仅因当前在浏览器中运行。安装版将项目保存为文件，没有大小限制。', hi:'लगभग 5 MB में से {0} MB उपयोग ({1}%)। यह सीमा केवल इसलिए है क्योंकि ऐप ब्राउज़र में चल रहा है। स्थापित अनुप्रयोग में परियोजनाएँ फ़ाइलों के रूप में सहेजी जाती हैं और असीमित होती हैं।', es:'{0} MB de unos 5 MB usados ({1} %). Este límite existe solo porque la app se ejecuta en el navegador. En la aplicación instalada los proyectos se guardan como archivos, sin límite de tamaño.', ar:'استُخدم {0} ميغابايت من نحو 5 ({1}٪). هذا الحد قائم فقط لأن التطبيق يعمل في المتصفح. في التطبيق المثبَّت تُحفظ المشاريع كملفات بلا حد للحجم.', fr:'{0} Mo utilisés sur environ 5 Mo ({1} %). Cette limite n’existe que parce que l’app tourne dans un navigateur. Dans l’application installée, les projets sont des fichiers, sans limite de taille.', bn:'প্রায় ৫ MB-র মধ্যে {0} MB ব্যবহৃত ({1}%)। এই সীমা কেবল ব্রাউজারে চলার কারণে। ইনস্টল করা অ্যাপে প্রকল্প ফাইল হিসেবে সংরক্ষিত হয়, আকারের সীমা নেই।', pt:'{0} MB de cerca de 5 MB usados ({1} %). Este limite existe só porque a app corre no navegador. Na aplicação instalada os projetos são ficheiros, sem limite de tamanho.', id:'{0} MB dari sekitar 5 MB terpakai ({1}%). Batas ini hanya berlaku karena aplikasi berjalan di peramban. Pada aplikasi terpasang, proyek disimpan sebagai berkas tanpa batas ukuran.', ur:'تقریباً 5 MB میں سے {0} MB استعمال ({1}%)۔ یہ حد صرف اس لیے ہے کہ ایپ براؤزر میں چل رہی ہے۔ نصب شدہ ایپلی کیشن میں منصوبے فائلوں کے طور پر محفوظ ہوتے ہیں، حجم کی کوئی حد نہیں۔' },
+    'ein.warnung':      { de:'Gib jetzt eine Sicherung aus und entferne nicht mehr benötigte Bilder.', en:'Export a backup now and remove images you no longer need.', zh:'请立即导出备份并删除不再需要的图片。', hi:'अभी बैकअप निर्यात करें और अनावश्यक चित्र हटाएँ।', es:'Exporta una copia ahora y elimina las imágenes que ya no necesites.', ar:'صدّر نسخة احتياطية الآن واحذف الصور التي لم تعد بحاجة إليها.', fr:'Exportez une sauvegarde maintenant et supprimez les images inutiles.', bn:'এখনই ব্যাকআপ রপ্তানি করুন এবং অপ্রয়োজনীয় ছবি সরান।', pt:'Exporte uma cópia agora e remova as imagens de que já não precisa.', id:'Ekspor cadangan sekarang dan hapus gambar yang tidak diperlukan.', ur:'ابھی بیک اپ برآمد کریں اور غیر ضروری تصاویر ہٹا دیں۔' },
+
+    /* ---------- Einstellungen: Aktualisierung ---------- */
+    'upd.fragtAn':      { de:'die App fragt dafür beim Anbieter nach', en:'the app asks the provider for this', zh:'应用会为此询问提供方', hi:'ऐप इसके लिए प्रदाता से पूछता है', es:'la app consulta al proveedor', ar:'يستعلم التطبيق من المزوّد', fr:'l’app interroge le fournisseur', bn:'অ্যাপটি সরবরাহকারীকে জিজ্ঞাসা করে', pt:'a app consulta o fornecedor', id:'aplikasi menanyakannya ke penyedia', ur:'ایپ اس کے لیے فراہم کنندہ سے پوچھتی ہے' },
+    'upd.keinNetz':     { de:'die App baut damit keinerlei Netzwerkverbindung auf', en:'the app makes no network connection at all', zh:'应用完全不建立网络连接', hi:'ऐप कोई नेटवर्क संपर्क नहीं बनाता', es:'la app no establece ninguna conexión de red', ar:'لا ينشئ التطبيق أي اتصال بالشبكة', fr:'l’app n’établit aucune connexion réseau', bn:'অ্যাপটি কোনো নেটওয়ার্ক সংযোগ করে না', pt:'a app não estabelece qualquer ligação de rede', id:'aplikasi tidak membuat koneksi jaringan sama sekali', ur:'ایپ کوئی نیٹ ورک رابطہ نہیں بناتی' },
+    'upd.suche':        { de:'Es wird gesucht …', en:'Checking …', zh:'正在检查 …', hi:'जाँच हो रही है …', es:'Comprobando …', ar:'جارٍ البحث …', fr:'Recherche …', bn:'যাচাই চলছে …', pt:'A verificar …', id:'Memeriksa …', ur:'جانچ جاری …' },
+    'upd.keine':        { de:'Die Version ist aktuell.', en:'This version is up to date.', zh:'已是最新版本。', hi:'यह संस्करण नवीनतम है।', es:'La versión está actualizada.', ar:'هذا الإصدار محدَّث.', fr:'La version est à jour.', bn:'সংস্করণটি হালনাগাদ।', pt:'A versão está atualizada.', id:'Versi ini sudah terbaru.', ur:'یہ ورژن تازہ ترین ہے۔' },
+    'upd.verfuegbar':   { de:'Version {0} steht bereit.', en:'Version {0} is available.', zh:'版本 {0} 可用。', hi:'संस्करण {0} उपलब्ध है।', es:'La versión {0} está disponible.', ar:'الإصدار {0} متاح.', fr:'La version {0} est disponible.', bn:'সংস্করণ {0} উপলব্ধ।', pt:'A versão {0} está disponível.', id:'Versi {0} tersedia.', ur:'ورژن {0} دستیاب ہے۔' },
+    'upd.laedt':        { de:'Wird geladen … {0} %', en:'Downloading … {0}%', zh:'正在下载 … {0}%', hi:'डाउनलोड हो रहा है … {0}%', es:'Descargando … {0} %', ar:'جارٍ التنزيل … {0}٪', fr:'Téléchargement … {0} %', bn:'ডাউনলোড হচ্ছে … {0}%', pt:'A transferir … {0} %', id:'Mengunduh … {0}%', ur:'ڈاؤن لوڈ ہو رہا ہے … {0}%' },
+    'upd.geladen':      { de:'Version {0} ist heruntergeladen und wird beim Neustart eingespielt.', en:'Version {0} has been downloaded and will be installed on restart.', zh:'版本 {0} 已下载，重启后安装。', hi:'संस्करण {0} डाउनलोड हो गया और पुनः आरंभ पर स्थापित होगा।', es:'La versión {0} se ha descargado y se instalará al reiniciar.', ar:'نُزّل الإصدار {0} وسيُثبَّت عند إعادة التشغيل.', fr:'La version {0} est téléchargée et sera installée au redémarrage.', bn:'সংস্করণ {0} ডাউনলোড হয়েছে এবং পুনরায় চালুর সময় ইনস্টল হবে।', pt:'A versão {0} foi transferida e será instalada ao reiniciar.', id:'Versi {0} telah diunduh dan akan dipasang saat mulai ulang.', ur:'ورژن {0} ڈاؤن لوڈ ہو گیا اور دوبارہ شروع کرنے پر نصب ہوگا۔' },
+    'upd.fehler':       { de:'Zuletzt fehlgeschlagen: {0}', en:'Last attempt failed: {0}', zh:'上次失败：{0}', hi:'पिछली बार विफल: {0}', es:'Último intento fallido: {0}', ar:'فشلت المحاولة الأخيرة: {0}', fr:'Dernier essai échoué : {0}', bn:'শেষ চেষ্টা ব্যর্থ: {0}', pt:'Última tentativa falhou: {0}', id:'Percobaan terakhir gagal: {0}', ur:'آخری کوشش ناکام: {0}' },
+    'upd.keineQuelle':  { de:'Für diese Fassung ist keine Bezugsquelle hinterlegt.', en:'No update source is configured for this build.', zh:'此版本未配置更新来源。', hi:'इस संस्करण के लिए कोई स्रोत निर्धारित नहीं है।', es:'Esta versión no tiene origen de actualización configurado.', ar:'لا يوجد مصدر تحديث لهذه النسخة.', fr:'Aucune source de mise à jour pour cette version.', bn:'এই সংস্করণের জন্য কোনো উৎস নির্ধারিত নেই।', pt:'Esta versão não tem origem de atualização configurada.', id:'Tidak ada sumber pembaruan untuk versi ini.', ur:'اس نسخے کے لیے کوئی ذریعہ مقرر نہیں۔' },
+    'upd.entwicklung':  { de:'Im Entwicklungsbetrieb wird nicht gesucht.', en:'No check is made in development mode.', zh:'开发模式下不检查。', hi:'विकास मोड में जाँच नहीं होती।', es:'En modo de desarrollo no se comprueba.', ar:'لا يجري البحث في وضع التطوير.', fr:'Aucune recherche en mode développement.', bn:'ডেভেলপমেন্ট মোডে যাচাই হয় না।', pt:'Em modo de desenvolvimento não se verifica.', id:'Tidak diperiksa dalam mode pengembangan.', ur:'ڈویلپمنٹ موڈ میں جانچ نہیں ہوتی۔' },
+    'upd.ungeprueft':   { de:'Noch nicht geprüft.', en:'Not checked yet.', zh:'尚未检查。', hi:'अभी जाँचा नहीं गया।', es:'Aún sin comprobar.', ar:'لم يُتحقق بعد.', fr:'Pas encore vérifié.', bn:'এখনো যাচাই হয়নি।', pt:'Ainda não verificado.', id:'Belum diperiksa.', ur:'ابھی جانچا نہیں گیا۔' },
+    'upd.laden':        { de:'Herunterladen', en:'Download', zh:'下载', hi:'डाउनलोड', es:'Descargar', ar:'تنزيل', fr:'Télécharger', bn:'ডাউনলোড', pt:'Transferir', id:'Unduh', ur:'ڈاؤن لوڈ' },
+    'upd.neustart':     { de:'Jetzt neu starten', en:'Restart now', zh:'立即重启', hi:'अभी पुनः आरंभ करें', es:'Reiniciar ahora', ar:'أعد التشغيل الآن', fr:'Redémarrer maintenant', bn:'এখনই পুনরায় চালু', pt:'Reiniciar agora', id:'Mulai ulang sekarang', ur:'ابھی دوبارہ شروع کریں' },
+    'upd.anGemeldet':   { de:'Die App sucht künftig beim Start nach Aktualisierungen.', en:'The app will check for updates at startup from now on.', zh:'今后应用将在启动时检查更新。', hi:'अब से ऐप शुरू होने पर अपडेट जाँचेगा।', es:'A partir de ahora la app buscará actualizaciones al iniciar.', ar:'سيبحث التطبيق عن التحديثات عند البدء من الآن.', fr:'L’app cherchera désormais les mises à jour au démarrage.', bn:'এখন থেকে অ্যাপ চালুর সময় হালনাগাদ খুঁজবে।', pt:'A partir de agora a app procura atualizações ao iniciar.', id:'Mulai sekarang aplikasi memeriksa pembaruan saat mulai.', ur:'اب سے ایپ شروع پر اپ ڈیٹ تلاش کرے گی۔' },
+    'upd.ausGemeldet':  { de:'Aktualisierungssuche abgeschaltet. Die App geht damit nicht mehr ins Netz.', en:'Update check switched off. The app no longer goes online.', zh:'已关闭更新检查。应用不再联网。', hi:'अपडेट जाँच बंद। ऐप अब ऑनलाइन नहीं जाता।', es:'Búsqueda de actualizaciones desactivada. La app ya no se conecta.', ar:'أُوقف البحث عن التحديثات. لم يعد التطبيق يتصل بالإنترنت.', fr:'Recherche de mises à jour désactivée. L’app ne se connecte plus.', bn:'হালনাগাদ যাচাই বন্ধ। অ্যাপ আর অনলাইনে যায় না।', pt:'Procura de atualizações desligada. A app já não se liga à rede.', id:'Pemeriksaan pembaruan dimatikan. Aplikasi tidak lagi daring.', ur:'اپ ڈیٹ جانچ بند۔ ایپ اب آن لائن نہیں جاتی۔' },
+
+    /* ---------- Einstellungen: eigene Optionen ---------- */
+    'opt.hinweis':      { de:'Neue Optionen legst du direkt im Formular an: wähle im Dropdown den Eintrag „➕ Neue Option …". Der Kapitel- und Folgen-Status sowie die Akte bleiben fest – Fortschrittsanzeige, Statistik und Akt-Struktur rechnen auf genau diesen Werten.', en:'You add new options right in the form: choose “➕ New option …” in the dropdown. Chapter and episode status and the acts stay fixed – progress, statistics and act structure are calculated from exactly those values.', zh:'新选项直接在表单中添加：在下拉列表中选择“➕ 新选项 …”。章节与剧集状态以及幕保持固定——进度、统计和幕结构正是基于这些值计算的。', hi:'नए विकल्प सीधे फ़ॉर्म में जोड़ें: ड्रॉपडाउन में „➕ नया विकल्प …" चुनें। अध्याय और एपिसोड की स्थिति तथा अंक निश्चित रहते हैं – प्रगति, आँकड़े और अंक-संरचना इन्हीं मानों पर गणना करते हैं।', es:'Las opciones nuevas se añaden en el formulario: elige “➕ Nueva opción …” en el desplegable. El estado de capítulos y episodios y los actos son fijos: el progreso, las estadísticas y la estructura de actos se calculan con esos valores.', ar:'تُضاف الخيارات الجديدة من النموذج مباشرة: اختر «➕ خيار جديد …» من القائمة. تبقى حالة الفصول والحلقات والفصول الثلاثة ثابتة – فالتقدّم والإحصاءات وبنية الفصول تُحسب من هذه القيم بالذات.', fr:'Les nouvelles options s’ajoutent dans le formulaire : choisissez « ➕ Nouvelle option … » dans la liste. Le statut des chapitres et épisodes ainsi que les actes restent fixes : progression, statistiques et structure en dépendent.', bn:'নতুন বিকল্প সরাসরি ফর্মে যোগ করুন: ড্রপডাউনে „➕ নতুন বিকল্প …" বাছুন। অধ্যায় ও পর্বের অবস্থা এবং অঙ্ক স্থির থাকে – অগ্রগতি, পরিসংখ্যান ও অঙ্ক-কাঠামো ঠিক এই মানগুলির উপরেই হিসাব করে।', pt:'As novas opções adicionam-se no formulário: escolha “➕ Nova opção …” na lista. O estado de capítulos e episódios e os atos são fixos – progresso, estatísticas e estrutura baseiam-se nesses valores.', id:'Pilihan baru ditambahkan langsung di formulir: pilih “➕ Pilihan baru …” pada daftar. Status bab dan episode serta babak tetap – kemajuan, statistik dan struktur babak dihitung dari nilai-nilai itu.', ur:'نئے اختیارات براہِ راست فارم میں شامل کریں: فہرست میں سے «➕ نیا اختیار …» چنیں۔ ابواب اور اقساط کی حالت اور ایکٹ مقرر رہتے ہیں – پیش رفت، اعداد و شمار اور ایکٹ کی ساخت انہی اقدار پر شمار ہوتی ہے۔' },
+    'opt.nichtVerwendet':{ de:'nicht verwendet', en:'not used', zh:'未使用', hi:'उपयोग में नहीं', es:'sin usar', ar:'غير مستخدم', fr:'non utilisé', bn:'ব্যবহৃত হয়নি', pt:'não usado', id:'tidak dipakai', ur:'غیر استعمال شدہ' },
+    'opt.verwendet':    { de:'{0}× verwendet', en:'used {0}×', zh:'使用 {0} 次', hi:'{0} बार उपयोग', es:'usado {0} veces', ar:'مستخدم {0} مرة', fr:'utilisé {0} fois', bn:'{0} বার ব্যবহৃত', pt:'usado {0} vezes', id:'dipakai {0}×', ur:'{0} بار استعمال' },
+    'opt.umbenennen':   { de:'Umbenennen', en:'Rename', zh:'重命名', hi:'नाम बदलें', es:'Renombrar', ar:'إعادة تسمية', fr:'Renommer', bn:'নাম বদলান', pt:'Mudar o nome', id:'Ganti nama', ur:'نام بدلیں' },
+    'opt.keineEigenen': { de:'Noch keine eigenen – {0} vorgegebene Optionen.', en:'None of your own yet – {0} preset options.', zh:'尚无自定义项——{0} 个预设选项。', hi:'अभी अपने कोई नहीं – {0} पूर्वनिर्धारित विकल्प।', es:'Aún ninguna propia: {0} opciones predefinidas.', ar:'لا خيارات خاصة بعد – {0} خياراً جاهزاً.', fr:'Aucune personnalisée : {0} options prédéfinies.', bn:'নিজের কোনোটি নেই – {0}টি পূর্বনির্ধারিত বিকল্প।', pt:'Ainda nenhuma própria: {0} opções predefinidas.', id:'Belum ada milik sendiri – {0} pilihan bawaan.', ur:'ابھی اپنا کوئی نہیں – {0} پہلے سے مقرر اختیارات۔' },
+
+    /* ---------- Bibliothek ---------- */
+    'bib.titel':        { de:'Meine Geschichten', en:'My stories', zh:'我的作品', hi:'मेरी कहानियाँ', es:'Mis historias', ar:'قصصي', fr:'Mes histoires', bn:'আমার গল্প', pt:'As minhas histórias', id:'Cerita saya', ur:'میری کہانیاں' },
+    'bib.leer':         { de:'Hier ist noch nichts. Lege ein Projekt an – es landet automatisch in deinem Geschichten-Ordner.', en:'Nothing here yet. Create a project – it lands in your stories folder automatically.', zh:'这里还是空的。新建一个项目，它会自动存入你的作品文件夹。', hi:'यहाँ अभी कुछ नहीं है। एक परियोजना बनाएँ – वह अपने आप आपके कहानी-फ़ोल्डर में चली जाती है।', es:'Aquí aún no hay nada. Crea un proyecto: irá automáticamente a tu carpeta de historias.', ar:'لا شيء هنا بعد. أنشئ مشروعاً – سيُحفظ تلقائياً في مجلد قصصك.', fr:'Rien ici pour l’instant. Créez un projet : il ira automatiquement dans votre dossier d’histoires.', bn:'এখানে এখনো কিছু নেই। একটি প্রকল্প তৈরি করুন – তা নিজে থেকেই আপনার গল্প-ফোল্ডারে যাবে।', pt:'Ainda nada aqui. Crie um projeto: irá automaticamente para a sua pasta de histórias.', id:'Belum ada apa pun. Buat proyek – otomatis masuk ke folder cerita Anda.', ur:'یہاں ابھی کچھ نہیں۔ ایک منصوبہ بنائیں – وہ خود بخود آپ کے کہانی فولڈر میں چلا جائے گا۔' },
+    'bib.ordner':       { de:'Geschichten-Ordner', en:'Stories folder', zh:'作品文件夹', hi:'कहानी-फ़ोल्डर', es:'Carpeta de historias', ar:'مجلد القصص', fr:'Dossier des histoires', bn:'গল্প-ফোল্ডার', pt:'Pasta de histórias', id:'Folder cerita', ur:'کہانی فولڈر' },
+    'bib.ordnerAendern':{ de:'Ordner ändern …', en:'Change folder …', zh:'更改文件夹 …', hi:'फ़ोल्डर बदलें …', es:'Cambiar carpeta …', ar:'تغيير المجلد …', fr:'Changer de dossier …', bn:'ফোল্ডার বদলান …', pt:'Mudar de pasta …', id:'Ubah folder …', ur:'فولڈر بدلیں …' },
+    'bib.imOrdner':     { de:'Im Ordner zeigen', en:'Show in folder', zh:'在文件夹中显示', hi:'फ़ोल्डर में दिखाएँ', es:'Mostrar en la carpeta', ar:'إظهار في المجلد', fr:'Afficher dans le dossier', bn:'ফোল্ডারে দেখান', pt:'Mostrar na pasta', id:'Tampilkan di folder', ur:'فولڈر میں دکھائیں' },
+    'bib.ausDatei':     { de:'Aus einer Datei öffnen …', en:'Open from a file …', zh:'从文件打开 …', hi:'फ़ाइल से खोलें …', es:'Abrir desde un archivo …', ar:'فتح من ملف …', fr:'Ouvrir depuis un fichier …', bn:'ফাইল থেকে খুলুন …', pt:'Abrir a partir de um ficheiro …', id:'Buka dari berkas …', ur:'فائل سے کھولیں …' },
+    'bib.auswaerts':    { de:'außerhalb', en:'external', zh:'外部', hi:'बाहरी', es:'externo', ar:'خارجي', fr:'externe', bn:'বাইরের', pt:'externo', id:'di luar', ur:'باہر' },
+    'bib.offen':        { de:'geöffnet', en:'open', zh:'已打开', hi:'खुला', es:'abierto', ar:'مفتوح', fr:'ouvert', bn:'খোলা', pt:'aberto', id:'terbuka', ur:'کھلا' },
+    'bib.umbenennen':   { de:'Umbenennen', en:'Rename', zh:'重命名', hi:'नाम बदलें', es:'Renombrar', ar:'إعادة تسمية', fr:'Renommer', bn:'নাম বদলান', pt:'Mudar o nome', id:'Ganti nama', ur:'نام بدلیں' },
+    'bib.entfernen':    { de:'Entfernen', en:'Remove', zh:'移除', hi:'हटाएँ', es:'Quitar', ar:'إزالة', fr:'Retirer', bn:'সরান', pt:'Remover', id:'Hapus', ur:'ہٹائیں' },
+    'bib.entfernenFrage':{ de:'„{0}" aus der Bibliothek entfernen? Die Datei wird nicht gelöscht, sondern in den Unterordner „Papierkorb" verschoben.', en:'Remove “{0}” from the library? The file is not deleted but moved to the “Papierkorb” subfolder.', zh:'从作品库移除「{0}」？文件不会被删除，只会移入「Papierkorb」子文件夹。', hi:'„{0}" को लाइब्रेरी से हटाएँ? फ़ाइल मिटाई नहीं जाती, बल्कि „Papierkorb" उपफ़ोल्डर में चली जाती है।', es:'¿Quitar «{0}» de la biblioteca? El archivo no se elimina, se mueve a la subcarpeta «Papierkorb».', ar:'إزالة «{0}» من المكتبة؟ لا يُحذف الملف بل يُنقل إلى المجلد الفرعي «Papierkorb».', fr:'Retirer « {0} » de la bibliothèque ? Le fichier n’est pas supprimé mais déplacé dans le sous-dossier « Papierkorb ».', bn:'„{0}" লাইব্রেরি থেকে সরাবেন? ফাইল মোছা হয় না, „Papierkorb" উপ-ফোল্ডারে সরানো হয়।', pt:'Remover «{0}» da biblioteca? O ficheiro não é eliminado, é movido para a subpasta «Papierkorb».', id:'Hapus “{0}” dari pustaka? Berkas tidak dihapus, hanya dipindah ke subfolder “Papierkorb”.', ur:'«{0}» کو لائبریری سے ہٹائیں؟ فائل حذف نہیں ہوتی بلکہ ذیلی فولڈر «Papierkorb» میں منتقل ہو جاتی ہے۔' },
+    'bib.neuerTitel':   { de:'Neuer Titel', en:'New title', zh:'新标题', hi:'नया शीर्षक', es:'Nuevo título', ar:'عنوان جديد', fr:'Nouveau titre', bn:'নতুন শিরোনাম', pt:'Novo título', id:'Judul baru', ur:'نیا عنوان' },
+    'bib.nichtLesbar':  { de:'Diese Datei lässt sich nicht lesen.', en:'This file cannot be read.', zh:'无法读取此文件。', hi:'यह फ़ाइल पढ़ी नहीं जा सकती।', es:'Este archivo no se puede leer.', ar:'تعذّرت قراءة هذا الملف.', fr:'Ce fichier ne peut pas être lu.', bn:'এই ফাইলটি পড়া যাচ্ছে না।', pt:'Este ficheiro não pode ser lido.', id:'Berkas ini tidak dapat dibaca.', ur:'یہ فائل پڑھی نہیں جا سکتی۔' },
+    'bib.woerterKurz':  { de:'{0} Wörter · {1} Kapitel', en:'{0} words · {1} chapters', zh:'{0} 字 · {1} 章', hi:'{0} शब्द · {1} अध्याय', es:'{0} palabras · {1} capítulos', ar:'{0} كلمة · {1} فصلاً', fr:'{0} mots · {1} chapitres', bn:'{0} শব্দ · {1} অধ্যায়', pt:'{0} palavras · {1} capítulos', id:'{0} kata · {1} bab', ur:'{0} الفاظ · {1} ابواب' },
+    'bib.ohneTitel':    { de:'Ohne Titel', en:'Untitled', zh:'无标题', hi:'बिना शीर्षक', es:'Sin título', ar:'بلا عنوان', fr:'Sans titre', bn:'শিরোনামহীন', pt:'Sem título', id:'Tanpa judul', ur:'بلا عنوان' },
+
+    /* ---------- Detailseite und Beziehungen ---------- */
+    'det.leer':         { de:'Noch keine Angaben – über „Bearbeiten" ausfüllen.', en:'No details yet – fill them in via “Edit”.', zh:'尚无内容——通过「编辑」填写。', hi:'अभी कोई विवरण नहीं – „संपादित करें" से भरें।', es:'Aún sin datos: complétalos con «Editar».', ar:'لا بيانات بعد – أضفها عبر «تحرير».', fr:'Aucune information – à remplir via « Modifier ».', bn:'এখনো কোনো তথ্য নেই – „সম্পাদনা" দিয়ে পূরণ করুন।', pt:'Ainda sem dados – preencha em «Editar».', id:'Belum ada detail – isi lewat “Ubah”.', ur:'ابھی کوئی تفصیل نہیں – «ترمیم» سے بھریں۔' },
+    'bez.titel':        { de:'Beziehungen', en:'Relationships', zh:'关系', hi:'संबंध', es:'Relaciones', ar:'العلاقات', fr:'Relations', bn:'সম্পর্ক', pt:'Relações', id:'Hubungan', ur:'تعلقات' },
+    'bez.hinzu':        { de:'Hinzufügen', en:'Add', zh:'添加', hi:'जोड़ें', es:'Añadir', ar:'إضافة', fr:'Ajouter', bn:'যোগ করুন', pt:'Adicionar', id:'Tambah', ur:'شامل کریں' },
+    'bez.alleAnsehen':  { de:'Ansehen', en:'View', zh:'查看', hi:'देखें', es:'Ver', ar:'عرض', fr:'Voir', bn:'দেখুন', pt:'Ver', id:'Lihat', ur:'دیکھیں' },
+    'bez.entfernen':    { de:'Beziehung entfernen', en:'Remove relationship', zh:'移除关系', hi:'संबंध हटाएँ', es:'Quitar relación', ar:'إزالة العلاقة', fr:'Supprimer la relation', bn:'সম্পর্ক সরান', pt:'Remover relação', id:'Hapus hubungan', ur:'تعلق ہٹائیں' },
+    'bez.keine':        { de:'Noch keine Beziehungen. Über „Hinzufügen" verknüpfst du diesen Eintrag mit einem anderen.', en:'No relationships yet. Use “Add” to link this entry to another one.', zh:'还没有关系。用「添加」把这一条与另一条连起来。', hi:'अभी कोई संबंध नहीं। „जोड़ें" से इसे किसी अन्य प्रविष्टि से जोड़ें।', es:'Aún no hay relaciones. Con «Añadir» enlazas esta entrada con otra.', ar:'لا علاقات بعد. استخدم «إضافة» لربط هذا المُدخل بآخر.', fr:'Aucune relation. Utilisez « Ajouter » pour lier cette fiche à une autre.', bn:'এখনো কোনো সম্পর্ক নেই। „যোগ করুন" দিয়ে একে অন্য ভুক্তির সঙ্গে যুক্ত করুন।', pt:'Ainda sem relações. Use «Adicionar» para ligar esta entrada a outra.', id:'Belum ada hubungan. Pakai “Tambah” untuk menautkan entri ini ke yang lain.', ur:'ابھی کوئی تعلق نہیں۔ «شامل کریں» سے اسے کسی اور اندراج سے جوڑیں۔' },
+    'bez.keineZiele':   { de:'Es gibt noch keinen zweiten Eintrag, mit dem sich dieser verknüpfen ließe.', en:'There is no second entry yet to link this one to.', zh:'还没有第二条可以与之关联。', hi:'अभी दूसरी कोई प्रविष्टि नहीं है जिससे जोड़ा जा सके।', es:'Todavía no hay una segunda entrada con la que enlazar.', ar:'لا يوجد مُدخل ثانٍ بعد لربطه به.', fr:'Il n’y a pas encore de deuxième fiche à lier.', bn:'যুক্ত করার মতো দ্বিতীয় ভুক্তি এখনো নেই।', pt:'Ainda não há uma segunda entrada para ligar.', id:'Belum ada entri kedua untuk ditautkan.', ur:'جوڑنے کے لیے ابھی دوسرا اندراج موجود نہیں۔' },
+    'bez.neu':          { de:'Neue Beziehung', en:'New relationship', zh:'新建关系', hi:'नया संबंध', es:'Nueva relación', ar:'علاقة جديدة', fr:'Nouvelle relation', bn:'নতুন সম্পর্ক', pt:'Nova relação', id:'Hubungan baru', ur:'نیا تعلق' },
+    'bez.zu':           { de:'Verknüpfen mit', en:'Link to', zh:'关联到', hi:'किससे जोड़ें', es:'Enlazar con', ar:'الربط بـ', fr:'Lier à', bn:'যুক্ত করুন', pt:'Ligar a', id:'Tautkan ke', ur:'سے جوڑیں' },
+    'bez.wie':          { de:'Was ist das für eine Beziehung?', en:'What kind of relationship?', zh:'是什么关系？', hi:'यह किस तरह का संबंध है?', es:'¿Qué tipo de relación?', ar:'ما نوع العلاقة؟', fr:'Quel type de relation ?', bn:'এটি কী ধরনের সম্পর্ক?', pt:'Que tipo de relação?', id:'Hubungan seperti apa?', ur:'یہ کس قسم کا تعلق ہے؟' },
+    'bez.wieBeispiel':  { de:'z. B. Tochter, Geliebte, Heimatplanet', en:'e.g. daughter, lover, home planet', zh:'例如：女儿、恋人、母星', hi:'जैसे बेटी, प्रेमी, गृह-ग्रह', es:'p. ej. hija, amante, planeta natal', ar:'مثلاً: ابنة، حبيب، الكوكب الأم', fr:'p. ex. fille, amant, planète natale', bn:'যেমন কন্যা, প্রেমিক, নিজ গ্রহ', pt:'p. ex. filha, amante, planeta natal', id:'mis. putri, kekasih, planet asal', ur:'مثلاً بیٹی، محبوب، آبائی سیارہ' },
+    'bez.richtung':     { de:'Richtung', en:'Direction', zh:'方向', hi:'दिशा', es:'Dirección', ar:'الاتجاه', fr:'Sens', bn:'দিক', pt:'Sentido', id:'Arah', ur:'سمت' },
+    'bez.einseitig':    { de:'→ gilt in diese Richtung', en:'→ applies one way', zh:'→ 单向成立', hi:'→ एक दिशा में लागू', es:'→ vale en un sentido', ar:'→ في اتجاه واحد', fr:'→ dans un seul sens', bn:'→ এক দিকে প্রযোজ্য', pt:'→ vale num sentido', id:'→ berlaku satu arah', ur:'→ ایک طرف لاگو' },
+    'bez.beidseitig':   { de:'↔ gilt für beide gleich', en:'↔ applies to both alike', zh:'↔ 双向相同', hi:'↔ दोनों के लिए समान', es:'↔ vale igual para ambos', ar:'↔ للطرفين معاً', fr:'↔ vaut pour les deux', bn:'↔ উভয়ের জন্য সমান', pt:'↔ vale para ambos', id:'↔ berlaku bagi keduanya', ur:'↔ دونوں کے لیے یکساں' },
+    'bez.ausText':      { de:'Aus dem Textfeld erkannt', en:'Detected from the text field', zh:'从文本字段识别', hi:'पाठ फ़ील्ड से पहचाना गया', es:'Detectado del campo de texto', ar:'مُستنتَج من حقل النص', fr:'Détecté depuis le champ texte', bn:'টেক্সট ক্ষেত্র থেকে শনাক্ত', pt:'Detetado do campo de texto', id:'Dikenali dari kolom teks', ur:'متن کے خانے سے پہچانا گیا' },
+    'bez.uebernehmen':  { de:'Als Beziehung übernehmen', en:'Turn into a relationship', zh:'转为关系', hi:'संबंध बनाएँ', es:'Convertir en relación', ar:'حوّلها إلى علاقة', fr:'Convertir en relation', bn:'সম্পর্ক হিসেবে নিন', pt:'Converter em relação', id:'Jadikan hubungan', ur:'تعلق میں بدلیں' },
+
+    /* ---------- Zeitangaben ---------- */
+    'zeit.geradeEben':  { de:'gerade eben', en:'just now', zh:'刚刚', hi:'अभी-अभी', es:'ahora mismo', ar:'الآن', fr:'à l’instant', bn:'এইমাত্র', pt:'agora mesmo', id:'baru saja', ur:'ابھی ابھی' },
+    'zeit.vorMin':      { de:'vor {0} Min.', en:'{0} min ago', zh:'{0} 分钟前', hi:'{0} मिनट पहले', es:'hace {0} min', ar:'قبل {0} دقيقة', fr:'il y a {0} min', bn:'{0} মিনিট আগে', pt:'há {0} min', id:'{0} menit lalu', ur:'{0} منٹ پہلے' },
+    'zeit.vorStd':      { de:'vor {0} Std.', en:'{0} h ago', zh:'{0} 小时前', hi:'{0} घंटे पहले', es:'hace {0} h', ar:'قبل {0} ساعة', fr:'il y a {0} h', bn:'{0} ঘণ্টা আগে', pt:'há {0} h', id:'{0} jam lalu', ur:'{0} گھنٹے پہلے' },
+    'zeit.gestern':     { de:'gestern', en:'yesterday', zh:'昨天', hi:'कल', es:'ayer', ar:'أمس', fr:'hier', bn:'গতকাল', pt:'ontem', id:'kemarin', ur:'کل' },
+    'zeit.vorTagen':    { de:'vor {0} Tagen', en:'{0} days ago', zh:'{0} 天前', hi:'{0} दिन पहले', es:'hace {0} días', ar:'قبل {0} أيام', fr:'il y a {0} jours', bn:'{0} দিন আগে', pt:'há {0} dias', id:'{0} hari lalu', ur:'{0} دن پہلے' }
+  };
+
+  /* Kürzel der Eintragsarten in der Änderungsliste. Bewusst knapp:
+     drei Zeichen, in der jeweiligen Sprache erkennbar. */
+  const ARTKUERZEL = {
+    kapitel:  { de:'KAP', en:'CHP', zh:'章', hi:'अध्या', es:'CAP', ar:'فصل', fr:'CHP', bn:'অধ্যা', pt:'CAP', id:'BAB', ur:'باب' },
+    folge:    { de:'FLG', en:'EPS', zh:'集', hi:'एपि', es:'EPI', ar:'حلقة', fr:'ÉPI', bn:'পর্ব', pt:'EPI', id:'EPS', ur:'قسط' },
+    figur:    { de:'FIG', en:'CHR', zh:'角', hi:'पात्र', es:'PER', ar:'شخص', fr:'PER', bn:'চরিত', pt:'PER', id:'TKH', ur:'کردار' },
+    ort:      { de:'ORT', en:'PLC', zh:'地', hi:'स्थान', es:'LUG', ar:'مكان', fr:'LIE', bn:'স্থান', pt:'LUG', id:'TMP', ur:'مقام' },
+    welt:     { de:'WLT', en:'WLD', zh:'界', hi:'विश्व', es:'MUN', ar:'عالم', fr:'MON', bn:'জগৎ', pt:'MUN', id:'DNA', ur:'دنیا' },
+    beat:     { de:'PLT', en:'PLT', zh:'情', hi:'कथा', es:'TRA', ar:'حبكة', fr:'INT', bn:'কাহি', pt:'TRA', id:'PLT', ur:'کہانی' },
+    ereignis: { de:'ZEI', en:'EVT', zh:'事', hi:'घटना', es:'EVT', ar:'حدث', fr:'ÉVN', bn:'ঘটনা', pt:'EVT', id:'PRS', ur:'واقعہ' },
+    notiz:    { de:'IDE', en:'IDA', zh:'念', hi:'विचा', es:'IDE', ar:'فكرة', fr:'IDÉ', bn:'ভাবনা', pt:'IDE', id:'IDE', ur:'خیال' }
+  };
+
+  const API = { SPRACHEN, REIHENFOLGE, TEXTE, ARTKUERZEL };
+
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+  else global.StoryPlanerSprachen = API;
+
+})(typeof window !== 'undefined' ? window : globalThis);
+/* ===== SPRACHEN-ENDE ===== */
+</script>
+<script>
+/* Nur fuer die Vorschau: Modus, Thema und Sprache lassen sich umschalten. */
+let sprache="de";
+const SPRACHEN=StoryPlanerSprachen.SPRACHEN, TEXTE=StoryPlanerSprachen.TEXTE;
+function setPro(an){ document.body.classList.toggle("pro", an);
+  document.querySelectorAll(".switch").forEach(s=>s.classList.toggle("on", an)); }
+function toggleTheme(){ const r=document.documentElement;
+  r.dataset.theme = r.dataset.theme==="dark" ? "light" : "dark";
+  const g = r.dataset.theme==="dark" ? "\u2600" : "\u263e";
+  document.querySelectorAll("#themeBtn,#themeBtnPro").forEach(b=>b.textContent=g); }
+function openOpts(){ alert("Sprachauswahl: " + Object.values(SPRACHEN).map(s=>s.eigen).join(" · ")); }
+["openForm","go","inspiration","exportMarkdown","toggleBookEdit","openDetail","winMin","winMax","winClose",
+ "setWs","importJSON","exportJSON","loadDemo","wipeAll","editSelected","deleteSelected","selectAllRows",
+ "showShortcuts","toast","projektMenue","jsonImport","kiExport","projektNeu","projektOeffnen","speichereJetzt",
+ "manuskriptEinlesen","ueberDialog","rueckgaengig","wiederherstellen"].forEach(n=>window[n]=function(){});
+document.querySelectorAll(".pMenu>button").forEach(b=>b.onclick=()=>b.parentElement.classList.toggle("open"));
+</script>
+</body></html>

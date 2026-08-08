@@ -1,0 +1,19 @@
+# Abhängigkeiten
+node_modules/
+
+# Bauergebnisse – gehören ins GitHub-Release, nicht ins Repository
+dist/
+*.exe
+*.blockmap
+*.dmg
+*.AppImage
+
+# Zwischenstände und Sicherungen
+*.bak
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# Eigene Projektdateien, falls jemand welche im Ordner ablegt
+*.story
